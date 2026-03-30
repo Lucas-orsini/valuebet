@@ -1,0 +1,11 @@
+
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+screenshots/
+agent.js
+.next/
+playwright-screenshots.js
+node_modules/
+package-lock.json

@@ -1,0 +1,261 @@
+"use client";
+import { motion } from "framer-motion";
+import { Download, Cpu, Target, Bell } from "lucide-react";
+import { howItWorksSteps } from "@/lib/data";
+import { cn } from "@/lib/utils";
+import type { HowItWorksStep } from "@/lib/data";
+
+const iconMap = {
+  download: Download,
+  cpu: Cpu,
+  target: Target,
+  bell: Bell,
+};
+
+// Widget for step 1 - Timeline
+function TimelineWidget() {
+  const items = [
+    { label: "Récupération des matchs", time: "22:00", status: "done" },
+    { label: "Analyse des statistiques", time: "22:15", status: "done" },
+    { label: "Calcul des probabilités", time: "22:30", status: "done" },
+    { label: "Envoi des alertes", time: "En cours", status: "active" },
+  ];
+
+  return (
+    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+        <span className="text-xs text-zinc-500 font-mono"> scraping.py</span>
+      </div>
+      <div className="space-y-2">
+        {items.map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.2 }}
+            className="flex items-center gap-3 text-xs"
+          >
+            <div
+              className={cn(
+                "w-1.5 h-1.5 rounded-full",
+                item.status === "done"
+                  ? "bg-green-500"
+                  : item.status === "active"
+                  ? "bg-orange-500 animate-pulse"
+                  : "bg-zinc-600"
+              )}
+            />
+            <span
+              className={cn(
+                "flex-1",
+                item.status === "active" ? "text-zinc-200" : "text-zinc-500"
+              )}
+            >
+              {item.label}
+            </span>
+            <span className="text-zinc-600 font-mono">{item.time}</span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Widget for step 2 - Model prediction
+function PredictionWidget() {
+  return (
+    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-6 h-6 rounded bg-orange-500/20 flex items-center justify-center">
+          <Cpu size={12} className="text-orange-400" />
+        </div>
+        <span className="text-xs text-zinc-400">XGBoost v2.4</span>
+      </div>
+      <div className="space-y-3">
+        <div className="p-3 rounded-lg bg-[#18181b] border border-white/[0.05]">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs text-zinc-500">Sinner vs Medvedev</span>
+            <span className="text-[10px] text-orange-400">VALUE BET</span>
+          </div>
+          <div className="flex items-end gap-2">
+            <span className="text-2xl font-bold text-zinc-100">67%</span>
+            <span className="text-xs text-zinc-500 mb-1">probabilité</span>
+          </div>
+          <div className="h-1.5 bg-white/[0.05] rounded-full mt-2 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: "67%" }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full"
+            />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1 p-2 rounded bg-green-500/10 border border-green-500/20">
+            <p className="text-[10px] text-zinc-500">Edge</p>
+            <p className="text-sm font-bold text-green-400">+8.2%</p>
+          </div>
+          <div className="flex-1 p-2 rounded bg-white/[0.03] border border-white/[0.05]">
+            <p className="text-[10px] text-zinc-500">Kelly optimal</p>
+            <p className="text-sm font-bold text-zinc-300">2u</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Widget for step 3 - Value detection
+function ValueDetectionWidget() {
+  const items = [
+    { book: "Betclic", odds: 2.10, fair: 1.85, edge: 13.5 },
+    { book: "Unibet", odds: 2.05, fair: 1.85, edge: 10.8 },
+    { book: "Winamax", odds: 2.00, fair: 1.85, edge: 8.1 },
+  ];
+
+  return (
+    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-6 h-6 rounded bg-green-500/20 flex items-center justify-center">
+          <Target size={12} className="text-green-400" />
+        </div>
+        <span className="text-xs text-zinc-400">Détection active</span>
+      </div>
+      <div className="space-y-2">
+        {items.map((item, i) => (
+          <motion.div
+            key={item.book}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.15 }}
+            className="flex items-center gap-3 p-2 rounded-lg bg-white/[0.02] border border-white/[0.05]"
+          >
+            <div className="flex-1">
+              <p className="text-xs text-zinc-300">{item.book}</p>
+              <p className="text-[10px] text-zinc-600">Fair: {item.fair}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-bold text-zinc-100">{item.odds}</p>
+              <p className="text-[10px] text-green-400">+{item.edge}%</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Widget for step 4 - Telegram notification
+function TelegramWidget() {
+  return (
+    <div className="rounded-xl border border-[#0088cc]/30 bg-[#0088cc]/5 p-4 min-h-[200px]">
+      <div className="flex items-center gap-2 mb-4">
+        <svg className="w-5 h-5 text-[#0088cc]" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+        </svg>
+        <span className="text-xs text-[#0088cc] font-medium">Alerte envoyée</span>
+        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+      </div>
+      <div className="bg-[#1a1a1a] rounded-lg p-3 space-y-2">
+        <p className="text-xs text-zinc-400">🎾 <span className="text-zinc-200">Value Bet détecté</span></p>
+        <p className="text-xs text-zinc-300">Sinner vs Medvedev</p>
+        <p className="text-xs text-zinc-400">
+          <span className="text-orange-400">Cote: 2.10</span> · Edge: +8.2%
+        </p>
+        <div className="flex gap-2 pt-2">
+          <button className="flex-1 h-7 rounded bg-orange-500 text-[10px] text-white font-medium">
+            Miser 2u
+          </button>
+          <button className="flex-1 h-7 rounded bg-white/5 text-[10px] text-zinc-400 border border-white/10">
+            Ignorer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const widgetMap = [TimelineWidget, PredictionWidget, ValueDetectionWidget, TelegramWidget];
+
+export function HowItWorksSection() {
+  return (
+    <section id="how" className="py-24 px-6 bg-[#111]">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-2xl mx-auto mb-16"
+        >
+          <span className="inline-block px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-medium uppercase tracking-widest mb-4">
+            Comment ça marche
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
+            Du match à l&apos;alerte en 4 étapes
+          </h2>
+          <p className="text-base text-zinc-500 leading-relaxed">
+            Notre système fonctionne automatiquement 24h/24 pour vous fournir
+            les meilleures opportunités de value bet.
+          </p>
+        </motion.div>
+
+        {/* Steps */}
+        <div className="space-y-16 sm:space-y-24">
+          {howItWorksSteps.map((step: HowItWorksStep, index: number) => {
+            const isReversed = index % 2 === 1;
+            const Icon = iconMap[step.icon as keyof typeof iconMap];
+            const Widget = widgetMap[index];
+
+            return (
+              <motion.div
+                key={step.step}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className={`flex flex-col ${
+                  isReversed ? "md:flex-row-reverse" : "md:flex-row"
+                } items-center gap-8 md:gap-12 lg:gap-24`}
+              >
+                {/* Text */}
+                <div className="flex-1 space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl border border-orange-500/20 bg-orange-500/10 flex items-center justify-center">
+                      <Icon size={22} className="text-orange-400" strokeWidth={1.5} />
+                    </div>
+                    <span className="text-3xl font-bold text-zinc-800 dark:text-zinc-700">
+                      {String(step.step).padStart(2, "0")}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-semibold text-zinc-100 tracking-tight mb-3">
+                      {step.title}
+                    </h3>
+                    <p className="text-base text-zinc-500 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                    <svg className="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 6v6l4 2" />
+                    </svg>
+                    <span className="text-xs text-zinc-400">{step.time}</span>
+                  </div>
+                </div>
+
+                {/* Widget */}
+                <div className="flex-1 w-full">
+                  <Widget />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
