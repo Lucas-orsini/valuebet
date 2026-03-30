@@ -6,11 +6,11 @@ export function CtaBanner() {
     <section className="py-24 px-6 bg-[#09090b] relative overflow-hidden">
       {/* Background Glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,rgba(249,115,22,0.12),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_50%,rgba(200,230,20,0.12),transparent)]" />
       </div>
 
       {/* Decorative elements */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-orange-500/5 blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tennis-500/5 blur-3xl" />
 
       <div className="relative z-10 max-w-2xl mx-auto text-center flex flex-col items-center gap-6">
         <motion.div
@@ -35,7 +35,7 @@ export function CtaBanner() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="flex flex-col sm:flex-row items-center gap-3"
         >
-          <button className="h-11 px-6 rounded-lg bg-orange-500 hover:bg-orange-400 text-white text-sm font-medium transition-all duration-200 shadow-[0_0_24px_rgba(249,115,22,0.3)] hover:shadow-[0_0_32px_rgba(249,115,22,0.4)]">
+          <button className="h-11 px-6 rounded-lg bg-tennis-500 hover:bg-tennis-400 text-white text-sm font-medium transition-all duration-200 shadow-[0_0_24px_rgba(200,230,20,0.3)] hover:shadow-[0_0_32px_rgba(200,230,20,0.4)]">
             Commencer gratuitement
           </button>
           <button className="h-11 px-6 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300 text-sm font-medium transition-colors">
