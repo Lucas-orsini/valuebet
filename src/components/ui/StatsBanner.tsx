@@ -95,8 +95,8 @@ export function StatsBanner() {
                 transition={{ delay: index * 0.1 }}
                 className="flex flex-col items-center text-center gap-3"
               >
-                <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                  <Icon size={20} className="text-orange-400" strokeWidth={1.5} />
+                <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center">
+                  <Icon size={20} className="text-accent" strokeWidth={1.5} />
                 </div>
                 <AnimatedCounter
                   value={stat.value}
