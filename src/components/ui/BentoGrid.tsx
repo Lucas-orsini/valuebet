@@ -84,7 +84,7 @@ function CounterFeature({
       <span className="text-3xl font-bold text-zinc-100 tracking-tight">
         {displayValue}
       </span>
-      <span className="text-xl font-medium text-orange-400 ml-1">{suffix}</span>
+      <span className="text-xl font-medium text-accent ml-1">{suffix}</span>
     </div>
   );
 }
@@ -114,7 +114,7 @@ function MetricsFeature() {
               whileInView={{ width: `${Math.min(100, value)}%` }}
               viewport={{ once: true }}
               transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 * i }}
-              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
+              className="h-full rounded-full bg-gradient-to-r from-accent to-accent-light"
             />
           </div>
         </div>
@@ -218,7 +218,7 @@ function TelegramPreview() {
 function UnitsPreview() {
   const units = [
     { level: "1u", amount: "10€", desc: "Confiance normale", color: "bg-zinc-500" },
-    { level: "2u", amount: "20€", desc: "Confiance élevée", color: "bg-orange-500" },
+    { level: "2u", amount: "20€", desc: "Confiance élevée", color: "bg-accent" },
     { level: "3u", amount: "30€", desc: "Confiance max", color: "bg-green-500" },
   ];
 
@@ -329,8 +329,8 @@ export function BentoGrid() {
             </h3>
             <p className="text-sm text-zinc-500">{feature.description}</p>
             <div className="flex items-center gap-2 mt-auto">
-              <div className="px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20">
-                <span className="text-[11px] font-medium text-orange-400">
+              <div className="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20">
+                <span className="text-[11px] font-medium text-accent">
                   {feature.accent}
                 </span>
               </div>
