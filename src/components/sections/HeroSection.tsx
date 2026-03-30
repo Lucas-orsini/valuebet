@@ -1,20 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
-import { UnicornBackground } from "@/components/ui/UnicornBackground";
+import { ParticleBackground } from "@/components/ui/ParticleBackground";
 import { AnimatedTextGenerate } from "@/components/ui/AnimatedTextGenerate";
-import { cn } from "@/lib/utils";
 
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-6 bg-[#09090b] overflow-hidden pt-14">
-      {/* Unicorn Background */}
-      <UnicornBackground
-        jsonFilePath="https://ipbkonbdobkaebffenbz.supabase.co/storage/v1/object/public/scenes/modern_hero.json"
-        className="absolute inset-0 z-0 w-full h-full"
-        scale={0.75}
-        dpi={1.5}
-      />
+      {/* Particle Background */}
+      <ParticleBackground className="absolute inset-0 z-0 w-full h-full" />
 
       {/* Overlay gradient for better text readability */}
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#09090b]/60 via-transparent to-[#09090b]" />
