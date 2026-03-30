@@ -14,9 +14,9 @@
   --text-1: #fafafa;
   --text-2: #a1a1aa;
   --text-3: #71717a;
-  --accent: #f97316;
-  --accent-hi: #fb923c;
-  --accent-glow: rgba(249, 115, 22, 0.18);
+  --accent: #F2CB38;
+  --accent-hi: #F7D55C;
+  --accent-glow: rgba(242, 203, 56, 0.18);
   --green: #4ade80;
   --red: #f87171;
 }
@@ -42,7 +42,7 @@ body {
 }
 
 ::selection {
-  background-color: rgba(249, 115, 22, 0.3);
+  background-color: rgba(242, 203, 56, 0.3);
   color: #fafafa;
 }
 
@@ -64,13 +64,13 @@ body {
   background: var(--text-3);
 }
 
-/* LustreText — shimmer sur le texte amber */
+/* LustreText — shimmer sur le texte accent */
 .lustre-dark {
   background: linear-gradient(
     90deg,
     #fafafa 0%,
     #fafafa 40%,
-    #fb923c 50%,
+    #F7D55C 50%,
     #fafafa 60%,
     #fafafa 100%
   );

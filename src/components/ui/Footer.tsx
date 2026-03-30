@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#F2CB38] to-[#E5B830] flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
                   viewBox="0 0 24 24"
@@ -103,11 +103,11 @@ export function Footer() {
           </div>
 
           {/* Responsible Gambling Disclaimer */}
-          <div className="mt-6 p-4 rounded-xl bg-orange-500/5 border border-orange-500/10">
+          <div className="mt-6 p-4 rounded-xl bg-[#F2CB38]/5 border border-[#F2CB38]/10">
             <div className="flex items-start gap-3">
               <span className="text-lg">⚠️</span>
               <div>
-                <p className="text-xs font-medium text-orange-400 mb-1">
+                <p className="text-xs font-medium text-[#F2CB38] mb-1">
                   Jeu responsable
                 </p>
                 <p className="text-xs text-zinc-500 leading-relaxed">

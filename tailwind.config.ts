@@ -9,6 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        accent: {
+          DEFAULT: '#F2CB38',
+          light: '#F7D55C',
+          dark: '#D4AF2A',
+        },
         tennis: {
           50: "#fafde8",
           100: "#f0fbc4",
