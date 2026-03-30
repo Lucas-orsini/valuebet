@@ -24,7 +24,7 @@ function TimelineWidget() {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+        <div className="w-2 h-2 rounded-full bg-tennis-500 animate-pulse" />
         <span className="text-xs text-zinc-500 font-mono"> scraping.py</span>
       </div>
       <div className="space-y-2">
@@ -42,7 +42,7 @@ function TimelineWidget() {
                 item.status === "done"
                   ? "bg-green-500"
                   : item.status === "active"
-                  ? "bg-orange-500 animate-pulse"
+                  ? "bg-tennis-500 animate-pulse"
                   : "bg-zinc-600"
               )}
             />
@@ -67,8 +67,8 @@ function PredictionWidget() {
   return (
     <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-6 h-6 rounded bg-orange-500/20 flex items-center justify-center">
-          <Cpu size={12} className="text-orange-400" />
+        <div className="w-6 h-6 rounded bg-tennis-500/20 flex items-center justify-center">
+          <Cpu size={12} className="text-tennis-400" />
         </div>
         <span className="text-xs text-zinc-400">XGBoost v2.4</span>
       </div>
@@ -76,7 +76,7 @@ function PredictionWidget() {
         <div className="p-3 rounded-lg bg-[#18181b] border border-white/[0.05]">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs text-zinc-500">Sinner vs Medvedev</span>
-            <span className="text-[10px] text-orange-400">VALUE BET</span>
+            <span className="text-[10px] text-tennis-400">VALUE BET</span>
           </div>
           <div className="flex items-end gap-2">
             <span className="text-2xl font-bold text-zinc-100">67%</span>
@@ -87,7 +87,7 @@ function PredictionWidget() {
               initial={{ width: 0 }}
               animate={{ width: "67%" }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full"
+              className="h-full bg-gradient-to-r from-tennis-500 to-tennis-400 rounded-full"
             />
           </div>
         </div>
@@ -161,10 +161,10 @@ function TelegramWidget() {
         <p className="text-xs text-zinc-400">🎾 <span className="text-zinc-200">Value Bet détecté</span></p>
         <p className="text-xs text-zinc-300">Sinner vs Medvedev</p>
         <p className="text-xs text-zinc-400">
-          <span className="text-orange-400">Cote: 2.10</span> · Edge: +8.2%
+          <span className="text-tennis-400">Cote: 2.10</span> · Edge: +8.2%
         </p>
         <div className="flex gap-2 pt-2">
-          <button className="flex-1 h-7 rounded bg-orange-500 text-[10px] text-white font-medium">
+          <button className="flex-1 h-7 rounded bg-tennis-500 text-[10px] text-white font-medium">
             Miser 2u
           </button>
           <button className="flex-1 h-7 rounded bg-white/5 text-[10px] text-zinc-400 border border-white/10">
@@ -190,7 +190,7 @@ export function HowItWorksSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="inline-block px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-medium uppercase tracking-widest mb-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-tennis-500/10 text-tennis-400 text-xs font-medium uppercase tracking-widest mb-4">
             Comment ça marche
           </span>
           <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
@@ -223,8 +223,8 @@ export function HowItWorksSection() {
                 {/* Text */}
                 <div className="flex-1 space-y-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl border border-orange-500/20 bg-orange-500/10 flex items-center justify-center">
-                      <Icon size={22} className="text-orange-400" strokeWidth={1.5} />
+                    <div className="w-12 h-12 rounded-xl border border-tennis-500/20 bg-tennis-500/10 flex items-center justify-center">
+                      <Icon size={22} className="text-tennis-400" strokeWidth={1.5} />
                     </div>
                     <span className="text-3xl font-bold text-zinc-800 dark:text-zinc-700">
                       {String(step.step).padStart(2, "0")}

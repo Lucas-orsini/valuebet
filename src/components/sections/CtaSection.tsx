@@ -16,7 +16,7 @@ export function CtaSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="inline-block px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-medium uppercase tracking-widest mb-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-tennis-500/10 text-tennis-400 text-xs font-medium uppercase tracking-widest mb-4">
             Tarifs
           </span>
           <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
@@ -40,13 +40,13 @@ export function CtaSection() {
               className={cn(
                 "relative rounded-xl p-6 flex flex-col gap-5",
                 plan.highlight
-                  ? "bg-[#111] border border-orange-500/30 shadow-[0_0_40px_rgba(249,115,22,0.08)]"
+                  ? "bg-[#111] border border-tennis-500/30 shadow-[0_0_40px_rgba(200,230,20,0.08)]"
                   : "bg-[#0d0d0d] border border-white/[0.07]"
               )}
             >
               {plan.highlight && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full bg-orange-500 text-white text-[11px] font-medium">
+                  <span className="px-3 py-1 rounded-full bg-tennis-500 text-white text-[11px] font-medium">
                     Le plus populaire
                   </span>
                 </div>
@@ -69,7 +69,7 @@ export function CtaSection() {
                 className={cn(
                   "h-10 rounded-lg text-sm font-medium transition-all duration-200",
                   plan.highlight
-                    ? "bg-orange-500 hover:bg-orange-400 text-white shadow-[0_0_16px_rgba(249,115,22,0.2)]"
+                    ? "bg-tennis-500 hover:bg-tennis-400 text-white shadow-[0_0_16px_rgba(200,230,20,0.2)]"
                     : "border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300"
                 )}
               >
@@ -103,11 +103,11 @@ export function CtaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="relative text-center p-12 rounded-2xl border border-orange-500/20 bg-gradient-to-b from-orange-500/5 to-transparent overflow-hidden"
+          className="relative text-center p-12 rounded-2xl border border-tennis-500/20 bg-gradient-to-b from-tennis-500/5 to-transparent overflow-hidden"
         >
           {/* Glow effect */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_100%,rgba(249,115,22,0.15),transparent)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_100%,rgba(200,230,20,0.15),transparent)]" />
           </div>
 
           <div className="relative z-10">
@@ -118,7 +118,7 @@ export function CtaSection() {
               Rejoignez plus de 500 parieurs qui utilisent déjà notre IA pour
               détecter les value bets.
             </p>
-            <button className="h-11 px-8 rounded-lg bg-orange-500 hover:bg-orange-400 text-white text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 shadow-[0_0_24px_rgba(249,115,22,0.3)] hover:shadow-[0_0_32px_rgba(249,115,22,0.4)]">
+            <button className="h-11 px-8 rounded-lg bg-tennis-500 hover:bg-tennis-400 text-white text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 shadow-[0_0_24px_rgba(200,230,20,0.3)] hover:shadow-[0_0_32px_rgba(200,230,20,0.4)]">
               Commencer maintenant
               <ArrowRight size={16} />
             </button>
