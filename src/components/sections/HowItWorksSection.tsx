@@ -176,7 +176,7 @@ function TennisBallIcon({ className }: { className?: string }) {
   );
 }
 
-// Widget for step 4 - Telegram notification (mobile notification style with tennis data)
+// Widget for step 4 - Telegram notification (harmonized with other widgets)
 function TelegramWidget() {
   const notificationVariants: Variants = {
     idle: {
@@ -209,75 +209,65 @@ function TelegramWidget() {
   };
 
   return (
-    <div className="max-w-[300px]">
-      {/* Notification container - mobile style */}
-      <motion.div
-        variants={notificationVariants}
-        initial="idle"
-        animate="new"
-        className="relative rounded-2xl bg-[#0088cc] p-4 shadow-lg overflow-hidden"
-      >
-        {/* Pulsing VALUE BET badge */}
-        <div className="absolute top-3 left-3">
-          <span className="animate-pulse inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFD700] text-[#09090b] text-[10px] font-bold uppercase tracking-wider">
-            Value Bet
+    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-6 h-6 rounded bg-accent/20 flex items-center justify-center">
+          <svg
+            className="w-3.5 h-3.5 text-accent-light"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+          </svg>
+        </div>
+        <span className="text-xs text-zinc-400">Haurus</span>
+        <span className="ml-auto text-[10px] text-zinc-600">Maintenant</span>
+      </div>
+
+      {/* Pulsing VALUE BET badge */}
+      <div className="mb-3">
+        <span className="animate-pulse inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent-light text-[10px] font-bold uppercase tracking-wider">
+          Value Bet
+        </span>
+      </div>
+
+      {/* Body - two lines */}
+      <div className="space-y-1.5 mb-3">
+        {/* Line 1: category + tournament + tennis icon */}
+        <div className="flex items-center">
+          <p className="text-[10px] text-zinc-500 uppercase tracking-wider">
+            {tennisData.category} · {tennisData.tournament}
+          </p>
+          <TennisBallIcon className="ml-auto shrink-0 w-4 h-4" />
+        </div>
+
+        {/* Line 2: match + odds */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-zinc-200 font-medium">
+            {tennisData.match}
+          </p>
+          <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-zinc-100 text-xs font-bold">
+            {tennisData.odds.toFixed(2)}
           </span>
         </div>
+      </div>
 
-        {/* Notification content */}
-        <div className="pt-6">
-          {/* Header - compact */}
-          <div className="flex items-center gap-2 mb-3">
-            {/* Telegram icon */}
-            <svg
-              className="w-4 h-4 text-white/90"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-            </svg>
-            <span className="text-xs text-white/90 font-medium">Haurus</span>
-            <span className="ml-auto text-[10px] text-white/60">Maintenant</span>
-          </div>
-
-          {/* Body - two lines */}
-          <div className="space-y-1.5 mb-3">
-            {/* Line 1: category + tournament + tennis icon */}
-            <div className="flex items-center">
-              <p className="text-[10px] text-white/70 uppercase tracking-wider">
-                {tennisData.category} · {tennisData.tournament}
-              </p>
-              <TennisBallIcon className="ml-auto shrink-0" />
-            </div>
-
-            {/* Line 2: match + odds */}
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-white font-medium">
-                {tennisData.match}
-              </p>
-              <span className="px-2 py-0.5 rounded bg-white/20 text-white text-xs font-bold">
-                {tennisData.odds.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          {/* Horizontal badges */}
-          <div className="flex items-center gap-2 pt-2 border-t border-white/20">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/10">
-              <span className="text-[9px] text-white/70 uppercase tracking-wider">Edge</span>
-              <span className="text-xs text-[#CCFF00] font-bold">{tennisData.edge}</span>
-            </div>
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/10">
-              <span className="text-[9px] text-white/70 uppercase tracking-wider">Prob</span>
-              <span className="text-xs text-white font-bold">{tennisData.probability}</span>
-            </div>
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/10">
-              <span className="text-[9px] text-white/70 uppercase tracking-wider">Unit</span>
-              <span className="text-xs text-white font-bold">{tennisData.unit}</span>
-            </div>
-          </div>
+      {/* Horizontal badges */}
+      <div className="flex items-center gap-2 pt-2 border-t border-white/[0.07]">
+        <div className="flex items-center gap-1 px-2 py-1 rounded bg-white/[0.03] border border-white/[0.06]">
+          <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Edge</span>
+          <span className="text-xs text-accent-light font-bold">{tennisData.edge}</span>
         </div>
-      </motion.div>
+        <div className="flex items-center gap-1 px-2 py-1 rounded bg-white/[0.03] border border-white/[0.06]">
+          <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Prob</span>
+          <span className="text-xs text-zinc-200 font-bold">{tennisData.probability}</span>
+        </div>
+        <div className="flex items-center gap-1 px-2 py-1 rounded bg-white/[0.03] border border-white/[0.06]">
+          <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Unit</span>
+          <span className="text-xs text-zinc-200 font-bold">{tennisData.unit}</span>
+        </div>
+      </div>
     </div>
   );
 }
