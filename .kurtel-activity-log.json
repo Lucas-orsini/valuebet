@@ -1,9 +1,9 @@
 [
   {
-    "timestamp": "2026-03-31T15:17:58.173Z",
+    "timestamp": "2026-03-31T15:32:19.470Z",
     "agent": "qa",
     "event": "skipped",
-    "description": "qa_skip=true — Modification purement visuelle/CSS : repositionnement d'une icône du mode absolute vers inline flow - aucun calcul, logique métier, appel API ou validation",
+    "description": "qa_skip=true — Modification purement visuelle/CSS sur un composant statique - changement de couleurs de fond, bordure et accents. Aucune logique métier, aucune interaction, aucune validation.",
     "details": {}
   }
 ]
