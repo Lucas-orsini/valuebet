@@ -1,9 +1,9 @@
 [
   {
-    "timestamp": "2026-03-31T15:41:18.412Z",
+    "timestamp": "2026-03-31T15:53:38.154Z",
     "agent": "qa",
     "event": "skipped",
-    "description": "qa_skip=true — Modification purement visuelle de layout (ordre des éléments flex) et de couleur — aucun calcul, aucune logique métier, aucun formulaire, aucune interaction utilisateur",
+    "description": "qa_skip=true — Modification CSS pure — changement de couleur de fond et de l'icône, aucun calcul, aucune logique métier, aucun appel API, aucune interaction utilisateur.",
     "details": {}
   }
 ]

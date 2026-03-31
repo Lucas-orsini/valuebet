@@ -212,9 +212,9 @@ function TelegramWidget() {
     <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-6 h-6 rounded bg-accent/20 flex items-center justify-center">
+        <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center">
           <svg
-            className="w-3.5 h-3.5 text-[#0088cc]"
+            className="w-3.5 h-3.5 text-blue-400"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
