@@ -46,7 +46,7 @@ export interface Feature {
 export const features: Feature[] = [
   {
     id: "xgboost",
-    title: "Modèle XGBoost",
+    title: "Modèle V4",
     description: "Algorithme de machine learning entraîné sur des millions de données tennis.",
     accent: "276 000+ matchs",
     icon: "brain",

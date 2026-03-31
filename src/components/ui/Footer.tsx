@@ -87,7 +87,7 @@ export function Footer() {
         <div className="pt-8 border-t border-white/[0.05]">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-xs text-zinc-600">
-              © 2025 Value Bet AI. Tous droits réservés.
+              © 2026 Haurus. Tous droits réservés.
             </p>
             <div className="flex items-center gap-4">
               {["Confidentialité", "CGU", "Cookies"].map((item) => (

@@ -252,7 +252,7 @@ function TransparencyChecklist() {
     "Historique de tous les paris",
     "Cotes avant/après match",
     "ROI vérifiable",
-    "Logs du modèle XGBoost",
+    "Logs du modèle",
   ];
 
   return (
