@@ -200,7 +200,7 @@ function TelegramWidget() {
   // Tennis match data
   const tennisData = {
     category: "ATP",
-    tournament: "Miami Open",
+    tournament: "MIAMI OPEN",
     match: "Sinner vs Medvedev",
     odds: 2.10,
     edge: "+8.2%",
@@ -217,11 +217,6 @@ function TelegramWidget() {
         animate="new"
         className="relative rounded-2xl bg-[#0088cc] p-4 shadow-lg overflow-hidden"
       >
-        {/* Tennis ball positioned top right */}
-        <div className="absolute -top-1 -right-1">
-          <TennisBallIcon />
-        </div>
-
         {/* Pulsing VALUE BET badge */}
         <div className="absolute top-3 left-3">
           <span className="animate-pulse inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFD700] text-[#09090b] text-[10px] font-bold uppercase tracking-wider">
@@ -247,10 +242,13 @@ function TelegramWidget() {
 
           {/* Body - two lines */}
           <div className="space-y-1.5 mb-3">
-            {/* Line 1: category + tournament */}
-            <p className="text-[10px] text-white/70 uppercase tracking-wider">
-              {tennisData.category} · {tennisData.tournament}
-            </p>
+            {/* Line 1: category + tournament + tennis icon */}
+            <div className="flex items-center">
+              <p className="text-[10px] text-white/70 uppercase tracking-wider">
+                {tennisData.category} · {tennisData.tournament}
+              </p>
+              <TennisBallIcon className="ml-auto shrink-0" />
+            </div>
 
             {/* Line 2: match + odds */}
             <div className="flex items-center justify-between">

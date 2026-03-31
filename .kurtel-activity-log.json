@@ -1,16 +1,9 @@
 [
   {
-    "timestamp": "2026-03-31T15:06:24.405Z",
+    "timestamp": "2026-03-31T15:17:58.173Z",
     "agent": "qa",
-    "event": "task_started",
-    "description": "Ezra démarre la phase de tests",
-    "details": {}
-  },
-  {
-    "timestamp": "2026-03-31T15:07:25.698Z",
-    "agent": "qa",
-    "event": "test_passed",
-    "description": "Tous les tests passent dès la première run : ",
+    "event": "skipped",
+    "description": "qa_skip=true — Modification purement visuelle/CSS : repositionnement d'une icône du mode absolute vers inline flow - aucun calcul, logique métier, appel API ou validation",
     "details": {}
   }
 ]
