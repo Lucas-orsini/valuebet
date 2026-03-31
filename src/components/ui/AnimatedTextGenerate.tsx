@@ -42,10 +42,10 @@ export function AnimatedTextGenerate({
   const placeholderColor = mode === "light" ? "bg-zinc-300" : "bg-zinc-600";
 
   return (
-    <div className={cn("font-semibold", className)}>
+    <div className={cn("flex flex-col items-center justify-center font-semibold", className)}>
       <div
         className={cn(
-          "flex flex-wrap items-center gap-x-2 gap-y-1",
+          "flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center",
           "text-4xl sm:text-5xl lg:text-6xl tracking-[-0.03em] leading-[1.08]",
           textClassName
         )}
@@ -58,7 +58,7 @@ export function AnimatedTextGenerate({
                 initial={{ opacity: 0, filter: blurEffect ? "blur(10px)" : "none" }}
                 animate={{ opacity: 1, filter: "blur(0px)" }}
                 transition={{ duration: speed * 0.3, ease: "easeOut" }}
-                className={wordColor}
+                className={cn("inline-block", wordColor)}
               >
                 {word}
               </motion.span>

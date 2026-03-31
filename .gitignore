@@ -9,3 +9,7 @@ agent.js
 playwright-screenshots.js
 node_modules/
 package-lock.json
+
+next-env.d.ts
+tsconfig.tsbuildinfo
+.kurtel-activity-log.json

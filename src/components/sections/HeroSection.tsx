@@ -14,7 +14,7 @@ export function HeroSection() {
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#09090b]/60 via-transparent to-[#09090b]" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto gap-8">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-3xl mx-auto gap-8">
         {/* Beta Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -36,7 +36,7 @@ export function HeroSection() {
           text="L'œil d'Haurus sur chaque court"
           speed={0.4}
           mode="dark"
-          className="text-center"
+          className="w-full justify-center text-center"
         />
 
         {/* Subline */}
