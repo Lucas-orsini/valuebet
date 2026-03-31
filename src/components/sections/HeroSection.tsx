@@ -46,7 +46,7 @@ export function HeroSection() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed"
         >
-         Votre stratégie éclairée par la puissance de la statistique et de l'intelligence artificielle.
+         Votre stratégie éclairée par la puissance de la statistique et de l'intelligence artificielle
         </motion.p>
 
         {/* CTAs */}

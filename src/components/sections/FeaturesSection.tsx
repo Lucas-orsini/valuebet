@@ -19,11 +19,11 @@ export function FeaturesSection() {
             Fonctionnalités
           </span>
           <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
-            Une technologie de pointe pour vos paris
+            Une technologie de pointe pour affiner vos analyses
           </h2>
           <p className="text-base text-zinc-500 leading-relaxed">
             Notre système combine le meilleur du machine learning et des données
-            sportives pour vous donner un avantage décisif.
+            sportives pour vous donner un avantage statistique
           </p>
         </motion.div>
 

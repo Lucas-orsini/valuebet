@@ -26,7 +26,7 @@ export function Footer() {
                 </svg>
               </div>
               <span className="text-sm font-semibold text-zinc-100 tracking-tight">
-                Value Bet AI
+                Haurus
               </span>
             </div>
             <p className="text-xs text-zinc-500 leading-relaxed max-w-[220px] mb-4">

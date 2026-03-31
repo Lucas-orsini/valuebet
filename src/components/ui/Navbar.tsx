@@ -47,7 +47,7 @@ export function Navbar() {
             </svg>
           </div>
           <span className="text-sm font-semibold text-zinc-100 tracking-tight">
-            Value Bet AI
+            Haurus
           </span>
         </a>
 

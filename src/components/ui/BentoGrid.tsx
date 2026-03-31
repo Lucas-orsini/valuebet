@@ -217,9 +217,9 @@ function TelegramPreview() {
 // Units management preview
 function UnitsPreview() {
   const units = [
-    { level: "1u", amount: "10€", desc: "Confiance normale", color: "bg-zinc-500" },
-    { level: "2u", amount: "20€", desc: "Confiance élevée", color: "bg-accent" },
-    { level: "3u", amount: "30€", desc: "Confiance max", color: "bg-green-500" },
+    { level: "1u", amount: "1%", desc: "Confiance standard", color: "bg-zinc-500" },
+    { level: "2u", amount: "2%", desc: "Confiance correct", color: "bg-accent" },
+    { level: "3u", amount: "3%", desc: "Confiance haute", color: "bg-green-500" },
   ];
 
   return (
