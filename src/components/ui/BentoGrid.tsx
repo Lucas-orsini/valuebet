@@ -4,6 +4,7 @@ import { motion, useMotionValue, useTransform, type Variants } from "framer-moti
 import { Brain, Zap, LayoutGrid, Send, Sliders, Eye, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { features } from "@/lib/data";
+import { OddsComparisonWidget } from "@/components/ui/OddsComparisonWidget";
 
 // Animation variants
 const fadeInUp: Variants = {
@@ -118,56 +119,6 @@ function MetricsFeature() {
             />
           </div>
         </div>
-      ))}
-    </div>
-  );
-}
-
-// Bookmaker list component
-function BookmakerList() {
-  const bookmakers = [
-    { name: "Betclic", status: "connected" },
-    { name: "Unibet", status: "connected" },
-    { name: "Winamax", status: "connected" },
-    { name: "Betway", status: "connected" },
-    { name: "Bwin", status: "connected" },
-    { name: "+15 autres", status: "available" },
-  ];
-
-  return (
-    <div className="mt-2 flex flex-col gap-2">
-      {bookmakers.map((bookmaker, i) => (
-        <motion.div
-          key={bookmaker.name}
-          initial={{ opacity: 0, x: -8 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.08 * i }}
-          className={cn(
-            "flex items-center gap-2 p-2 rounded-md border transition-all",
-            bookmaker.status === "connected"
-              ? "border-green-500/20 bg-green-500/5"
-              : "border-white/[0.05] bg-white/[0.02]"
-          )}
-        >
-          <div
-            className={cn(
-              "w-1.5 h-1.5 rounded-full",
-              bookmaker.status === "connected" ? "bg-green-500" : "bg-zinc-500"
-            )}
-          />
-          <span
-            className={cn(
-              "text-xs flex-1",
-              bookmaker.status === "connected" ? "text-zinc-300" : "text-zinc-500"
-            )}
-          >
-            {bookmaker.name}
-          </span>
-          {bookmaker.status === "connected" && (
-            <CheckCircle2 size={12} className="text-green-500" />
-          )}
-        </motion.div>
       ))}
     </div>
   );
@@ -355,7 +306,7 @@ export function BentoGrid() {
               {feature.title}
             </h3>
             <p className="text-sm text-zinc-500">{feature.description}</p>
-            <BookmakerList />
+            <OddsComparisonWidget />
           </>
         );
       case "telegram":
