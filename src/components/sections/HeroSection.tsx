@@ -33,7 +33,7 @@ export function HeroSection() {
 
         {/* Animated Headline */}
         <AnimatedTextGenerate
-          text="L'intelligence artificielle au service de vos paris tennis"
+          text="L'œil d'Haurus sur chaque court"
           speed={0.4}
           mode="dark"
           className="text-center"
@@ -46,8 +46,7 @@ export function HeroSection() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed"
         >
-          Notre modèle XGBoost analyse 276 000+ matchs ATP pour détecter les value bets
-          avec un taux de réussite de 70% et un ROI moyen de 31.3%.
+         Votre stratégie éclairée par la puissance de la statistique et de l'intelligence artificielle.
         </motion.p>
 
         {/* CTAs */}
