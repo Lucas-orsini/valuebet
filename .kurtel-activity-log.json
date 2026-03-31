@@ -1,9 +1,9 @@
 [
   {
-    "timestamp": "2026-03-31T15:32:19.470Z",
+    "timestamp": "2026-03-31T15:41:18.412Z",
     "agent": "qa",
     "event": "skipped",
-    "description": "qa_skip=true — Modification purement visuelle/CSS sur un composant statique - changement de couleurs de fond, bordure et accents. Aucune logique métier, aucune interaction, aucune validation.",
+    "description": "qa_skip=true — Modification purement visuelle de layout (ordre des éléments flex) et de couleur — aucun calcul, aucune logique métier, aucun formulaire, aucune interaction utilisateur",
     "details": {}
   }
 ]

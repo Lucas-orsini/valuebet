@@ -214,7 +214,7 @@ function TelegramWidget() {
       <div className="flex items-center gap-2 mb-4">
         <div className="w-6 h-6 rounded bg-accent/20 flex items-center justify-center">
           <svg
-            className="w-3.5 h-3.5 text-accent-light"
+            className="w-3.5 h-3.5 text-[#0088cc]"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
@@ -234,12 +234,12 @@ function TelegramWidget() {
 
       {/* Body - two lines */}
       <div className="space-y-1.5 mb-3">
-        {/* Line 1: category + tournament + tennis icon */}
+        {/* Line 1: tennis icon + category + tournament */}
         <div className="flex items-center">
+          <TennisBallIcon className="shrink-0 w-4 h-4 mr-2" />
           <p className="text-[10px] text-zinc-500 uppercase tracking-wider">
             {tennisData.category} · {tennisData.tournament}
           </p>
-          <TennisBallIcon className="ml-auto shrink-0 w-4 h-4" />
         </div>
 
         {/* Line 2: match + odds */}
