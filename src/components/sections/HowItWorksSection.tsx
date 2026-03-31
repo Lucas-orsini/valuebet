@@ -146,30 +146,84 @@ function ValueDetectionWidget() {
   );
 }
 
-// Widget for step 4 - Telegram notification
+// Widget for step 4 - Telegram notification (native style, no action buttons)
 function TelegramWidget() {
   return (
-    <div className="rounded-xl border border-[#0088cc]/30 bg-[#0088cc]/5 p-4 min-h-[200px]">
+    <div className="rounded-xl border border-[#229ED9]/20 bg-[#0088cc]/5 p-4 min-h-[200px]">
+      {/* Widget header */}
       <div className="flex items-center gap-2 mb-4">
-        <svg className="w-5 h-5 text-[#0088cc]" viewBox="0 0 24 24" fill="currentColor">
+        <svg
+          className="w-5 h-5 text-[#229ED9]"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
           <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
         </svg>
-        <span className="text-xs text-[#0088cc] font-medium">Alerte envoyée</span>
-        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+        <span className="text-xs text-[#229ED9] font-medium">Alerte Value Bet</span>
+        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-auto" />
       </div>
-      <div className="bg-[#1a1a1a] rounded-lg p-3 space-y-2">
-        <p className="text-xs text-zinc-400">🎾 <span className="text-zinc-200">Value détecté</span></p>
-        <p className="text-xs text-zinc-300">Sinner vs Medvedev</p>
-        <p className="text-xs text-zinc-400">
-          <span className="text-accent-light">Cote: 2.10</span> · Edge: +8.2%
-        </p>
-        <div className="flex gap-2 pt-2">
-          <button className="flex-1 h-7 rounded bg-accent text-[10px] text-white font-medium">
-            Miser 3u
-          </button>
-          <button className="flex-1 h-7 rounded bg-white/5 text-[10px] text-zinc-400 border border-white/10">
-            Ignorer
-          </button>
+
+      {/* Telegram native message bubble */}
+      <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] overflow-hidden">
+        {/* Chat header */}
+        <div className="px-3 py-2 border-b border-[#2a2a2a] flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#229ED9] animate-pulse" />
+          <span className="text-[11px] text-zinc-400 font-medium">Haurus Bot</span>
+          <span className="text-[10px] text-zinc-600 ml-auto">Maintenant</span>
+        </div>
+
+        {/* Message body */}
+        <div className="p-3 space-y-2.5">
+          {/* Tournament + match */}
+          <div>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">
+              UEFA Champions League · Demi-finale
+            </p>
+            <p className="text-sm text-zinc-100 font-medium leading-tight">
+              PSG vs Real Madrid
+            </p>
+          </div>
+
+          {/* Favorite + odds */}
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-zinc-500">Favori</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-zinc-200">Real Madrid</span>
+              <span className="px-1.5 py-0.5 rounded bg-[#229ED9]/15 text-[#229ED9] text-[11px] font-bold">
+                2.50
+              </span>
+            </div>
+          </div>
+
+          {/* Metrics grid */}
+          <div className="grid grid-cols-2 gap-1.5 pt-1">
+            {[
+              { label: "Edge", value: "+12%", highlight: true },
+              { label: "Probabilité", value: "45%", highlight: false },
+              { label: "Unité", value: "10u", highlight: false },
+              { label: "EV", value: "+3.0", highlight: true },
+            ].map((metric) => (
+              <div
+                key={metric.label}
+                className={cn(
+                  "rounded p-2 flex flex-col gap-0.5",
+                  metric.highlight
+                    ? "bg-[#229ED9]/10 border border-[#229ED9]/20"
+                    : "bg-white/[0.03] border border-white/[0.05]"
+                )}
+              >
+                <span className="text-[10px] text-zinc-500">{metric.label}</span>
+                <span
+                  className={cn(
+                    "text-sm font-bold",
+                    metric.highlight ? "text-[#229ED9]" : "text-zinc-200"
+                  )}
+                >
+                  {metric.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
