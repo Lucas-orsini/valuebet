@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Download, Cpu, Target, Bell } from "lucide-react";
 import { howItWorksSteps } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -146,86 +146,140 @@ function ValueDetectionWidget() {
   );
 }
 
-// Widget for step 4 - Telegram notification (native style, no action buttons)
-function TelegramWidget() {
+// Tennis ball SVG with rotation animation
+function TennisBallIcon({ className }: { className?: string }) {
   return (
-    <div className="rounded-xl border border-[#229ED9]/20 bg-[#0088cc]/5 p-4 min-h-[200px]">
-      {/* Widget header */}
-      <div className="flex items-center gap-2 mb-4">
-        <svg
-          className="w-5 h-5 text-[#229ED9]"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-        </svg>
-        <span className="text-xs text-[#229ED9] font-medium">Alerte Value Bet</span>
-        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ml-auto" />
-      </div>
+    <motion.svg
+      viewBox="0 0 24 24"
+      className={cn("w-6 h-6 text-[#CCFF00]", className)}
+      animate={{ rotate: [0, 10, -10, 0] }}
+      transition={{
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path
+        d="M3 12c0 0 3-4 9-4s9 4 9 4-3 4-9 4-9-4-9-4z"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M12 3c0 0 4 3 4 9s-4 9-4 9"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.5"
+      />
+    </motion.svg>
+  );
+}
 
-      {/* Telegram native message bubble */}
-      <div className="bg-[#1a1a1a] rounded-lg border border-[#2a2a2a] overflow-hidden">
-        {/* Chat header */}
-        <div className="px-3 py-2 border-b border-[#2a2a2a] flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#229ED9] animate-pulse" />
-          <span className="text-[11px] text-zinc-400 font-medium">Haurus Bot</span>
-          <span className="text-[10px] text-zinc-600 ml-auto">Maintenant</span>
+// Widget for step 4 - Telegram notification (mobile notification style with tennis data)
+function TelegramWidget() {
+  const notificationVariants: Variants = {
+    idle: {
+      opacity: 1,
+      x: 0,
+    },
+    new: {
+      opacity: [0, 1],
+      x: [20, 0],
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+      },
+    },
+    highlight: {
+      opacity: 1,
+      x: 0,
+    },
+  };
+
+  // Tennis match data
+  const tennisData = {
+    category: "ATP",
+    tournament: "Miami Open",
+    match: "Sinner vs Medvedev",
+    odds: 2.10,
+    edge: "+8.2%",
+    probability: "52%",
+    unit: "3u",
+  };
+
+  return (
+    <div className="max-w-[300px]">
+      {/* Notification container - mobile style */}
+      <motion.div
+        variants={notificationVariants}
+        initial="idle"
+        animate="new"
+        className="relative rounded-2xl bg-[#0088cc] p-4 shadow-lg overflow-hidden"
+      >
+        {/* Tennis ball positioned top right */}
+        <div className="absolute -top-1 -right-1">
+          <TennisBallIcon />
         </div>
 
-        {/* Message body */}
-        <div className="p-3 space-y-2.5">
-          {/* Tournament + match */}
-          <div>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">
-              UEFA Champions League · Demi-finale
-            </p>
-            <p className="text-sm text-zinc-100 font-medium leading-tight">
-              PSG vs Real Madrid
-            </p>
+        {/* Pulsing VALUE BET badge */}
+        <div className="absolute top-3 left-3">
+          <span className="animate-pulse inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFD700] text-[#09090b] text-[10px] font-bold uppercase tracking-wider">
+            Value Bet
+          </span>
+        </div>
+
+        {/* Notification content */}
+        <div className="pt-6">
+          {/* Header - compact */}
+          <div className="flex items-center gap-2 mb-3">
+            {/* Telegram icon */}
+            <svg
+              className="w-4 h-4 text-white/90"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+            </svg>
+            <span className="text-xs text-white/90 font-medium">Haurus</span>
+            <span className="ml-auto text-[10px] text-white/60">Maintenant</span>
           </div>
 
-          {/* Favorite + odds */}
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-zinc-500">Favori</span>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-zinc-200">Real Madrid</span>
-              <span className="px-1.5 py-0.5 rounded bg-[#229ED9]/15 text-[#229ED9] text-[11px] font-bold">
-                2.50
+          {/* Body - two lines */}
+          <div className="space-y-1.5 mb-3">
+            {/* Line 1: category + tournament */}
+            <p className="text-[10px] text-white/70 uppercase tracking-wider">
+              {tennisData.category} · {tennisData.tournament}
+            </p>
+
+            {/* Line 2: match + odds */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-white font-medium">
+                {tennisData.match}
+              </p>
+              <span className="px-2 py-0.5 rounded bg-white/20 text-white text-xs font-bold">
+                {tennisData.odds.toFixed(2)}
               </span>
             </div>
           </div>
 
-          {/* Metrics grid */}
-          <div className="grid grid-cols-2 gap-1.5 pt-1">
-            {[
-              { label: "Edge", value: "+12%", highlight: true },
-              { label: "Probabilité", value: "45%", highlight: false },
-              { label: "Unité", value: "10u", highlight: false },
-              { label: "EV", value: "+3.0", highlight: true },
-            ].map((metric) => (
-              <div
-                key={metric.label}
-                className={cn(
-                  "rounded p-2 flex flex-col gap-0.5",
-                  metric.highlight
-                    ? "bg-[#229ED9]/10 border border-[#229ED9]/20"
-                    : "bg-white/[0.03] border border-white/[0.05]"
-                )}
-              >
-                <span className="text-[10px] text-zinc-500">{metric.label}</span>
-                <span
-                  className={cn(
-                    "text-sm font-bold",
-                    metric.highlight ? "text-[#229ED9]" : "text-zinc-200"
-                  )}
-                >
-                  {metric.value}
-                </span>
-              </div>
-            ))}
+          {/* Horizontal badges */}
+          <div className="flex items-center gap-2 pt-2 border-t border-white/20">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/10">
+              <span className="text-[9px] text-white/70 uppercase tracking-wider">Edge</span>
+              <span className="text-xs text-[#CCFF00] font-bold">{tennisData.edge}</span>
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/10">
+              <span className="text-[9px] text-white/70 uppercase tracking-wider">Prob</span>
+              <span className="text-xs text-white font-bold">{tennisData.probability}</span>
+            </div>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/10">
+              <span className="text-[9px] text-white/70 uppercase tracking-wider">Unit</span>
+              <span className="text-xs text-white font-bold">{tennisData.unit}</span>
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
