@@ -60,7 +60,7 @@ export const features: Feature[] = [
   {
     id: "bookmakers",
     title: "Multi-bookmakers",
-    description: "Comparaison des cotes chez les principaux bookmakers français.",
+    description: "Comparaison des cotes chez les principaux bookmakers dans le monde.",
     icon: "layout-grid",
   },
   {
@@ -96,31 +96,31 @@ export const howItWorksSteps: HowItWorksStep[] = [
     step: 1,
     title: "Collecte des données",
     description:
-      "Notre système scrappe automatiquement les matchs ATP/WTA et les cotes en temps réel auprès de plus de 15 bookmakers. Chaque donnée est validée et nettoyée avant d'être stockée.",
+      "Notre système centralise les données du circuit ATP et les cotes des plus grands bookmakers mondiaux en temps réel. Notre processus garantit une donnée purifiée et validée pour une précision d'analyse optimale.",
     icon: "download",
-    time: "22:00 - 22:30",
+    time: "06:00 - 06:30",
   },
   {
     step: 2,
     title: "Analyse par l'IA",
     description:
-      "Le modèle XGBoost analyse chaque rencontre en fonction de plus de 50 variables : forme du joueur, surface, historique, conditions météo, fatigue, blessures potentielles...",
+      "Le modèle V4 analyse chaque rencontre en fonction de plus de 15 variables : forme du joueur, surface, historique, ranking, fatigue...",
     icon: "cpu",
-    time: "22:30 - 23:00",
+    time: "06:30 - 07:00",
   },
   {
     step: 3,
-    title: "Détection des value bets",
+    title: "Analyse de l'Écart",
     description:
-      "En comparant la probabilité estimée par notre modèle avec les cotes proposées par les bookmakers, nous identifions les paris où la côte est supérieure à la probabilité réelle.",
+      "Notre technologie évalue l'écart entre nos probabilités internes et les cotes des bookmakers. Ce processus permet d'extraire les signaux où la cote sous-estime la probabilité réelle de victoire détectée par l'IA.",
     icon: "target",
-    time: "23:00 - 23:15",
+    time: "07:00- 07:15",
   },
   {
     step: 4,
     title: "Alerte sur Telegram",
     description:
-      "Chaque value bet est envoyé instantanément sur Telegram avec le match, la cote, le bookmaker optimal, la mise recommandée (en unités) et le niveau de confiance.",
+      "Recevez instantanément les rapports de notre IA sur Telegram. Pour chaque signal, Haurus détaille la cote de référence, l'exposition recommandée et le niveau de fiabilité statistique.",
     icon: "bell",
     time: "En continu",
   },

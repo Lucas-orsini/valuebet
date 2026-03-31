@@ -41,7 +41,7 @@ export function FeaturesSection() {
           {[
             {
               icon: Brain,
-              title: "IA XGBoost",
+              title: "IA MODELE V4",
               description: "Algorithme de référence entraîné sur des millions de données tennis",
             },
             {
@@ -51,8 +51,8 @@ export function FeaturesSection() {
             },
             {
               icon: Eye,
-              title: "100% transparent",
-              description: "Accès à l'historique complet et aux logs du modèle",
+              title: "transparence",
+              description: "Accès à l'historique complet et aux résultats du modèle",
             },
           ].map((item, index) => (
             <div

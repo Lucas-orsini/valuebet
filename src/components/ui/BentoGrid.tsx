@@ -200,10 +200,10 @@ function UnitsPreview() {
 // Transparency checklist
 function TransparencyChecklist() {
   const items = [
-    "Historique de tous les paris",
-    "Cotes avant/après match",
+    "Historique du modele",
+    "Cotes d'avant match",
     "ROI vérifiable",
-    "Logs du modèle",
+    "Résultat du modèle",
   ];
 
   return (

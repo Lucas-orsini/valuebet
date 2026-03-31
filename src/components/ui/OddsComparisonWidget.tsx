@@ -10,9 +10,9 @@ interface OddsRow {
 }
 
 const ODDS_COMPARISON_DATA: OddsRow[] = [
-  { bookmaker: "Betclic", odds: 2.10, isOptimal: true, edge: 13.5 },
-  { bookmaker: "Unibet", odds: 2.05, isOptimal: false, edge: 10.8 },
-  { bookmaker: "Winamax", odds: 2.00, isOptimal: false, edge: 8.1 },
+  { bookmaker: "Winamax", odds: 2.10, isOptimal: true, edge: 13.5 },
+  { bookmaker: "Stake", odds: 2.05, isOptimal: false, edge: 10.8 },
+  { bookmaker: "Unibet", odds: 2.00, isOptimal: false, edge: 8.1 },
   { bookmaker: "Betway", odds: 1.95, isOptimal: false, edge: 5.4 },
 ];
 

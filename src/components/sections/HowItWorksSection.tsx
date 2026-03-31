@@ -15,9 +15,9 @@ const iconMap = {
 // Widget for step 1 - Timeline
 function TimelineWidget() {
   const items = [
-    { label: "Récupération des matchs", time: "22:00", status: "done" },
-    { label: "Analyse des statistiques", time: "22:15", status: "done" },
-    { label: "Calcul des probabilités", time: "22:30", status: "done" },
+    { label: "Récupération des matchs", time: "06:00", status: "done" },
+    { label: "Analyse des statistiques", time: "06:30", status: "done" },
+    { label: "Calcul des probabilités", time: "07:00", status: "done" },
     { label: "Envoi des alertes", time: "En cours", status: "active" },
   ];
 
@@ -25,7 +25,7 @@ function TimelineWidget() {
     <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-        <span className="text-xs text-zinc-500 font-mono"> scraping.py</span>
+        <span className="text-xs text-zinc-500 font-mono"> Model_V4.py</span>
       </div>
       <div className="space-y-2">
         {items.map((item, i) => (
@@ -70,13 +70,13 @@ function PredictionWidget() {
         <div className="w-6 h-6 rounded bg-accent/20 flex items-center justify-center">
           <Cpu size={12} className="text-accent-light" />
         </div>
-        <span className="text-xs text-zinc-400">XGBoost v2.4</span>
+        <span className="text-xs text-zinc-400">Model v4</span>
       </div>
       <div className="space-y-3">
         <div className="p-3 rounded-lg bg-[#18181b] border border-white/[0.05]">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs text-zinc-500">Sinner vs Medvedev</span>
-            <span className="text-[10px] text-accent-light">VALUE BET</span>
+            <span className="text-[10px] text-accent-light">VALUE</span>
           </div>
           <div className="flex items-end gap-2">
             <span className="text-2xl font-bold text-zinc-100">67%</span>
@@ -93,12 +93,12 @@ function PredictionWidget() {
         </div>
         <div className="flex gap-2">
           <div className="flex-1 p-2 rounded bg-green-500/10 border border-green-500/20">
-            <p className="text-[10px] text-zinc-500">Edge</p>
+            <p className="text-[10px] text-zinc-500">Ecart</p>
             <p className="text-sm font-bold text-green-400">+8.2%</p>
           </div>
           <div className="flex-1 p-2 rounded bg-white/[0.03] border border-white/[0.05]">
-            <p className="text-[10px] text-zinc-500">Kelly optimal</p>
-            <p className="text-sm font-bold text-zinc-300">2u</p>
+            <p className="text-[10px] text-zinc-500">Unité optimal</p>
+            <p className="text-sm font-bold text-zinc-300">3u</p>
           </div>
         </div>
       </div>
@@ -109,9 +109,9 @@ function PredictionWidget() {
 // Widget for step 3 - Value detection
 function ValueDetectionWidget() {
   const items = [
-    { book: "Betclic", odds: 2.10, fair: 1.85, edge: 13.5 },
-    { book: "Unibet", odds: 2.05, fair: 1.85, edge: 10.8 },
-    { book: "Winamax", odds: 2.00, fair: 1.85, edge: 8.1 },
+    { book: "Stake", odds: 2.10, fair: 1.85, edge: 13.5 },
+    { book: "Winamax", odds: 2.05, fair: 1.85, edge: 10.8 },
+    { book: "Unibet", odds: 2.00, fair: 1.85, edge: 8.1 },
   ];
 
   return (
@@ -120,7 +120,7 @@ function ValueDetectionWidget() {
         <div className="w-6 h-6 rounded bg-green-500/20 flex items-center justify-center">
           <Target size={12} className="text-green-400" />
         </div>
-        <span className="text-xs text-zinc-400">Détection active</span>
+        <span className="text-xs text-zinc-400">Détection value</span>
       </div>
       <div className="space-y-2">
         {items.map((item, i) => (
@@ -158,14 +158,14 @@ function TelegramWidget() {
         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
       </div>
       <div className="bg-[#1a1a1a] rounded-lg p-3 space-y-2">
-        <p className="text-xs text-zinc-400">🎾 <span className="text-zinc-200">Value Bet détecté</span></p>
+        <p className="text-xs text-zinc-400">🎾 <span className="text-zinc-200">Value détecté</span></p>
         <p className="text-xs text-zinc-300">Sinner vs Medvedev</p>
         <p className="text-xs text-zinc-400">
           <span className="text-accent-light">Cote: 2.10</span> · Edge: +8.2%
         </p>
         <div className="flex gap-2 pt-2">
           <button className="flex-1 h-7 rounded bg-accent text-[10px] text-white font-medium">
-            Miser 2u
+            Miser 3u
           </button>
           <button className="flex-1 h-7 rounded bg-white/5 text-[10px] text-zinc-400 border border-white/10">
             Ignorer
@@ -198,7 +198,7 @@ export function HowItWorksSection() {
           </h2>
           <p className="text-base text-zinc-500 leading-relaxed">
             Notre système fonctionne automatiquement 24h/24 pour vous fournir
-            les meilleures opportunités de value bet.
+            les meilleures statistiques et révéler les opportunités de valeur.
           </p>
         </motion.div>
 
