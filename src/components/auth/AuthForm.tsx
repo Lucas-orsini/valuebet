@@ -8,7 +8,7 @@ import { AuthCard } from "./AuthCard";
 import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { createBrowserClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { AUTH_MESSAGES, VALIDATION_MESSAGES, AUTH_REDIRECT_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,7 @@ function validatePassword(password: string): string | null {
 
 export function AuthForm({ mode, onSuccess }: AuthFormProps) {
   const router = useRouter();
-  const supabase = createBrowserClient();
+  const supabase = createClient();
   const config = AUTH_MESSAGES[mode];
 
   const [email, setEmail] = useState("");
