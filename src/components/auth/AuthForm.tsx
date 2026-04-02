@@ -87,9 +87,6 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
           const { error } = await supabase.auth.signUp({
             email,
             password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-            },
           });
 
           if (error) {
@@ -98,8 +95,10 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             return;
           }
 
-          // Signup success - show confirmation message
-          setFormState("success");
+          // Signup success - redirect immediately to dashboard
+          router.push(AUTH_REDIRECT_URL);
+          router.refresh();
+          onSuccess?.();
           return;
         }
 
@@ -113,48 +112,6 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
     },
     [email, password, mode, onSuccess, router, supabase]
   );
-
-  // Success state for signup
-  if (formState === "success") {
-    return (
-      <AuthCard
-        title="Email de vérification envoyé"
-        description={`Un lien de vérification a été envoyé à ${email}. Veuillez vérifier votre boîte de réception.`}
-      >
-        <div className="text-center py-4">
-          <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-6 h-6 text-green-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <p className="text-sm text-zinc-400 mb-4">
-            Cliquez sur le lien dans l'email pour activer votre compte.
-          </p>
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={() => {
-              setFormState("idle");
-              setEmail("");
-              setPassword("");
-            }}
-          >
-            Retour à la connexion
-          </Button>
-        </div>
-      </AuthCard>
-    );
-  }
 
   return (
     <AuthCard title={config.title} description={config.description}>
