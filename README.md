@@ -76,9 +76,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 3. Click **Project Settings** (the gear icon) in the left sidebar
 4. Click **API**
 5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Under **Project API keys**, copy the **anon public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-> ⚠️ Never share your `.env.local` file or commit it to git — it contains secrets!
+6. Under **Project API keys**, copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 4. Run the development server
 
@@ -86,80 +84,66 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 npm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open http://localhost:3000 in your browser.
 
-The login page is at `/login`, the signup page is at `/signup`, and the dashboard is at `/dashboard`.
-
-> 💡 **VS Code tip**: Open the integrated terminal with `` Ctrl+` `` (or `` Cmd+` `` on Mac). Run all commands here.
+> 💡 **VS Code tip**: open the integrated terminal with Ctrl+`` ` `` (or Cmd+`` ` `` on Mac)
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon public key | Anonymous API key for client-side requests |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project connection URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Public API key for client-side authentication |
 
 ## 🧪 Running Tests
 
-Tests automatically check that the login and signup forms work correctly. They catch mistakes before they reach the live app.
+Unit tests automatically verify that individual parts of the app (like forms and components) work correctly without needing the full app running.
 
-Run all tests:
-
-```bash
-npm run test
-```
-
-Run a specific test file:
+### Run all tests
 
 ```bash
-npm run test -- __tests__/AuthForm.test.tsx
+npx jest
 ```
 
-Run tests in watch mode (re-runs automatically when you save a file):
+### Run a specific test file
 
 ```bash
-npm run test -- --watch
+npx jest __tests__/AuthForm.test.tsx
 ```
 
-**How to read the output:**
-- **PASS** — All tests passed, your code is working correctly
-- **FAIL** — Something broke, check the error message below to see which test failed and why
+### Watch mode (re-runs on file change)
+
+```bash
+npx jest --watch
+```
+
+### Reading test output
+
+- **PASS** — All tests in that file passed ✅
+- **FAIL** — Something broke. The output will show which test failed and why (expected vs actual values)
+
+The test suite covers:
+- `AuthForm.test.tsx` — Authentication form rendering, validation, and user interactions
 
 ## 📁 Project Structure
 
 ```
-├── __tests__/                 # Automated tests
-│   └── AuthForm.test.tsx     # Tests for authentication forms
+value-bet-ai/
 ├── src/
-│   ├── app/                   # Next.js App Router pages
-│   │   ├── (auth)/           # Auth route group (login, signup)
-│   │   │   ├── login/
-│   │   │   └── signup/
-│   │   ├── dashboard/        # Dashboard pages
-│   │   │   ├── layout.tsx    # Dashboard layout with sidebar/header
-│   │   │   └── page.tsx      # Main dashboard page
-│   │   └── page.tsx          # Landing/home page
+│   ├── app/                    # Next.js App Router pages and layouts
+│   │   ├── (auth)/            # Auth route group with shared layout
+│   │   ├── dashboard/         # Dashboard page
+│   │   └── page.tsx           # Landing page
 │   ├── components/
-│   │   ├── dashboard/        # Dashboard-specific components
-│   │   │   ├── BankrollChart.tsx      # Bankroll performance chart
-│   │   │   ├── BetHistoryTable.tsx    # Historical bets with filters
-│   │   │   ├── BetsTable.tsx          # Active bets table with ROI labels
-│   │   │   ├── DashboardHeader.tsx    # Dashboard header component
-│   │   │   ├── DashboardSidebar.tsx   # Navigation sidebar
-│   │   │   ├── KpiCards.tsx           # KPI summary cards
-│   │   │   └── SurfaceStats.tsx      # Surface-specific statistics
-│   │   └── ui/              # Reusable UI components (Button, Input, etc.)
-│   └── lib/
-│       ├── dashboard-data.ts # Dashboard data fetching and utilities
-│       └── supabase.ts       # Supabase client configuration
-├── .env.local                # Environment variables (not committed)
-├── package.json              # Dependencies and scripts
-└── tailwind.config.ts        # Tailwind CSS configuration
+│   │   ├── ui/               # Reusable UI components (Button, Input, Footer)
+│   │   └── sections/         # Page sections (Hero, CTA, etc.)
+│   └── lib/                  # Utilities and Supabase client
+├── __tests__/                # Jest test files
+├── public/                   # Static assets
+└── package.json              # Dependencies and scripts
 ```
 
 ## 🚀 Deploy to Vercel
-
-The easiest way to deploy your Next.js app is with Vercel.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
@@ -167,18 +151,18 @@ The easiest way to deploy your Next.js app is with Vercel.
 
 1. Click the **Deploy with Vercel** button above (or go to [vercel.com/new](https://vercel.com/new))
 2. Import your GitHub repository (`YOUR_USERNAME/value-bet-ai`)
-3. In the **Environment Variables** section, add all variables from your `.env.local` file:
+3. In the **Environment Variables** section, add all variables from your `.env.local`:
 
    | Name | Value |
    |------|-------|
-   | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key |
+   | `NEXT_PUBLIC_SUPABASE_URL` | your_supabase_project_url |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your_supabase_anon_key |
 
 4. Click **Deploy**
 
-Your app will be live at `https://your-project.vercel.app` within seconds.
+Your app will be live at `https://your-project.vercel.app` once the build completes.
 
-> ⚠️ **Important**: Make sure to add all environment variables in Vercel > Settings > Environment Variables before deploying, otherwise your app will crash.
+> ⚠️ **Important**: Make sure to add all environment variables in Vercel. If they're missing, authentication and database features won't work on the deployed site.
 
 ## 📝 License
 

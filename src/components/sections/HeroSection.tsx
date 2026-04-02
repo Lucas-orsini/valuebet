@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import { ParticleBackground } from "@/components/ui/ParticleBackground";
 import { AnimatedTextGenerate } from "@/components/ui/AnimatedTextGenerate";
@@ -56,14 +57,20 @@ export function HeroSection() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex flex-col sm:flex-row items-center gap-3"
         >
-          <button className="h-11 px-6 rounded-lg bg-accent hover:bg-accent-light text-white text-sm font-medium transition-all duration-200 flex items-center gap-2 shadow-[0_0_24px_rgba(242,203,56,0.25)] hover:shadow-[0_0_32px_rgba(242,203,56,0.35)]">
+          <Link
+            href="/signup"
+            className="h-11 px-6 rounded-lg bg-accent hover:bg-accent-light text-white text-sm font-medium transition-all duration-200 flex items-center gap-2 shadow-[0_0_24px_rgba(242,203,56,0.25)] hover:shadow-[0_0_32px_rgba(242,203,56,0.35)]"
+          >
             Accéder gratuitement
             <ArrowRight size={16} />
-          </button>
-          <button className="h-11 px-6 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300 text-sm font-medium transition-colors flex items-center gap-2">
+          </Link>
+          <Link
+            href="/login"
+            className="h-11 px-6 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300 text-sm font-medium transition-colors flex items-center gap-2"
+          >
             <Play size={14} className="text-accent-light" />
             Voir une démo
-          </button>
+          </Link>
         </motion.div>
 
         {/* Social Proof */}
