@@ -6,9 +6,10 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 
 - **User Authentication** — Secure signup and login with email and password via Supabase Auth (no email verification required)
 - **Protected Dashboard** — Dashboard is only accessible when logged in; unauthenticated users are redirected to the landing page
+- **Session Persistence** — Uses Supabase SSR for proper cookie-based session management across server and client
 - **Login/Sign Up Navigation** — Easy access to authentication pages from the landing page navbar
 - **Modern UI** — Clean, responsive interface built with Tailwind CSS and Framer Motion animations
-- **Supabase Integration** — Full authentication flow with session management and secure API callbacks
+- **Supabase Integration** — Full authentication flow with SSR session management and secure API callbacks
 - **Reusable Components** — Modular UI components (Button, Input, FormField) with consistent styling
 - **Route Groups** — Organized auth routes under the `(auth)` group with shared layout
 - **Dashboard Overview** — Real-time tracking of active bets with ROI labels (🟢🟡🟠🔴), player info, odds, break-even and units
@@ -27,7 +28,7 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Animations** — Framer Motion
 - **Icons** — Lucide React
 - **Charts** — Recharts
-- **Auth & Database** — Supabase
+- **Auth & Database** — Supabase with SSR for proper session handling
 - **Testing** — Jest with React Testing Library
 - **Deployment** — Vercel
 
@@ -85,195 +86,125 @@ Then open http://localhost:3000 in your browser.
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
-|----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard → Project Settings → API → Project URL | Your Supabase project URL (starts with `https://`) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard → Project Settings → API → Project API keys → `anon` key | Public API key for client-side Supabase access |
+|----------|----------|-----------------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | [Supabase Dashboard](https://supabase.com/dashboard) → Project Settings → API → Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | [Supabase Dashboard](https://supabase.com/dashboard) → Project Settings → API → anon/public key | Public API key for client-side authentication |
 
-**Steps to find Supabase credentials:**
-
-1. Go to [supabase.com](https://supabase.com) and sign in
+To find these:
+1. Go to [supabase.com/dashboard](https://supabase.com/dashboard)
 2. Select your project
-3. Click **Project Settings** (gear icon) in the left sidebar
-4. Click **API** under Project Settings
-5. Copy the **Project URL** and paste as `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon public** key under Project API keys and paste as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## 🔐 Authentication Flow & Login Redirect Fix
-
-If you're stuck on the login page after signing in, the session isn't being properly retrieved or refreshed. Here's how to fix it:
-
-### Root Cause
-
-The dashboard redirect issue usually happens when:
-
-1. **Supabase client isn't configured** — Environment variables may not be loaded
-2. **Middleware isn't checking auth** — Routes aren't protected correctly
-3. **Session isn't being refreshed** — The auth state isn't synced between server and client
-
-### Fix Steps
-
-**Step 1: Verify your `.env.local` file**
-
-Make sure `.env.local` exists in the **root folder** (same level as `package.json`), not inside `src/`.
-
-Check it contains:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...your-anon-key
-```
-
-**Step 2: Restart the dev server**
-
-```bash
-# Stop the server (Ctrl+C)
-# Then restart it
-npm run dev
-```
-
-**Step 3: Check browser console for errors**
-
-1. Open http://localhost:3000/login
-2. Right-click → Inspect → Console tab
-3. Look for red errors related to Supabase or authentication
-
-**Step 4: Ensure Supabase Auth is configured**
-
-In your Supabase Dashboard:
-
-1. Go to **Authentication** → **Settings**
-2. Make sure **Email** is enabled under Providers
-3. Check that **Confirm email** is disabled (since your app doesn't require verification)
-
-### How the Auth Flow Works
-
-1. User submits credentials in `src/components/auth/AuthForm.tsx`
-2. Supabase validates and creates a session
-3. Session cookie is set server-side via `supabase/server.ts`
-4. Middleware checks the session and redirects:
-   - Authenticated users on `/login` → redirect to `/dashboard`
-   - Unauthenticated users on `/dashboard` → redirect to `/login`
-
-If the redirect isn't working, the middleware or session retrieval likely has an issue.
+3. Click **Project Settings** (gear icon)
+4. Click **API** in the sidebar
+5. Copy the **Project URL** and **anon/public** key
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that the login and signup forms work correctly. When you run a test, it simulates a user interacting with the form and verifies the app responds correctly.
-
-### Run all tests
+Unit tests automatically check that key parts of the app work correctly (like forms and buttons). Run all tests:
 
 ```bash
 npx jest
 ```
 
-### Run a specific test file
+Run a specific test file:
 
 ```bash
 npx jest __tests__/AuthForm.test.tsx
 ```
 
-or
-
-```bash
-npx jest src/__tests__/AuthForm.test.tsx
-```
-
-### Watch mode (re-runs on file change)
+Watch mode (re-runs tests automatically when files change):
 
 ```bash
 npx jest --watch
 ```
 
-### Understanding test output
+**Reading test output:**
+- `PASS` — All tests passed, everything works ✅
+- `FAIL` — Something broke, check the error message below for details
 
-- **PASS** — All tests in that file passed ✅
-- **FAIL** — Something broke ❌ (shows which test failed and why)
-- **FAIL** example output:
+**What tests cover:** AuthForm component (sign up, login, input validation, error handling, loading states)
 
-```
-FAIL __tests__/AuthForm.test.tsx
-  ● AuthForm › renders login form
+## 🔐 Session Persistence Fix (Supabase SSR)
 
-    expect(received).toBe(expected)
+The app uses `@supabase/ssr` to properly handle session persistence across server and client. This ensures you stay logged in after authentication.
 
-    Expected: "Sign in"
-    Received: ""
+### Key Files
 
-    3 tests passed, 1 test failed
-```
+- **`src/middleware.ts`** — Intercepts all requests to refresh sessions and protect routes
+- **`src/lib/supabase/server.ts`** — Creates server-side Supabase clients with cookie handling
+- **`src/lib/supabase/client.ts`** — Creates browser-side Supabase client
 
-This tells you: the test expected the button to say "Sign in" but found it empty.
+### How It Works
 
-### What the tests cover
+1. **Middleware** (`src/middleware.ts`) runs on every request:
+   - Refreshes the session cookie before the page loads
+   - Redirects unauthenticated users from protected routes (like `/dashboard`) to `/login`
+   - Redirects authenticated users from auth routes (like `/login`) to `/dashboard`
 
-Based on the test files found, tests verify:
+2. **Server Components** use `createServerClient` with cookies for session reads/writes
 
-- **AuthForm.tsx** — Login form renders correctly, signup toggles work, form submission triggers Supabase auth calls, error messages display properly
+3. **Client Components** use `createBrowserClient` for real-time auth state
+
+### Important: Middleware Location
+
+The `middleware.ts` file **must** be in the **root of your project** (same level as `package.json`), not inside `src/`. This is a Next.js requirement.
 
 ## 📁 Project Structure
 
 ```
-src/
-├── __tests__/           # Jest unit tests
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── (auth)/             # Auth route group (login, signup)
+│   │   ├── dashboard/          # Protected dashboard pages
+│   │   ├── layout.tsx          # Root layout
+│   │   └── page.tsx            # Landing page
+│   ├── components/             # Reusable UI components
+│   │   ├── auth/               # Auth components (AuthForm)
+│   │   └── ui/                 # Base UI components (Button, Input)
+│   └── lib/
+│       └── supabase/           # Supabase client utilities
+│           ├── client.ts       # Browser client (createBrowserClient)
+│           └── server.ts       # Server client (createServerClient)
+├── __tests__/                  # Jest test files
 │   └── AuthForm.test.tsx
-├── app/                 # Next.js App Router pages and layouts
-│   ├── (auth)/          # Route group: login/signup pages with shared auth layout
-│   ├── dashboard/       # Protected dashboard page
-│   └── page.tsx         # Landing page
-├── components/          # Reusable React components
-│   ├── auth/
-│   │   └── AuthForm.tsx # Login/signup form component
-│   ├── ui/              # Base UI components (Button, Input, FormField)
-│   └── charts/          # Dashboard chart components
-├── lib/                 # Utility functions and helpers
-├── supabase/            # Supabase client configuration
-│   ├── client.ts        # Browser-side Supabase client
-│   └── server.ts        # Server-side Supabase client with session handling
-└── types/               # TypeScript type definitions
+├── middleware.ts               # Next.js middleware for session refresh
+├── .env.local                  # Environment variables (git-ignored)
+└── package.json
 ```
-
-**Key files for auth debugging:**
-
-- `src/components/auth/AuthForm.tsx` — Login form component
-- `src/supabase/client.ts` — Client-side Supabase instance
-- `src/supabase/server.ts` — Server-side session handling
-- `middleware.ts` — Route protection (if exists)
 
 ## 🚀 Deploy to Vercel
 
-### One-click deploy
+### One-click Deploy
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### Step by step
+### Step by Step
 
-1. **Import your repository**
+1. **Push your code to GitHub** if you haven't already:
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin https://github.com/YOUR_USERNAME/value-bet-ai.git
+   git push -u origin main
+   ```
+
+2. **Import to Vercel**:
    - Go to [vercel.com/new](https://vercel.com/new)
-   - Click "Import Git Repository"
+   - Click **Import Git Repository**
    - Select your GitHub repo
 
-2. **Configure environment variables**
+3. **Add Environment Variables**:
    - In Vercel dashboard, go to **Settings** → **Environment Variables**
-   - Add each variable from `.env.local`:
+   - Add each variable from your `.env.local`:
      - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
      - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
 
-3. **Deploy**
-   - Click "Deploy"
-   - Wait 1-2 minutes for the build to complete
+4. **Deploy**:
+   - Click **Deploy**
+   - Wait for the build to complete
+   - Your app is live! 🎉
 
-4. **Update Supabase allowed URLs** (important!)
-   - Go to Supabase Dashboard → Authentication → URL Configuration
-   - Add your Vercel deployment URL (e.g., `https://your-project.vercel.app`)
-   - Add `http://localhost:3000` for local development
-
-### ⚠️ Common Vercel deployment issue
-
-If login works locally but not on Vercel:
-
-1. Verify all environment variables are set in Vercel dashboard
-2. Check Supabase → Authentication → URL Configuration includes your production URL
-3. Redeploy after adding environment variables (Vercel doesn't auto-reload them)
+> ⚠️ **Important**: Make sure to add all environment variables in Vercel before deploying. Without them, authentication will fail.
 
 ## 📝 License
 

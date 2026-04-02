@@ -8,7 +8,7 @@ import { AuthCard } from "./AuthCard";
 import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { AUTH_MESSAGES, VALIDATION_MESSAGES, AUTH_REDIRECT_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -19,10 +19,6 @@ export interface AuthFormProps {
   mode: AuthMode;
   onSuccess?: () => void;
 }
-
-// Session wait configuration
-const SESSION_POLL_INTERVAL_MS = 100;
-const SESSION_POLL_MAX_ATTEMPTS = 50; // 100ms * 50 = 5000ms max wait
 
 function validateEmail(email: string): string | null {
   if (!email.trim()) {
@@ -45,28 +41,9 @@ function validatePassword(password: string): string | null {
   return null;
 }
 
-/**
- * Waits for the session to be confirmed client-side before navigation.
- * This prevents race conditions where router.refresh() checks the server
- * session before the Supabase cookie is persisted.
- *
- * @returns true if session was confirmed, false if timeout occurred
- */
-async function waitForSession(supabase: ReturnType<typeof createClient>): Promise<boolean> {
-  for (let attempt = 0; attempt < SESSION_POLL_MAX_ATTEMPTS; attempt++) {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-      return true;
-    }
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, SESSION_POLL_INTERVAL_MS));
-  }
-  return false;
-}
-
 export function AuthForm({ mode, onSuccess }: AuthFormProps) {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   const config = AUTH_MESSAGES[mode];
 
   const [email, setEmail] = useState("");
@@ -80,7 +57,6 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
     async (e: React.FormEvent) => {
       e.preventDefault();
 
-      // Client-side validation
       const emailValidation = validateEmail(email);
       const passwordValidation = validatePassword(password);
 
@@ -107,15 +83,9 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             return;
           }
 
-          // Wait for session to be persisted client-side before navigation
-          // This ensures the cookie is available when dashboard layout checks session on server
-          const sessionConfirmed = await waitForSession(supabase);
-
-          if (!sessionConfirmed) {
-            setErrorMessage("La session n'a pas pu être créée. Veuillez réessayer.");
-            setFormState("error");
-            return;
-          }
+          // Session cookie is persisted by @supabase/ssr.
+          // The middleware refreshes the session on every request,
+          // so navigation is safe immediately after signInWithPassword.
         } else {
           const { error } = await supabase.auth.signUp({
             email,
@@ -127,12 +97,6 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             setFormState("error");
             return;
           }
-
-          // For signup, redirect immediately as it doesn't require session confirmation
-          router.push(AUTH_REDIRECT_URL);
-          router.refresh();
-          onSuccess?.();
-          return;
         }
 
         onSuccess?.();
