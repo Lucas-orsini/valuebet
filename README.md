@@ -19,6 +19,11 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Bankroll Performance Chart** — Visual curve of bankroll growth over time with flat betting comparison
 - **Bet History** — Filterable table by tournament, surface, and ROI label for analyzing model consistency
 - **Surface Statistics** — ROI breakdown for Clay, Hard, and Grass courts to validate model adaptability
+- **History Dashboard** — Comprehensive historical view with statistics overview, filterable chart visualization, and detailed bet records table
+- **History Statistics** — Quick stats cards showing total bets, win rate, average odds, and total profit/loss
+- **History Filters** — Filter history by date range, tournament, surface type, and bet outcome
+- **History Chart** — Visual trend chart displaying betting performance over time with Recharts
+- **History Table** — Sortable and filterable table with player info, odds, stake, profit, and outcome details
 
 ## 🛠️ Tech Stack
 
@@ -66,21 +71,12 @@ Create the file:
 touch .env.local
 ```
 
-Open `.env.local` in your code editor and add the following variables:
+Open `.env.local` in your code editor and add the following:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
-
-**Where to find these values:**
-
-1. Go to [supabase.com](https://supabase.com) and sign in to your account
-2. Select your project
-3. Click **Settings** (gear icon) in the left sidebar
-4. Click **API** under Project Settings
-5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 4. Run the development server
 
@@ -90,18 +86,29 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> 💡 **VS Code tip**: open the integrated terminal with `` Ctrl+` `` (or `` Cmd+` `` on Mac)
+> 💡 **VS Code tip**: open the integrated terminal with `Ctrl+`` ` ` ` ` ` ` ` (or `Cmd+`` ` ` ` ` ` ` on Mac)
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Settings > API > Project URL | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Settings > API > anon/public key | Public API key for client-side authentication |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard → Project Settings → API → Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard → Project Settings → API → anon/public key | Your Supabase anonymous key (safe to expose to client) |
+
+To find these values:
+
+1. Go to [supabase.com](https://supabase.com) and log in to your account
+2. Select your project
+3. Click **Project Settings** (gear icon) in the left sidebar
+4. Click **API** in the settings menu
+5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
+6. Copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ## 🧪 Running Tests
 
-Unit tests automatically verify that the authentication forms work correctly. They check things like form rendering, input handling, and error messages.
+Tests automatically check that key parts of the app work correctly without you having to test them manually.
+
+Run all tests:
 
 ```bash
 npx jest
@@ -113,48 +120,61 @@ Run a specific test file:
 npx jest __tests__/AuthForm.test.tsx
 ```
 
-Run tests in watch mode (re-runs automatically when you save changes):
+Watch mode (re-runs tests automatically when you save a file):
 
 ```bash
 npx jest --watch
 ```
 
-**How to read Jest output:**
-
-- **PASS** — All tests in that file passed ✅
-- **FAIL** — Something is broken, check the error message below for details ❌
-- ** Suites: 1 passed, 1 failed** means 1 test file passed and 1 failed
+**Understanding the output:**
+- **PASS** (green) — All tests in that file passed ✅
+- **FAIL** (red) — Something broke, check the error message below for what needs fixing
 
 **What the tests cover:**
-
-- `__tests__/AuthForm.test.tsx` — Authentication form components (login and signup forms)
+- `AuthForm.test.tsx` — Authentication form components (sign up, login, validation)
 
 ## 📁 Project Structure
 
-- **`src/app`** — Next.js App Router pages and layouts (landing, auth, dashboard)
-- **`src/components/ui`** — Reusable UI components (Navbar, Button, Input, FormField)
-- **`src/components/dashboard`** — Dashboard-specific components (DashboardSidebar)
-- **`src/lib`** — Utility functions and Supabase client setup
-- **`__tests__`** — Jest test files
-- **`public`** — Static assets (images, fonts)
-- **`.env.local`** — Environment variables (create this yourself, not committed to git)
+```
+├── src/
+│   ├── app/                      # Next.js App Router pages
+│   │   ├── (auth)/              # Authentication routes (login, signup)
+│   │   ├── dashboard/          # Protected dashboard pages
+│   │   │   ├── history/        # Bet history page (NEW)
+│   │   │   └── page.tsx        # Main dashboard overview
+│   │   ├── layout.tsx          # Root layout with providers
+│   │   └── page.tsx           # Landing page
+│   ├── components/              # Reusable UI components
+│   │   ├── dashboard/
+│   │   │   ├── history/        # History page components (NEW)
+│   │   │   │   ├── HistoryContent.tsx    # Main history page layout
+│   │   │   │   ├── HistoryStats.tsx      # Statistics overview cards
+│   │   │   │   ├── HistoryFilters.tsx     # Filter controls
+│   │   │   │   ├── HistoryChart.tsx       # Performance chart
+│   │   │   │   └── HistoryTable.tsx       # Bet records table
+│   │   │   └── DashboardContent.tsx      # Main dashboard layout
+│   │   └── ui/                 # Base UI components (Button, Input, etc.)
+│   └── lib/                    # Utilities and Supabase client setup
+├── __tests__/                  # Jest test files
+├── public/                    # Static assets
+└── supabase/                  # Database migrations and types
+```
 
 ## 🚀 Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### Step by step:
+**Step by step:**
 
 1. Click the **Deploy with Vercel** button above (or go to [vercel.com/new](https://vercel.com/new))
-2. Import your GitHub repository (`value-bet-ai`)
-3. In the **Environment Variables** section, add all variables from `.env.local`:
-   - `NEXT_PUBLIC_SUPABASE_URL` — your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — your Supabase anon key
-4. Click **Deploy**
-
-Your app will be live at a Vercel URL (e.g., `your-app.vercel.app`) once the build completes.
-
-> ⚠️ **Important**: Make sure to add all environment variables in Vercel > Settings > Environment Variables before deploying. Without these, authentication and database features will not work.
+2. Click **Import Git Repository** and select your GitHub repo
+3. Vercel will auto-detect Next.js — click **Deploy**
+4. Once deployed, go to your project → **Settings** → **Environment Variables**
+5. Add each variable from your `.env.local`:
+   - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
+6. **Redeploy** (go to **Deployments** → click the three dots → **Redeploy**) so the new env vars take effect
+7. Your app is live! 🎉
 
 ## 📝 License
 
