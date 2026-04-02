@@ -20,6 +20,10 @@ export interface AuthFormProps {
   onSuccess?: () => void;
 }
 
+// Session wait configuration
+const SESSION_POLL_INTERVAL_MS = 100;
+const SESSION_POLL_MAX_ATTEMPTS = 50; // 100ms * 50 = 5000ms max wait
+
 function validateEmail(email: string): string | null {
   if (!email.trim()) {
     return VALIDATION_MESSAGES.email.required;
@@ -39,6 +43,25 @@ function validatePassword(password: string): string | null {
     return VALIDATION_MESSAGES.password.minLength;
   }
   return null;
+}
+
+/**
+ * Waits for the session to be confirmed client-side before navigation.
+ * This prevents race conditions where router.refresh() checks the server
+ * session before the Supabase cookie is persisted.
+ *
+ * @returns true if session was confirmed, false if timeout occurred
+ */
+async function waitForSession(supabase: ReturnType<typeof createClient>): Promise<boolean> {
+  for (let attempt = 0; attempt < SESSION_POLL_MAX_ATTEMPTS; attempt++) {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      return true;
+    }
+    // eslint-disable-next-line no-promise-executor-return
+    await new Promise((resolve) => setTimeout(resolve, SESSION_POLL_INTERVAL_MS));
+  }
+  return false;
 }
 
 export function AuthForm({ mode, onSuccess }: AuthFormProps) {
@@ -83,6 +106,16 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             setFormState("error");
             return;
           }
+
+          // Wait for session to be persisted client-side before navigation
+          // This ensures the cookie is available when dashboard layout checks session on server
+          const sessionConfirmed = await waitForSession(supabase);
+
+          if (!sessionConfirmed) {
+            setErrorMessage("La session n'a pas pu être créée. Veuillez réessayer.");
+            setFormState("error");
+            return;
+          }
         } else {
           const { error } = await supabase.auth.signUp({
             email,
@@ -95,7 +128,7 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             return;
           }
 
-          // Signup success - redirect immediately to dashboard
+          // For signup, redirect immediately as it doesn't require session confirmation
           router.push(AUTH_REDIRECT_URL);
           router.refresh();
           onSuccess?.();
