@@ -13,3 +13,4 @@ package-lock.json
 next-env.d.ts
 tsconfig.tsbuildinfo
 .kurtel-activity-log.json
+.env.local
