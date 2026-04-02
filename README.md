@@ -9,6 +9,12 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Supabase Integration** — Full authentication flow with session management and secure API callbacks
 - **Reusable Components** — Modular UI components (Button, Input, FormField) with consistent styling
 - **Route Groups** — Organized auth routes under the `(auth)` group with shared layout
+- **Dashboard Overview** — Real-time tracking of active bets with ROI labels (🟢🟡🟠🔴), player info, odds, break-even and units
+- **Live Bet Status** — Instant status updates showing pending, won, or lost bets
+- **KPI Dashboard** — Global ROI, win/loss rate, total profit in units, and current winning streak at a glance
+- **Bankroll Performance Chart** — Visual curve of bankroll growth over time with flat betting comparison
+- **Bet History** — Filterable table by tournament, surface, and ROI label for analyzing model consistency
+- **Surface Statistics** — ROI breakdown for Clay, Hard, and Grass courts to validate model adaptability
 
 ## 🛠️ Tech Stack
 
@@ -17,6 +23,7 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Styling** — Tailwind CSS
 - **Animations** — Framer Motion
 - **Icons** — Lucide React
+- **Charts** — Recharts
 - **Auth & Database** — Supabase
 - **Testing** — Jest with React Testing Library
 - **Deployment** — Vercel
@@ -81,7 +88,7 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The login page is at `/login` and the signup page is at `/signup`.
+The login page is at `/login`, the signup page is at `/signup`, and the dashboard is at `/dashboard`.
 
 > 💡 **VS Code tip**: Open the integrated terminal with `` Ctrl+` `` (or `` Cmd+` `` on Mac). Run all commands here.
 
@@ -89,89 +96,89 @@ The login page is at `/login` and the signup page is at `/signup`.
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard → Project Settings → API → Project URL | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard → Project Settings → API → anon public key | Anonymous API key for client-side auth |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon public key | Anonymous API key for client-side requests |
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that your code works correctly. The project includes tests for the authentication form.
+Tests automatically check that the login and signup forms work correctly. They catch mistakes before they reach the live app.
 
 Run all tests:
 
 ```bash
-npx jest
+npm run test
 ```
 
 Run a specific test file:
 
 ```bash
-npx jest __tests__/AuthForm.test.tsx
+npm run test -- __tests__/AuthForm.test.tsx
 ```
 
-Watch mode (re-runs tests automatically when you save a file):
+Run tests in watch mode (re-runs automatically when you save a file):
 
 ```bash
-npx jest --watch
+npm run test -- --watch
 ```
 
 **How to read the output:**
-
-- **PASS** — All tests passed, your code works correctly
-- **FAIL** — Something broke. Check the error message above for which test failed and why
-
-**What the tests cover:**
-
-- `__tests__/AuthForm.test.tsx` — Authentication form rendering and user interactions (signup/login)
+- **PASS** — All tests passed, your code is working correctly
+- **FAIL** — Something broke, check the error message below to see which test failed and why
 
 ## 📁 Project Structure
 
 ```
-value-bet-ai/
-├── __tests__/              # Jest test files
-│   └── AuthForm.test.tsx   # Auth form tests
+├── __tests__/                 # Automated tests
+│   └── AuthForm.test.tsx     # Tests for authentication forms
 ├── src/
-│   ├── app/                # Next.js App Router pages and layouts
-│   │   ├── (auth)/         # Auth route group with shared layout
-│   │   │   ├── login/      # Login page
-│   │   │   └── signup/     # Signup page
-│   │   ├── layout.tsx      # Root layout
-│   │   └── page.tsx        # Home page
-│   ├── components/         # Reusable React components
-│   │   ├── auth/           # Auth-specific components
-│   │   │   └── AuthForm.tsx # Signup/login form component
-│   │   └── ui/             # Shared UI components (Button, Input, etc.)
-│   └── lib/                # Utilities and Supabase client setup
-├── .env.local              # Environment variables (create this)
-├── package.json            # Dependencies and scripts
-├── tailwind.config.ts      # Tailwind CSS configuration
-├── tsconfig.json           # TypeScript configuration
-└── jest.config.ts          # Jest testing configuration
+│   ├── app/                   # Next.js App Router pages
+│   │   ├── (auth)/           # Auth route group (login, signup)
+│   │   │   ├── login/
+│   │   │   └── signup/
+│   │   ├── dashboard/        # Dashboard pages
+│   │   │   ├── layout.tsx    # Dashboard layout with sidebar/header
+│   │   │   └── page.tsx      # Main dashboard page
+│   │   └── page.tsx          # Landing/home page
+│   ├── components/
+│   │   ├── dashboard/        # Dashboard-specific components
+│   │   │   ├── BankrollChart.tsx      # Bankroll performance chart
+│   │   │   ├── BetHistoryTable.tsx    # Historical bets with filters
+│   │   │   ├── BetsTable.tsx          # Active bets table with ROI labels
+│   │   │   ├── DashboardHeader.tsx    # Dashboard header component
+│   │   │   ├── DashboardSidebar.tsx   # Navigation sidebar
+│   │   │   ├── KpiCards.tsx           # KPI summary cards
+│   │   │   └── SurfaceStats.tsx      # Surface-specific statistics
+│   │   └── ui/              # Reusable UI components (Button, Input, etc.)
+│   └── lib/
+│       ├── dashboard-data.ts # Dashboard data fetching and utilities
+│       └── supabase.ts       # Supabase client configuration
+├── .env.local                # Environment variables (not committed)
+├── package.json              # Dependencies and scripts
+└── tailwind.config.ts        # Tailwind CSS configuration
 ```
 
 ## 🚀 Deploy to Vercel
 
-### One-click deploy
+The easiest way to deploy your Next.js app is with Vercel.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### Step by step
+### Step by step:
 
-1. Push your code to GitHub (if you haven't already)
-2. Go to [vercel.com](https://vercel.com) and sign in with GitHub
-3. Click **Add New Project**
-4. Import your `value-bet-ai` repository
-5. Under **Environment Variables**, add each variable from your `.env.local` file:
+1. Click the **Deploy with Vercel** button above (or go to [vercel.com/new](https://vercel.com/new))
+2. Import your GitHub repository (`YOUR_USERNAME/value-bet-ai`)
+3. In the **Environment Variables** section, add all variables from your `.env.local` file:
 
    | Name | Value |
    |------|-------|
-   | `NEXT_PUBLIC_SUPABASE_URL` | your_supabase_project_url |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your_supabase_anon_key |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key |
 
-6. Click **Deploy**
+4. Click **Deploy**
 
-> ⚠️ Important: Make sure to add ALL environment variables in Vercel before deploying. Without them, your app will crash.
+Your app will be live at `https://your-project.vercel.app` within seconds.
 
-Your app will be live at `https://your-project.vercel.app` once deployed.
+> ⚠️ **Important**: Make sure to add all environment variables in Vercel > Settings > Environment Variables before deploying, otherwise your app will crash.
 
 ## 📝 License
 
