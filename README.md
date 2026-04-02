@@ -5,7 +5,8 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 ## ✨ Features
 
 - **User Authentication** — Secure signup and login with email and password via Supabase Auth (no email verification required)
-- **Login/Sign Up Navigation** — Easy access to authentication pages from the navbar
+- **Protected Dashboard** — Dashboard is only accessible when logged in; unauthenticated users are redirected to the landing page
+- **Login/Sign Up Navigation** — Easy access to authentication pages from the landing page navbar
 - **Modern UI** — Clean, responsive interface built with Tailwind CSS and Framer Motion animations
 - **Supabase Integration** — Full authentication flow with session management and secure API callbacks
 - **Reusable Components** — Modular UI components (Button, Input, FormField) with consistent styling
@@ -73,13 +74,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 #### Where to find your Supabase credentials:
 
-1. Go to [supabase.com](https://supabase.com) and log in
-2. Click on your project
-3. Click **Project Settings** (the gear icon) in the left sidebar
-4. Click **API**
-5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Under **Project API keys**, copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-7. Save the file
+1. Go to [supabase.com](https://supabase.com) and sign in to your account
+2. Click on **"Project Settings"** (the gear icon) in the left sidebar
+3. Under the **"Config"** section, click on **"API"**
+4. Copy the **"Project URL"** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
+5. Copy the **"anon public"** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+> 💡 **Important**: Never share these keys or commit them to GitHub. The `.env.local` file is already in your `.gitignore`.
 
 ### 4. Run the development server
 
@@ -89,105 +90,86 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> 💡 **VS Code tip**: open the integrated terminal with `Ctrl+`` ` ` (or `Cmd+`` ` ` on Mac)
+> 💡 **VS Code tip**: open the integrated terminal with `` Ctrl+` `` (or `` Cmd+` `` on Mac)
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project connection URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > Project API keys > anon/public | Public API key for client-side requests |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Anonymous API key for client-side operations |
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that our authentication forms work correctly without breaking.
+Unit tests automatically check that your code works correctly. They verify individual pieces (like forms and buttons) without needing the whole app running.
 
-Run all tests:
+### Run all tests
 
 ```bash
-npm test
+npx jest
 ```
 
-Run a specific test file:
+### Run a specific test file
 
 ```bash
 npx jest __tests__/AuthForm.test.tsx
 ```
 
-Run tests in watch mode (re-runs automatically when you save changes):
+### Watch mode (re-runs on file change)
 
 ```bash
 npx jest --watch
 ```
 
-**How to read the output:**
-- **PASS** — All tests passed, everything works correctly
-- **FAIL** — Something broke, check the error message below for which test failed
+### Understanding test output
 
-The AuthForm tests cover:
-- Form rendering with all input fields
-- Email and password validation
-- Submit button states (enabled/disabled)
-- Error message display
-- Loading states during authentication
+- **PASS** — All tests passed ✅
+- **FAIL** — Something broke ❌ (shows which test failed and why)
+- ** Suites: X passed, Y failed** — Summary of all test files
+
+### What the tests cover
+
+- **AuthForm.test.tsx** — Tests the authentication form components (login/signup)
 
 ## 📁 Project Structure
 
 ```
-value-bet-ai/
-├── src/
-│   ├── app/                      # Next.js App Router pages
-│   │   ├── (auth)/               # Authentication route group
-│   │   │   ├── login/            # Login page
-│   │   │   └── signup/           # Sign up page
-│   │   ├── dashboard/            # Main dashboard
-│   │   │   └── page.tsx          # Dashboard page component
-│   │   ├── layout.tsx            # Root layout
-│   │   └── page.tsx              # Landing/home page
-│   ├── components/
-│   │   ├── ui/                   # Reusable UI components (Button, Input, etc.)
-│   │   └── dashboard/            # Dashboard-specific components
-│   │       ├── DashboardHeader.tsx   # Navbar with login/signup links
-│   │       ├── ValueOfTheDay.tsx     # Daily value bets with ROI badges
-│   │       └── BankrollChart.tsx     # Bankroll performance visualization
-│   ├── lib/                      # Utilities and data functions
-│   │   ├── dashboard-data.ts     # Dashboard data helpers
-│   │   └── utils.ts              # General utilities (cn function)
-│   └── __tests__/                # Jest test files
-├── public/                       # Static assets
-├── .env.local                    # Environment variables (create this)
-├── tailwind.config.ts            # Tailwind CSS configuration
-└── package.json                  # Dependencies and scripts
+src/
+├── app/                    # Next.js App Router pages and layouts
+│   ├── (auth)/             # Auth route group (login, signup pages)
+│   ├── dashboard/          # Protected dashboard (requires login)
+│   │   └── layout.tsx      # Dashboard layout with header
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Landing page
+├── components/             # Reusable UI components
+│   ├── dashboard/          # Dashboard-specific components
+│   │   └── DashboardHeader.tsx  # Dashboard navigation header
+│   ├── ui/                 # Base UI components (Button, Input, etc.)
+│   └── AuthForm.tsx        # Authentication form component
+├── lib/                    # Utility functions and Supabase setup
+│   └── supabase/
+│       ├── client.ts       # Supabase client for browser
+│       └── server.ts       # Supabase client for server-side
+└── __tests__/              # Jest test files
+    └── AuthForm.test.tsx   # Auth form tests
 ```
 
 ## 🚀 Deploy to Vercel
 
+### One-click deploy
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### Step by step:
+### Step by step
 
-1. **Push your code to GitHub** — if you haven't already:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/value-bet-ai.git
-   git push -u origin main
-   ```
+1. **Import your repository** — Click "Import Project" on Vercel, select your GitHub repo
+2. **Add environment variables** — In the Vercel dashboard, go to **Settings > Environment Variables** and add:
+   - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
+3. **Deploy** — Click "Deploy" and wait for the build to complete
+4. **Visit your app** — Once deployed, Vercel provides a URL like `your-project.vercel.app`
 
-2. **Go to Vercel** — visit [vercel.com](https://vercel.com) and sign up/login
-
-3. **Import your repository** — click "Import Project" and select your GitHub repo
-
-4. **Add environment variables** — in the Vercel dashboard:
-   - Go to **Settings** > **Environment Variables**
-   - Add `NEXT_PUBLIC_SUPABASE_URL` with your Supabase project URL
-   - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY` with your Supabase anon key
-
-5. **Deploy** — click "Deploy" and wait ~1 minute for your site to go live
-
-> ⚠️ **Important**: Make sure all `.env.local` variables are added to Vercel before deploying, otherwise authentication will fail.
+> ⚠️ **Important**: Make sure all environment variables from `.env.local` are also added in Vercel (Settings > Environment Variables) before deploying. Without them, your app won't connect to Supabase.
 
 ## 📝 License
 
