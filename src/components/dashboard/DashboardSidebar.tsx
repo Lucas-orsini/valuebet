@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Trophy,
@@ -11,9 +12,11 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS, USER } from "@/lib/dashboard-data";
+import { createClient } from "@/lib/supabase/client";
 
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard,
@@ -25,6 +28,31 @@ const iconMap: Record<string, React.ElementType> = {
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const supabase = createClient();
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error("Erreur lors de la déconnexion:", error.message);
+        setIsLoggingOut(false);
+        return;
+      }
+
+      router.push("/login");
+      router.refresh();
+    } catch {
+      console.error("Erreur inattendue lors de la déconnexion");
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <aside className="w-[240px] h-screen flex flex-col bg-[#0a0a0a] border-r border-white/[0.06] shrink-0">
@@ -114,9 +142,20 @@ export function DashboardSidebar() {
         </div>
 
         {/* Logout */}
-        <button className="flex items-center gap-2.5 w-full px-2 py-2 mt-1 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors">
-          <LogOut size={15} strokeWidth={1.5} />
-          <span className="text-xs">Déconnexion</span>
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-2.5 w-full px-2 py-2 mt-1 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Se déconnecter"
+        >
+          {isLoggingOut ? (
+            <Loader2 size={15} strokeWidth={1.5} className="animate-spin" />
+          ) : (
+            <LogOut size={15} strokeWidth={1.5} />
+          )}
+          <span className="text-xs">
+            {isLoggingOut ? "Déconnexion..." : "Déconnexion"}
+          </span>
         </button>
       </div>
     </aside>
