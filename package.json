@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.8",
     "lucide-react": "^0.424.0",
@@ -18,13 +19,21 @@
     "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.59.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.14.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "jest-environment-node": "^30.3.0",
     "postcss": "^8.4.40",
     "tailwindcss": "^3.4.7",
+    "ts-jest": "^29.4.9",
     "typescript": "^5.5.4"
   }
 }
