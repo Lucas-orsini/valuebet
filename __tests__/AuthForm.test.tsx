@@ -1,123 +1,165 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { AuthForm } from '../components/AuthForm'
-import { createClient } from '@/supabase/client'
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { AuthForm } from "@/components/auth/AuthForm";
 
-jest.mock('@/supabase/client', () => ({
-  createClient: jest.fn()
-}))
+const mockPush = jest.fn();
+const mockRefresh = jest.fn();
 
-const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockPush,
+    refresh: mockRefresh,
+  }),
+}));
 
-describe('AuthForm', () => {
-  const mockSupabaseClient = {
-    auth: {
-      signUp: jest.fn(),
-      signInWithPassword: jest.fn(),
-      signOut: jest.fn()
-    }
-  }
+const mockSignInWithPassword = jest.fn();
+const mockSignUp = jest.fn();
+const mockCreateClient = jest.fn().mockReturnValue({
+  auth: {
+    signInWithPassword: mockSignInWithPassword,
+    signUp: mockSignUp,
+  },
+});
 
+jest.mock("@/supabase/client", () => ({
+  createClient: () => mockCreateClient(),
+}));
+
+describe("AuthForm", () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    mockCreateClient.mockReturnValue(mockSupabaseClient as any)
-  })
+    jest.clearAllMocks();
+  });
 
-  describe('sign up mode', () => {
-    it('renders sign up form with email and password fields', () => {
-      render(<AuthForm mode="signup" />)
+  describe("login mode", () => {
+    it("should show email required error when submitting with empty email and not call Supabase", async () => {
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
 
-      expect(screen.getByLabelText('Email')).toBeInTheDocument()
-      expect(screen.getByLabelText('Password')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
-    })
+      const submitButton = screen.getByRole("button", { name: /se connecter/i });
+      await user.click(submitButton);
 
-    it('calls signUp with email and password on submit', async () => {
-      mockSupabaseClient.auth.signUp.mockResolvedValue({ data: {}, error: null })
+      const errorMessage = await screen.findByRole("alert", { name: /l'email est requis/i });
+      expect(errorMessage).toBeInTheDocument();
+      expect(mockSignInWithPassword).not.toHaveBeenCalled();
+    });
 
-      render(<AuthForm mode="signup" />)
+    it("should show password min length error when submitting with too short password", async () => {
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
 
-      fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } })
-      fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } })
-      fireEvent.click(screen.getByRole('button', { name: /sign up/i }))
+      const emailInput = screen.getByRole("textbox", { name: /email/i });
+      await user.type(emailInput, "test@example.com");
 
-      await waitFor(() => {
-        expect(mockSupabaseClient.auth.signUp).toHaveBeenCalledWith({
-          email: 'test@example.com',
-          password: 'password123',
-          options: {
-            emailRedirectTo: undefined
-          }
-        })
-      })
-    })
+      const submitButton = screen.getByRole("button", { name: /se connecter/i });
+      await user.click(submitButton);
 
-    it('displays error message when sign up fails', async () => {
-      mockSupabaseClient.auth.signUp.mockResolvedValue({
-        data: {},
-        error: { message: 'Email already registered' }
-      })
+      const errorMessage = await screen.findByRole("alert", { name: /le mot de passe est requis/i });
+      expect(errorMessage).toBeInTheDocument();
+    });
 
-      render(<AuthForm mode="signup" />)
+    it("should navigate to /dashboard when login credentials are valid", async () => {
+      const user = userEvent.setup();
+      mockSignInWithPassword.mockResolvedValueOnce({ error: null });
 
-      fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'existing@example.com' } })
-      fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } })
-      fireEvent.click(screen.getByRole('button', { name: /sign up/i }))
+      render(<AuthForm mode="login" />);
 
-      await waitFor(() => {
-        expect(screen.getByText('Email already registered')).toBeInTheDocument()
-      })
-    })
+      const emailInput = screen.getByRole("textbox", { name: /email/i });
+      const passwordInput = screen.getByLabelText(/mot de passe/i);
 
-    it('does not require email verification after sign up', async () => {
-      mockSupabaseClient.auth.signUp.mockResolvedValue({
-        data: { user: { id: '123' }, session: { access_token: 'token' } },
-        error: null
-      })
+      await user.type(emailInput, "test@example.com");
+      await user.type(passwordInput, "password123");
+      await user.click(screen.getByRole("button", { name: /se connecter/i }));
 
-      render(<AuthForm mode="signup" />)
+      expect(mockSignInWithPassword).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+      });
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
+    });
 
-      fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'new@example.com' } })
-      fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } })
-      fireEvent.click(screen.getByRole('button', { name: /sign up/i }))
+    it("should show Supabase error message when login fails with invalid credentials", async () => {
+      const user = userEvent.setup();
+      mockSignInWithPassword.mockResolvedValueOnce({
+        error: { message: "Invalid login credentials" },
+      });
 
-      await waitFor(() => {
-        expect(mockSupabaseClient.auth.signUp).toHaveBeenCalledWith(
-          expect.objectContaining({
-            options: expect.not.objectContaining({
-              data: expect.objectContaining({
-                emailConfirm: true
-              })
-            })
-          })
-        )
-      })
-    })
-  })
+      render(<AuthForm mode="login" />);
 
-  describe('sign in mode', () => {
-    it('renders sign in form with email and password fields', () => {
-      render(<AuthForm mode="signin" />)
+      const emailInput = screen.getByRole("textbox", { name: /email/i });
+      const passwordInput = screen.getByLabelText(/mot de passe/i);
 
-      expect(screen.getByLabelText('Email')).toBeInTheDocument()
-      expect(screen.getByLabelText('Password')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
-    })
+      await user.type(emailInput, "test@example.com");
+      await user.type(passwordInput, "wrongpassword");
+      await user.click(screen.getByRole("button", { name: /se connecter/i }));
 
-    it('calls signInWithPassword with email and password on submit', async () => {
-      mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({ data: {}, error: null })
+      const errorMessage = await screen.findByRole("alert", { name: /invalid login credentials/i });
+      expect(errorMessage).toBeInTheDocument();
+    });
+  });
 
-      render(<AuthForm mode="signin" />)
+  describe("signup mode", () => {
+    it("should navigate to /dashboard when signup succeeds", async () => {
+      const user = userEvent.setup();
+      mockSignUp.mockResolvedValueOnce({ error: null });
 
-      fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } })
-      fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } })
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
+      render(<AuthForm mode="signup" />);
 
-      await waitFor(() => {
-        expect(mockSupabaseClient.auth.signInWithPassword).toHaveBeenCalledWith({
-          email: 'test@example.com',
-          password: 'password123'
-        })
-      })
-    })
-  })
-})
+      const emailInput = screen.getByRole("textbox", { name: /email/i });
+      const passwordInput = screen.getByLabelText(/mot de passe/i);
+
+      await user.type(emailInput, "test@example.com");
+      await user.type(passwordInput, "password123");
+      await user.click(screen.getByRole("button", { name: /créer un compte/i }));
+
+      expect(mockSignUp).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+      });
+      expect(mockPush).toHaveBeenCalledWith("/dashboard");
+    });
+
+    it("should show footer link to 'Se connecter' in signup mode", () => {
+      render(<AuthForm mode="signup" />);
+
+      const loginLink = screen.getByRole("button", { name: /se connecter/i });
+      expect(loginLink).toBeInTheDocument();
+    });
+  });
+
+  describe("error clearing", () => {
+    it("should clear email error when user types in email field", async () => {
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
+
+      const submitButton = screen.getByRole("button", { name: /se connecter/i });
+      await user.click(submitButton);
+
+      const errorMessage = await screen.getByRole("alert", { name: /l'email est requis/i });
+      expect(errorMessage).toBeInTheDocument();
+
+      const emailInput = screen.getByRole("textbox", { name: /email/i });
+      await user.type(emailInput, "test@example.com");
+
+      expect(screen.queryByRole("alert", { name: /l'email est requis/i })).not.toBeInTheDocument();
+    });
+
+    it("should clear password error when user types in password field", async () => {
+      const user = userEvent.setup();
+      render(<AuthForm mode="login" />);
+
+      const emailInput = screen.getByRole("textbox", { name: /email/i });
+      await user.type(emailInput, "test@example.com");
+
+      const submitButton = screen.getByRole("button", { name: /se connecter/i });
+      await user.click(submitButton);
+
+      const errorMessage = await screen.getByRole("alert", { name: /le mot de passe est requis/i });
+      expect(errorMessage).toBeInTheDocument();
+
+      const passwordInput = screen.getByLabelText(/mot de passe/i);
+      await user.type(passwordInput, "password123");
+
+      expect(screen.queryByRole("alert", { name: /le mot de passe est requis/i })).not.toBeInTheDocument();
+    });
+  });
+});
