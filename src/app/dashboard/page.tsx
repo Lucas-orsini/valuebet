@@ -3,6 +3,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { KpiCards } from "@/components/dashboard/KpiCards";
 import { BetsTable } from "@/components/dashboard/BetsTable";
 import { BankrollChart } from "@/components/dashboard/BankrollChart";
+import { ValueOfTheDay } from "@/components/dashboard/ValueOfTheDay";
 import { BetHistoryTable } from "@/components/dashboard/BetHistoryTable";
 import { SurfaceStats } from "@/components/dashboard/SurfaceStats";
 import { KPI_DATA } from "@/lib/dashboard-data";
@@ -27,8 +28,18 @@ export default function DashboardPage() {
             {/* KPI Cards */}
             <KpiCards data={KPI_DATA} />
 
-            {/* Bankroll Chart - full width */}
-            <BankrollChart />
+            {/* Bankroll & Value section - side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+              {/* Bankroll Chart - 60% width */}
+              <div className="lg:col-span-3">
+                <BankrollChart />
+              </div>
+
+              {/* Value of the Day - 40% width */}
+              <div className="lg:col-span-2">
+                <ValueOfTheDay />
+              </div>
+            </div>
 
             {/* Surface Stats - full width */}
             <SurfaceStats />
