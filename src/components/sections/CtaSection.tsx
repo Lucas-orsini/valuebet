@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 import { pricingPlans } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -65,16 +66,17 @@ export function CtaSection() {
                 <p className="text-sm text-zinc-500 mt-2">{plan.description}</p>
               </div>
 
-              <button
+              <Link
+                href="/signup"
                 className={cn(
-                  "h-10 rounded-lg text-sm font-medium transition-all duration-200",
+                  "h-10 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center",
                   plan.highlight
                     ? "bg-accent hover:bg-accent-light text-white shadow-[0_0_16px_rgba(242,203,56,0.2)]"
                     : "border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300"
                 )}
               >
                 {plan.cta}
-              </button>
+              </Link>
 
               <ul className="flex flex-col gap-2">
                 {plan.features.map((feature: string) => (
@@ -118,10 +120,13 @@ export function CtaSection() {
               Rejoignez plus de 500 parieurs qui utilisent déjà notre IA pour
               détecter les value bets.
             </p>
-            <button className="h-11 px-8 rounded-lg bg-accent hover:bg-accent-light text-white text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 shadow-[0_0_24px_rgba(242,203,56,0.3)] hover:shadow-[0_0_32px_rgba(242,203,56,0.4)]">
+            <Link
+              href="/signup"
+              className="h-11 px-8 rounded-lg bg-accent hover:bg-accent-light text-white text-sm font-medium transition-all duration-200 inline-flex items-center gap-2 shadow-[0_0_24px_rgba(242,203,56,0.3)] hover:shadow-[0_0_32px_rgba(242,203,56,0.4)]"
+            >
               Commencer maintenant
               <ArrowRight size={16} />
-            </button>
+            </Link>
             <p className="text-xs text-zinc-600 mt-4">
               Gratuit · Sans engagement · Annulez quand vous voulez
             </p>

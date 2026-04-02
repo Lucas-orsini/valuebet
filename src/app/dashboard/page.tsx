@@ -23,34 +23,19 @@ export default function DashboardPage() {
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
+          <div className="max-w-[1400px] mx-auto flex flex-col gap-6 overflow-hidden">
             {/* KPI Cards */}
             <KpiCards data={KPI_DATA} />
 
-            {/* Main grid: Chart + Active Bets */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-              {/* Bankroll Chart - takes 3 columns */}
-              <div className="lg:col-span-3">
-                <BankrollChart />
-              </div>
+            {/* Bankroll Chart - full width */}
+            <BankrollChart />
 
-              {/* Active Bets - takes 2 columns */}
-              <div className="lg:col-span-2">
-                <BetsTable />
-              </div>
-            </div>
+            {/* Surface Stats - full width */}
+            <SurfaceStats />
 
-            {/* Secondary grid: Surface Stats + History */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-              {/* Surface Stats - takes 2 columns */}
-              <div className="lg:col-span-2">
-                <SurfaceStats />
-              </div>
-
-              {/* Bet History - takes 3 columns */}
-              <div className="lg:col-span-3">
-                <BetHistoryTable />
-              </div>
+            {/* Bet History - fills remaining vertical space */}
+            <div className="flex-1 min-h-0">
+              <BetHistoryTable />
             </div>
           </div>
         </div>
