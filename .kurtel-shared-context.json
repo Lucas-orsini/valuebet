@@ -1,0 +1,13 @@
+{
+  "task": "Je voudrais que tu renommes la page history en historique dans la partie dashboard. Ensuite, dans la page historique j'aimerai un tableau ou l'on peut voir tous les paris all time : boutons pour changer de page dans le tableau. Je ne veux pas de graphique. Je veux que le filtre soit intégrer au tableau pour faire des recherches",
+  "stack": "nextjs",
+  "summary": "Je voudrais que tu renommes la page history en historique dans la partie dashboard. Ensuite, dans la page historique j'aimerai un tableau ou l'on peut voir tous les paris all time : boutons pour changer de page dans le tableau. Je ne veux pas de graphique. Je veux que le filtre soit intégrer au tableau pour faire des recherches",
+  "api_contracts": [],
+  "shared_types": "",
+  "design_tokens": "",
+  "agent_tasks": {
+    "data_engineer": null,
+    "backend_dev": null,
+    "frontend_dev": null
+  }
+}

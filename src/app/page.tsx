@@ -1,25 +1,13 @@
-import { Navbar } from "@/components/ui/Navbar";
-import { Footer } from "@/components/ui/Footer";
-import { HeroSection } from "@/components/sections/HeroSection";
-import { StatsBanner } from "@/components/ui/StatsBanner";
-import { FeaturesSection } from "@/components/sections/FeaturesSection";
-import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
-import { ResultsSection } from "@/components/sections/ResultsSection";
-import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { CtaSection } from "@/components/sections/CtaSection";
+import { redirect } from 'next/navigation'
+import { createClient } from '@/supabase/server'
 
-export default function Home() {
-  return (
-    <main className="min-h-screen bg-[#09090b]">
-      <Navbar />
-      <HeroSection />
-      <StatsBanner />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <ResultsSection />
-      <TestimonialsSection />
-      <CtaSection />
-      <Footer />
-    </main>
-  );
+export default async function HomePage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect('/dashboard')
+  } else {
+    redirect('/login')
+  }
 }

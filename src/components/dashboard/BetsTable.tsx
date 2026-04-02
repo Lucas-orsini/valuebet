@@ -1,175 +1,270 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { ArrowUpRight, ArrowDownRight, Clock, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ACTIVE_BETS, ROI_COLORS, STATUS_COLORS } from "@/lib/dashboard-data";
-import type { Bet } from "@/lib/dashboard-data";
+import { useState, useEffect, useCallback } from 'react'
+import { Bet } from '@/types/database'
 
-export function BetsTable() {
+interface BetsTableProps {
+  userId: string
+}
+
+const PAGE_SIZE = 10
+
+export default function BetsTable({ userId }: BetsTableProps) {
+  const [bets, setBets] = useState<Bet[]>([])
+  const [filteredBets, setFilteredBets] = useState<Bet[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'won' | 'lost'>('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchBets = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(`/api/bets?userId=${userId}&page=${currentPage}&pageSize=${PAGE_SIZE}`)
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`)
+      }
+      const data = await response.json()
+      if (data.error) {
+        throw new Error(data.error)
+      }
+      setBets(data.bets || [])
+      setTotalCount(data.total || 0)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur lors du chargement des paris')
+      setBets([])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [userId, currentPage])
+
+  useEffect(() => {
+    fetchBets()
+  }, [fetchBets])
+
+  useEffect(() => {
+    let result = [...bets]
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      result = result.filter(
+        (bet) =>
+          bet.home_team.toLowerCase().includes(query) ||
+          bet.away_team.toLowerCase().includes(query)
+      )
+    }
+
+    if (statusFilter !== 'all') {
+      result = result.filter((bet) => bet.status === statusFilter)
+    }
+
+    setFilteredBets(result)
+  }, [bets, searchQuery, statusFilter])
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(amount)
+  }
+
+  const getStatusBadge = (status: Bet['status']) => {
+    const styles = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      won: 'bg-green-100 text-green-800',
+      lost: 'bg-red-100 text-red-800'
+    }
+    const labels = {
+      pending: 'En attente',
+      won: 'Gagné',
+      lost: 'Perdu'
+    }
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status]}`}>
+        {labels[status]}
+      </span>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        {error}
+      </div>
+    )
+  }
+
   return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-zinc-100">Paris actifs</h2>
-          <span className="px-2 py-0.5 rounded-full bg-[#F2CB38]/10 border border-[#F2CB38]/20 text-[#F2CB38] text-[10px] font-medium">
-            {ACTIVE_BETS.length}
-          </span>
+    <div className="space-y-4">
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Rechercher par équipe..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value)
+              setCurrentPage(1)
+            }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
-        <button className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
-          Voir tout
-          <ExternalLink size={12} />
-        </button>
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value as typeof statusFilter)
+            setCurrentPage(1)
+          }}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="all">Tous les statuts</option>
+          <option value="pending">En attente</option>
+          <option value="won">Gagné</option>
+          <option value="lost">Perdu</option>
+        </select>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-white/[0.05]">
-              <th className="px-5 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Match
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                Cote
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Pronostic
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                B-E
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Mise
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                Unités
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Cotes
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                ROI
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Gain potentiel
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Résultat
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Statut
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
-            {ACTIVE_BETS.map((bet, index) => (
-              <BetRow key={bet.id} bet={bet} index={index} />
-            ))}
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredBets.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  Aucun pari trouvé
+                </td>
+              </tr>
+            ) : (
+              filteredBets.map((bet) => (
+                <tr key={bet.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    {formatDate(bet.created_at)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {bet.home_team} vs {bet.away_team}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    {bet.predicted_winner}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    {formatAmount(bet.amount)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    {bet.odds.toFixed(2)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    {formatAmount(bet.potential_gain)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    {bet.actual_gain !== null ? formatAmount(bet.actual_gain) : '-'}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {getStatusBadge(bet.status)}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between px-5 py-3 border-t border-white/[0.06] bg-white/[0.02]">
-        <div className="flex items-center gap-2 text-[11px] text-zinc-500">
-          <Clock size={12} />
-          <span>Mise à jour en temps réel</span>
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-500">
+          Affichage {(currentPage - 1) * PAGE_SIZE + 1} -{' '}
+          {Math.min(currentPage * PAGE_SIZE, totalCount)} sur {totalCount} paris
         </div>
-        <span className="text-[11px] text-zinc-600">
-          Tous les horaires en UTC
-        </span>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            Précédent
+          </button>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            let pageNum: number
+            if (totalPages <= 5) {
+              pageNum = i + 1
+            } else if (currentPage <= 3) {
+              pageNum = i + 1
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i
+            } else {
+              pageNum = currentPage - 2 + i
+            }
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`px-4 py-2 border rounded-lg ${
+                  currentPage === pageNum
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {pageNum}
+              </button>
+            )
+          })}
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+          >
+            Suivant
+          </button>
+        </div>
       </div>
     </div>
-  );
-}
-
-function BetRow({ bet, index }: { bet: Bet; index: number }) {
-  const roiColors = ROI_COLORS[bet.roiLabel];
-  const statusColors = STATUS_COLORS[bet.status];
-
-  return (
-    <motion.tr
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="hover:bg-white/[0.02] transition-colors cursor-pointer"
-    >
-      {/* Match */}
-      <td className="px-5 py-4">
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-zinc-200 font-medium">
-            {bet.player}
-          </span>
-          <span className="text-xs text-zinc-500">vs {bet.opponent}</span>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] text-zinc-600">{bet.tournament}</span>
-            <span className="text-[10px] text-zinc-600">·</span>
-            <span className="text-[10px] text-zinc-600">{bet.surface}</span>
-          </div>
-        </div>
-      </td>
-
-      {/* Odds */}
-      <td className="px-3 py-4 text-center">
-        <span className="text-sm font-semibold text-zinc-100 tabular-nums">
-          {bet.odds.toFixed(2)}
-        </span>
-      </td>
-
-      {/* Break-even */}
-      <td className="px-3 py-4 text-center">
-        <span className="text-sm text-zinc-500 tabular-nums">
-          {bet.breakEven.toFixed(2)}
-        </span>
-      </td>
-
-      {/* Units */}
-      <td className="px-3 py-4 text-center">
-        <span
-          className={cn(
-            "inline-flex items-center justify-center min-w-[28px] h-6 px-2 rounded-md text-xs font-bold",
-            bet.units === 3
-              ? "bg-green-500/15 text-green-400"
-              : bet.units === 2
-              ? "bg-[#F2CB38]/15 text-[#F2CB38]"
-              : "bg-white/[0.08] text-zinc-300"
-          )}
-        >
-          {bet.units}u
-        </span>
-      </td>
-
-      {/* ROI Label */}
-      <td className="px-3 py-4 text-center">
-        <div className="flex items-center justify-center gap-1.5">
-          <div
-            className={cn(
-              "w-2 h-2 rounded-full",
-              roiColors.dot
-            )}
-          />
-          <span
-            className={cn(
-              "px-2 py-0.5 rounded text-[10px] font-medium",
-              roiColors.bg,
-              roiColors.text
-            )}
-          >
-            {bet.edge >= 6
-              ? "🟢 HIGH"
-              : bet.edge >= 4
-              ? "🟡 MED"
-              : bet.edge >= 2
-              ? "🟠 LOW"
-              : "🔴 MIN"}
-          </span>
-        </div>
-      </td>
-
-      {/* Status */}
-      <td className="px-3 py-4 text-center">
-        <span
-          className={cn(
-            "inline-flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-medium uppercase tracking-wider",
-            statusColors.bg,
-            statusColors.text
-          )}
-        >
-          {bet.status === "pending" && (
-            <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-          )}
-          {bet.status === "won" && <ArrowUpRight size={10} />}
-          {bet.status === "lost" && <ArrowDownRight size={10} />}
-          {bet.status}
-        </span>
-      </td>
-    </motion.tr>
-  );
+  )
 }
