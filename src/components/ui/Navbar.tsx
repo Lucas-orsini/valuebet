@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -73,15 +74,18 @@ export function Navbar() {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-2">
-          <a
-            href="#"
+          <Link
+            href="/login"
             className="text-sm text-zinc-400 hover:text-zinc-100 transition-colors px-3"
           >
             Connexion
-          </a>
-          <button className="h-8 px-4 rounded-md bg-accent hover:bg-accent-light text-white text-sm font-medium transition-colors duration-150">
+          </Link>
+          <Link
+            href="/signup"
+            className="h-8 px-4 rounded-md bg-accent hover:bg-accent-light text-white text-sm font-medium transition-colors duration-150 flex items-center"
+          >
             Commencer
-          </button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -113,12 +117,20 @@ export function Navbar() {
             ))}
           </nav>
           <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-white/[0.06]">
-            <a href="#" className="text-sm text-zinc-400 hover:text-zinc-100 px-3 py-2">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="text-sm text-zinc-400 hover:text-zinc-100 px-3 py-2"
+            >
               Connexion
-            </a>
-            <button className="h-9 px-4 rounded-md bg-accent hover:bg-accent-light text-white text-sm font-medium transition-colors">
+            </Link>
+            <Link
+              href="/signup"
+              onClick={() => setMobileOpen(false)}
+              className="h-9 px-4 rounded-md bg-accent hover:bg-accent-light text-white text-sm font-medium transition-colors flex items-center justify-center"
+            >
               Commencer
-            </button>
+            </Link>
           </div>
         </motion.div>
       )}
