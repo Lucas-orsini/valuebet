@@ -160,6 +160,66 @@ export const ACTIVE_BETS: Bet[] = [
   },
 ];
 
+// Value of the Day
+export interface ValueOfTheDayItem {
+  id: string;
+  playerName: string;
+  tournament: string;
+  surface: string;
+  odds: number;
+  estimatedProbability: number;
+  units: number;
+  edge: number;
+  roiLabel: RoiLabel;
+}
+
+export const VALUE_OF_THE_DAY: ValueOfTheDayItem[] = [
+  {
+    id: "v1",
+    playerName: "Jannik Sinner",
+    tournament: "ATP Finals",
+    surface: "Hard",
+    odds: 2.10,
+    estimatedProbability: 52,
+    units: 3,
+    edge: 8.2,
+    roiLabel: "green",
+  },
+  {
+    id: "v2",
+    playerName: "Carlos Alcaraz",
+    tournament: "ATP Finals",
+    surface: "Hard",
+    odds: 1.95,
+    estimatedProbability: 55,
+    units: 2,
+    edge: 5.4,
+    roiLabel: "yellow",
+  },
+  {
+    id: "v3",
+    playerName: "Taylor Fritz",
+    tournament: "Davis Cup",
+    surface: "Hard",
+    odds: 1.75,
+    estimatedProbability: 60,
+    units: 2,
+    edge: 3.8,
+    roiLabel: "orange",
+  },
+  {
+    id: "v4",
+    playerName: "Daniil Medvedev",
+    tournament: "ATP Finals",
+    surface: "Hard",
+    odds: 2.45,
+    estimatedProbability: 44,
+    units: 1,
+    edge: 2.1,
+    roiLabel: "red",
+  },
+];
+
 // Bankroll History
 export interface BankrollPoint {
   date: string;

@@ -65,9 +65,9 @@ export function BankrollChart() {
   const roi = ((bankrollDiff / firstPoint.bankroll) * 100).toFixed(1);
 
   return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden">
+    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] shrink-0">
         <div className="flex items-center gap-4">
           <h2 className="text-sm font-semibold text-zinc-100">
             Performance bankroll
@@ -103,7 +103,7 @@ export function BankrollChart() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 px-5 py-4 border-b border-white/[0.06]">
+      <div className="grid grid-cols-3 gap-4 px-5 py-4 border-b border-white/[0.06] shrink-0">
         <div>
           <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
             Bankroll actuelle
@@ -135,7 +135,7 @@ export function BankrollChart() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="h-[280px] p-4"
+        className="flex-1 p-4 min-h-[200px]"
       >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
@@ -194,7 +194,7 @@ export function BankrollChart() {
       </motion.div>
 
       {/* Comparison */}
-      <div className="grid grid-cols-2 gap-4 px-5 py-4 border-t border-white/[0.06] bg-white/[0.02]">
+      <div className="grid grid-cols-2 gap-4 px-5 py-4 border-t border-white/[0.06] bg-white/[0.02] shrink-0">
         <div className="flex items-center justify-between">
           <span className="text-xs text-zinc-500">vs stratégie flat bet</span>
           <span
