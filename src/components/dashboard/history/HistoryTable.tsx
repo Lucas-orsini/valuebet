@@ -16,12 +16,13 @@ import {
   Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ROI_COLORS, STATUS_COLORS, TOURNAMENTS, isInRange, TIME_RANGES } from "@/lib/dashboard-data";
+import { ROI_COLORS, STATUS_COLORS, TOURNAMENTS, isInRange } from "@/lib/dashboard-data";
 import type { BetHistoryItem, RoiLabel, Surface, TimeRange } from "@/lib/dashboard-data";
 
 interface HistoryTableProps {
   bets: BetHistoryItem[];
   isEmpty: boolean;
+  timeRange?: TimeRange;
 }
 
 interface FilterState {
@@ -29,7 +30,6 @@ interface FilterState {
   tournament: string;
   surface: string;
   roi: RoiLabel | "";
-  timeRange: TimeRange;
   dateRange: {
     start: Date | null;
     end: Date | null;
@@ -65,14 +65,13 @@ const INITIAL_FILTERS: FilterState = {
   tournament: "",
   surface: "",
   roi: "",
-  timeRange: "ALL",
   dateRange: {
     start: null,
     end: null,
   },
 };
 
-export function HistoryTable({ bets, isEmpty }: HistoryTableProps) {
+export function HistoryTable({ bets, isEmpty, timeRange = "ALL" }: HistoryTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -124,12 +123,12 @@ export function HistoryTable({ bets, isEmpty }: HistoryTableProps) {
     setShowDatePicker(false);
   }, []);
 
-  // Filtered bets - apply all filters
+  // Filtered bets - apply all filters (timeRange comes from parent now)
   const filteredBets = useMemo(() => {
     return bets.filter((bet) => {
-      // Time range filter
+      // Time range filter — now from parent prop
       const betDate = new Date(bet.date);
-      if (!isInRange(betDate, filters.timeRange)) return false;
+      if (!isInRange(betDate, timeRange)) return false;
 
       // Custom date range filter
       if (filters.dateRange.start || filters.dateRange.end) {
@@ -166,7 +165,7 @@ export function HistoryTable({ bets, isEmpty }: HistoryTableProps) {
 
       return true;
     });
-  }, [bets, filters]);
+  }, [bets, filters, timeRange]);
 
   // Check if any filters are active
   const hasActiveFilters = Boolean(
@@ -174,7 +173,6 @@ export function HistoryTable({ bets, isEmpty }: HistoryTableProps) {
       filters.tournament ||
       filters.surface ||
       filters.roi ||
-      filters.timeRange !== "ALL" ||
       filters.dateRange.start ||
       filters.dateRange.end
   );
@@ -303,30 +301,7 @@ export function HistoryTable({ bets, isEmpty }: HistoryTableProps) {
             className="overflow-hidden border-b border-white/[0.06]"
           >
             <div className="p-5 space-y-4 bg-white/[0.02]">
-              {/* Time range selector */}
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-zinc-500 shrink-0">Période :</span>
-                <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-                  {TIME_RANGES.map((range) => (
-                    <button
-                      key={range.value}
-                      onClick={() =>
-                        setFilters((prev) => ({ ...prev, timeRange: range.value }))
-                      }
-                      className={cn(
-                        "px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
-                        filters.timeRange === range.value
-                          ? "bg-[#F2CB38]/15 text-[#F2CB38] border border-[#F2CB38]/25 shadow-sm"
-                          : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.04]"
-                      )}
-                    >
-                      {range.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Filter controls */}
+              {/* Filter controls - timeRange is controlled by parent PeriodFilter */}
               <div className="flex flex-wrap items-center gap-3">
                 {/* Search */}
                 <div className="relative flex-1 min-w-[180px] max-w-[280px]">

@@ -19,6 +19,7 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Bankroll Performance Chart** — Visual curve of bankroll growth over time with flat betting comparison
 - **History Dashboard** — Comprehensive historical view with statistics overview and detailed bet records
 - **History Filtering** — Filter history data by time period: 1 month, 3 months, 6 months, 1 year, or all time directly from the dashboard header
+- **Period Filter Global Control** — Period filter positioned above "Total des paris" section, affecting all dashboard statistics and charts across the entire history page
 - **History Statistics** — Quick stats cards showing total bets, win rate, average odds, and total profit/loss filtered by selected time period
 - **Surface Statistics** — ROI breakdown for Clay, Hard, and Grass courts available in the history section to validate model adaptability
 - **History Chart** — Visual performance graph filtered by selected time period
@@ -41,9 +42,9 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 
 ### Prerequisites
 
-- **Node.js 18+** — [Download from nodejs.org](https://nodejs.org/)
-- **A code editor** — We recommend [VS Code](https://code.visualstudio.com/) with the [Tailwind CSS IntelliSense extension](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
-- **Git installed** — [Download git](https://git-scm.com/)
+- Node.js 18+ — [Download here](https://nodejs.org/)
+- A code editor — [We recommend VS Code](https://code.visualstudio.com/)
+- Git installed — [Download here](https://git-scm.com/)
 
 ### 1. Clone the repository
 
@@ -60,22 +61,29 @@ npm install
 
 ### 3. Set up environment variables
 
-Create a file named `.env.local` in the root directory of the project. This file stores sensitive configuration that your app needs to connect to Supabase.
+Create a file named `.env.local` in the root of your project. This file stores sensitive configuration settings that your app needs to connect to Supabase.
 
-> 💡 **What is `.env.local`?** It's a local configuration file that keeps your API keys safe. The `.local` part means it's ignored by git and won't be uploaded to GitHub. Never share this file or commit it to version control.
-
-Create the file with this exact content:
+Copy the template from `.env.example`:
 
 ```bash
-touch .env.local
+cp .env.example .env.local
 ```
 
-Open `.env.local` in your code editor and add the following:
+Open `.env.local` in your code editor and add your actual Supabase credentials:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+**Where to find these values:**
+
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Click **Project Settings** (the gear icon ⚙️)
+4. Click **API** in the sidebar
+5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
+6. Copy the **anon/public key** (the longer text under "Project API keys") and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 4. Run the development server
 
@@ -85,89 +93,93 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` ` (or `Cmd+`` ` on Mac)
+> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (Windows/Linux) or `Cmd+`` (Mac)
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard → Project Settings → API → Project URL | Your Supabase project's connection URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard → Project Settings → API → anon/public key | Public API key for client-side authentication |
-
-**Steps to find Supabase credentials:**
-
-1. Go to [supabase.com](https://supabase.com) and sign in to your account
-2. Select your project (or create a new one)
-3. Click **Project Settings** (gear icon) in the left sidebar
-4. Click **API** in the project settings menu
-5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon/public key** (labeled as `anon public` key) and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Public anonymous key for Supabase client |
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that parts of the app (like forms and buttons) work correctly without you clicking through everything manually.
+Unit tests automatically check that individual parts of the application work correctly.
 
-### Run all tests
+Run all tests:
 
 ```bash
 npx jest
 ```
 
-### Run a specific test file
+Run a specific test file:
 
 ```bash
 npx jest __tests__/AuthForm.test.tsx
 ```
 
-### Watch mode (re-runs on file change)
+Watch mode (re-runs tests automatically when files change):
 
 ```bash
 npx jest --watch
 ```
 
-**Reading Jest output:**
-- **PASS** — All tests in that file passed ✓
-- **FAIL** — Something broke. Jest will show which test failed and why (usually a mismatch between expected and actual value)
+**Understanding test output:**
+- `PASS` — All tests passed, everything works correctly
+- `FAIL` — Something broke, check the error message below for details
 
 **What the tests cover:**
-- `AuthForm.test.tsx` — Tests the authentication form component (login/signup)
+- `AuthForm.test.tsx` — Authentication form components (sign up, login, validation)
 
 ## 📁 Project Structure
 
-| Folder | Description |
-|--------|-------------|
-| `src/app` | Next.js App Router pages and layouts |
-| `src/app/(auth)` | Authentication pages (login, signup) with shared layout |
-| `src/app/dashboard` | Dashboard pages (overview, history) |
-| `src/components` | Reusable React components |
-| `src/components/dashboard` | Dashboard-specific components (header, history, tables) |
-| `src/lib` | Utility functions and Supabase client setup |
-| `__tests__` | Jest test files |
+```
+value-bet-ai/
+├── __tests__/                  # Jest unit tests
+│   └── AuthForm.test.tsx       # Auth form tests
+├── src/
+│   ├── app/                    # Next.js App Router pages and layouts
+│   │   ├── (auth)/             # Auth route group with shared layout
+│   │   │   ├── login/          # Login page
+│   │   │   └── signup/         # Sign up page
+│   │   ├── dashboard/          # Protected dashboard pages
+│   │   │   └── history/        # Betting history page
+│   │   ├── layout.tsx          # Root layout
+│   │   └── page.tsx            # Landing page
+│   ├── components/
+│   │   ├── auth/               # Authentication components
+│   │   ├── dashboard/
+│   │   │   ├── history/        # History components (PeriodFilter, HistoryContent, HistoryStats, SurfaceStats, HistoryTable)
+│   │   │   └── ...
+│   │   └── ui/                 # Reusable UI components (Button, Input, FormField)
+│   └── lib/                    # Utilities, Supabase client setup
+├── .env.example                # Environment variables template
+├── .env.local                  # Your local environment variables (not committed)
+├── package.json
+├── tailwind.config.ts
+├── tsconfig.json
+└── jest.config.ts              # Jest configuration
+```
 
 ## 🚀 Deploy to Vercel
 
+The easiest way to deploy your Next.js app is to use Vercel.
+
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### Step by step:
+**Step by step:**
 
-1. **Import your GitHub repository**
-   - Go to [vercel.com/new](https://vercel.com/new)
-   - Click **Import Git Repository**
-   - Select your `value-bet-ai` repository
-   - Vercel will auto-detect Next.js settings
+1. Click the "Deploy with Vercel" button above (or go to [vercel.com/new](https://vercel.com/new))
+2. Import your GitHub repository
+3. Add your environment variables:
+   - In Vercel dashboard, go to **Settings** > **Environment Variables**
+   - Add `NEXT_PUBLIC_SUPABASE_URL` with your Supabase URL
+   - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY` with your Supabase anon key
+4. Click **Deploy**
 
-2. **Add environment variables**
-   - In the Vercel dashboard, go to **Settings** → **Environment Variables**
-   - Add each variable from your `.env.local` file:
-     - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase URL
-     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
+Your app will be live at a Vercel URL (e.g., `your-app.vercel.app`) once the build completes.
 
-3. **Deploy**
-   - Click **Deploy**
-   - Wait for the build to complete
-   - Your app will be live at a Vercel URL (e.g., `your-app.vercel.app`)
-
-> ⚠️ **Important**: Make sure all environment variables are added in Vercel before deploying. The app will not work properly without them.
+> ⚠️ **Important**: Make sure all environment variables from your `.env.local` file are also added to Vercel, otherwise your app will not work correctly.
 
 ## 📝 License
 

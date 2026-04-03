@@ -2,13 +2,16 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import { PeriodFilter } from "./PeriodFilter";
 import { HistoryStats } from "./HistoryStats";
 import { HistoryTable } from "./HistoryTable";
 import { SurfaceStats } from "./SurfaceStats";
 import { BET_HISTORY } from "@/lib/dashboard-data";
+import type { TimeRange } from "@/lib/dashboard-data";
 
 export function HistoryContent() {
   const [isLoading] = useState(false);
+  const [timeRange, setTimeRange] = useState<TimeRange>("ALL");
 
   // All bets for the table
   const allBets = BET_HISTORY;
@@ -83,14 +86,17 @@ export function HistoryContent() {
       transition={{ duration: 0.4 }}
       className="space-y-6"
     >
+      {/* Period filter */}
+      <PeriodFilter value={timeRange} onChange={setTimeRange} />
+
       {/* Stats cards */}
-      <HistoryStats stats={stats} />
+      <HistoryStats stats={stats} timeRange={timeRange} />
 
       {/* Surface stats */}
-      <SurfaceStats />
+      <SurfaceStats timeRange={timeRange} bets={allBets} />
 
       {/* Table with integrated filters */}
-      <HistoryTable bets={allBets} isEmpty={isEmpty} />
+      <HistoryTable bets={allBets} isEmpty={isEmpty} timeRange={timeRange} />
     </motion.div>
   );
 }
