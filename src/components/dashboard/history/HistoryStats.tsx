@@ -109,7 +109,7 @@ function StatCard({
   );
 }
 
-export function HistoryStats({ stats }: HistoryStatsProps) {
+export function HistoryStats({ stats, timeRange }: HistoryStatsProps) {
   const cards = [
     {
       label: "Total des paris",
