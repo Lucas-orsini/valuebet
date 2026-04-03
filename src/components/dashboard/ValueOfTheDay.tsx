@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Info, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,9 +30,10 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
   const handleMouseEnter = (
     item: ValueOfTheDayItem,
-    event: React.MouseEvent<HTMLDivElement>
+    oddsRef: HTMLSpanElement | null
   ) => {
-    const rect = event.currentTarget.getBoundingClientRect();
+    if (!oddsRef) return;
+    const rect = oddsRef.getBoundingClientRect();
     setTooltipTargetRect(rect);
     setTooltip({
       playerName: item.playerName,
@@ -140,6 +141,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
         <div className="divide-y divide-white/[0.04]">
           {sortedItems.map((item, index) => {
             const roiColors = ROI_COLORS[item.roiLabel];
+            const oddsRef = useRef<HTMLSpanElement>(null);
 
             return (
               <motion.div
@@ -147,7 +149,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                onMouseEnter={(e) => handleMouseEnter(item, e)}
+                onMouseEnter={() => handleMouseEnter(item, oddsRef.current)}
                 onMouseLeave={handleMouseLeave}
                 className="relative px-4 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer"
               >
@@ -178,8 +180,11 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
                   {/* Odds & Badge */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <div className="w-14 min-w-[3.5rem] flex justify-end">
-                      <span className="text-sm font-semibold text-zinc-100 tabular-nums text-right">
+                    <div className="w-14 min-w-[3.5rem] flex justify-center">
+                      <span
+                        ref={oddsRef}
+                        className="text-sm font-semibold text-zinc-100 tabular-nums text-center"
+                      >
                         {item.odds.toFixed(2)}
                       </span>
                     </div>
