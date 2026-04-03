@@ -25,6 +25,10 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **History Chart** — Visual performance graph filtered by selected time period
 - **History Table** — Paginated table showing all-time bets with persistent search filters that remain visible even when no results match. Includes player info, tournament, surface, odds, stake, profit, ROI label, and bet outcome. Navigation buttons to browse through pages
 - **Enhanced History Filter UI** — Redesigned filter controls in the dashboard header with improved positioning, styling, and UX for seamless time period selection
+- **Bankroll Tracker** — Dedicated page to track your betting performance with two modes: Automatic (follows AI recommendations automatically) and Custom (manual selection and odds adjustment per bet)
+- **Bankroll KPIs** — Real-time metrics including current bankroll, profit/loss in €, personal ROI percentage, and current winning/losing streak
+- **Bankroll Curve** — Visual chart showing your bankroll growth over time
+- **Bets Summary Table** — Detailed table of recent bets with individual results and gain/loss in €
 
 ## 🛠️ Tech Stack
 
@@ -34,17 +38,17 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Animations** — Framer Motion
 - **Icons** — Lucide React
 - **Charts** — Recharts
-- **Auth & Database** — Supabase with SSR for proper session handling
-- **Testing** — Jest with React Testing Library
-- **Deployment** — Vercel
+- **Database** — Supabase (PostgreSQL + Auth)
+- **Testing** — Jest + React Testing Library
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ — [Download here](https://nodejs.org/)
-- A code editor — [We recommend VS Code](https://code.visualstudio.com/)
-- Git installed — [Download here](https://git-scm.com/)
+- **Node.js 18+** — [Download here](https://nodejs.org/)
+- **A code editor** — We recommend [VS Code](https://code.visualstudio.com/) with the Tailwind CSS IntelliSense extension
+- **Git installed** — [Download here](https://git-scm.com/)
+- **A Supabase account** — [Sign up free](https://supabase.com/)
 
 ### 1. Clone the repository
 
@@ -61,29 +65,18 @@ npm install
 
 ### 3. Set up environment variables
 
-Create a file named `.env.local` in the root of your project. This file stores sensitive configuration settings that your app needs to connect to Supabase.
-
-Copy the template from `.env.example`:
+Create a `.env.local` file in the root directory (copy from `.env.example`):
 
 ```bash
 cp .env.example .env.local
 ```
 
-Open `.env.local` in your code editor and add your actual Supabase credentials:
+Open `.env.local` in your code editor and fill in your Supabase credentials:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
-
-**Where to find these values:**
-
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Select your project
-3. Click **Project Settings** (the gear icon ⚙️)
-4. Click **API** in the sidebar
-5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon/public key** (the longer text under "Project API keys") and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 4. Run the development server
 
@@ -93,93 +86,112 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (Windows/Linux) or `Cmd+`` (Mac)
+> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (Windows/Linux) or `Cmd+`` (Mac), then run the commands above.
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Public anonymous key for Supabase client |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | [Supabase Dashboard](https://supabase.com/dashboard) → Project Settings → API → **Project URL** | Your Supabase project connection URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | [Supabase Dashboard](https://supabase.com/dashboard) → Project Settings → API → **anon/public** key | Public API key for client-side authentication |
+
+Steps to find your Supabase credentials:
+1. Go to [supabase.com/dashboard](https://supabase.com/dashboard)
+2. Select your project (or create a new one)
+3. Click **Project Settings** (gear icon)
+4. Click **API** in the sidebar
+5. Copy the **Project URL** and **anon/public** key values
+6. Paste them into your `.env.local` file
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that individual parts of the application work correctly.
+Tests verify that individual pieces of your application work correctly without needing the whole app running.
 
-Run all tests:
+### Run all tests
 
 ```bash
 npx jest
 ```
 
-Run a specific test file:
+### Run a specific test file
 
 ```bash
 npx jest __tests__/AuthForm.test.tsx
 ```
 
-Watch mode (re-runs tests automatically when files change):
+### Watch mode (re-runs on file change)
 
 ```bash
 npx jest --watch
 ```
 
-**Understanding test output:**
-- `PASS` — All tests passed, everything works correctly
-- `FAIL` — Something broke, check the error message below for details
+### Understanding test output
 
-**What the tests cover:**
-- `AuthForm.test.tsx` — Authentication form components (sign up, login, validation)
+- **PASS** — All tests in that file passed ✅
+- **FAIL** — Something broke ❌ The output will show which test failed and why (expected vs received values)
+
+The current test suite covers:
+- **AuthForm** — Login/signup form validation and submission behavior
 
 ## 📁 Project Structure
 
 ```
 value-bet-ai/
-├── __tests__/                  # Jest unit tests
-│   └── AuthForm.test.tsx       # Auth form tests
 ├── src/
-│   ├── app/                    # Next.js App Router pages and layouts
-│   │   ├── (auth)/             # Auth route group with shared layout
-│   │   │   ├── login/          # Login page
-│   │   │   └── signup/         # Sign up page
-│   │   ├── dashboard/          # Protected dashboard pages
-│   │   │   └── history/        # Betting history page
-│   │   ├── layout.tsx          # Root layout
-│   │   └── page.tsx            # Landing page
+│   ├── app/                      # Next.js App Router pages
+│   │   ├── (auth)/               # Auth group: login/signup pages
+│   │   │   ├── login/
+│   │   │   └── signup/
+│   │   ├── dashboard/            # Protected dashboard routes
+│   │   │   ├── bankroll/         # Bankroll tracker page
+│   │   │   └── page.tsx          # Main dashboard overview
+│   │   ├── layout.tsx            # Root layout
+│   │   └── page.tsx             # Landing page
 │   ├── components/
-│   │   ├── auth/               # Authentication components
 │   │   ├── dashboard/
-│   │   │   ├── history/        # History components (PeriodFilter, HistoryContent, HistoryStats, SurfaceStats, HistoryTable)
-│   │   │   └── ...
-│   │   └── ui/                 # Reusable UI components (Button, Input, FormField)
-│   └── lib/                    # Utilities, Supabase client setup
-├── .env.example                # Environment variables template
-├── .env.local                  # Your local environment variables (not committed)
-├── package.json
-├── tailwind.config.ts
-├── tsconfig.json
-└── jest.config.ts              # Jest configuration
+│   │   │   ├── bankroll/         # Bankroll tracker components
+│   │   │   │   ├── BankrollChart.tsx      # Visual bankroll curve
+│   │   │   │   ├── BankrollBetsTable.tsx  # Bets summary table
+│   │   │   │   └── BankrollTracker.tsx    # Main tracker component
+│   │   │   └── DashboardSidebar.tsx       # Navigation sidebar
+│   │   └── ui/                   # Reusable UI components
+│   ├── lib/
+│   │   ├── bankroll-calculations.ts  # P&L and ROI calculation logic
+│   │   ├── mock-bets-data.ts         # Sample bet data for testing
+│   │   └── supabase/             # Supabase client setup
+│   └── types/
+│       └── bankroll.ts           # TypeScript types for bankroll data
+├── __tests__/                    # Jest test files
+├── public/                       # Static assets
+├── .env.example                  # Environment template
+├── .env.local                    # Your local environment (git-ignored)
+└── package.json
 ```
 
 ## 🚀 Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use Vercel.
-
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-**Step by step:**
+### Step by step:
 
-1. Click the "Deploy with Vercel" button above (or go to [vercel.com/new](https://vercel.com/new))
-2. Import your GitHub repository
-3. Add your environment variables:
-   - In Vercel dashboard, go to **Settings** > **Environment Variables**
-   - Add `NEXT_PUBLIC_SUPABASE_URL` with your Supabase URL
-   - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY` with your Supabase anon key
-4. Click **Deploy**
+1. **Connect your repository**
+   - Click the "Deploy with Vercel" button above, OR
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Click "Import Git Repository"
+   - Select your GitHub/GitLab repo (`value-bet-ai`)
 
-Your app will be live at a Vercel URL (e.g., `your-app.vercel.app`) once the build completes.
+2. **Add environment variables**
+   - In the Vercel dashboard, go to **Settings** → **Environment Variables**
+   - Add each variable from your `.env.local`:
+     - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
 
-> ⚠️ **Important**: Make sure all environment variables from your `.env.local` file are also added to Vercel, otherwise your app will not work correctly.
+3. **Deploy**
+   - Click **Deploy**
+   - Wait for the build to complete (~2 minutes)
+   - Your app will be live at `https://your-project.vercel.app`
+
+> ⚠️ **Important**: Make sure to add ALL environment variables in Vercel, otherwise the app will not connect to your Supabase database.
 
 ## 📝 License
 
