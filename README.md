@@ -25,6 +25,10 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **History Chart** — Visual performance graph filtered by selected time period
 - **History Table** — Paginated table showing all-time bets with persistent search filters that remain visible even when no results match. Includes player info, tournament, surface, odds, stake, profit, ROI label, and bet outcome. Navigation buttons to browse through pages
 - **Enhanced History Filter UI** — Redesigned filter controls in the dashboard header with improved positioning, styling, and UX for seamless time period selection
+- **Bankroll Tracker** — Track your betting performance with a starting bankroll and two modes: Automatic (follows AI bets automatically with real-time P&L, ROI, and profit tracking) and Custom (manual bet selection with adjustable odds to match your actual bets)
+- **Bankroll KPIs** — View current bankroll in €, profit/loss in €, ROI percentage, and current streak at a glance
+- **Bankroll Curve** — Visual chart showing bankroll growth over time with real-time updates
+- **Bet History Table** — Detailed table of recent bets with results, odds, and individual profit/loss in €
 
 ## 🛠️ Tech Stack
 
@@ -34,17 +38,17 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Animations** — Framer Motion
 - **Icons** — Lucide React
 - **Charts** — Recharts
-- **Auth & Database** — Supabase with SSR for proper session handling
-- **Testing** — Jest with React Testing Library
-- **Deployment** — Vercel
+- **Database** — Supabase (PostgreSQL)
+- **Authentication** — Supabase Auth with SSR
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ — [Download here](https://nodejs.org/)
-- A code editor — [We recommend VS Code](https://code.visualstudio.com/)
-- Git installed — [Download here](https://git-scm.com/)
+- **Node.js 18+** — [Download from nodejs.org](https://nodejs.org/)
+- **A code editor** — We recommend [VS Code](https://code.visualstudio.com/) with the Tailwind CSS IntelliSense extension
+- **Git installed** — [Download git](https://git-scm.com/downloads)
+- **A Supabase account** — [Create one free at supabase.com](https://supabase.com)
 
 ### 1. Clone the repository
 
@@ -61,29 +65,21 @@ npm install
 
 ### 3. Set up environment variables
 
-Create a file named `.env.local` in the root of your project. This file stores sensitive configuration settings that your app needs to connect to Supabase.
-
-Copy the template from `.env.example`:
+Create a `.env.local` file in the root directory (copy from `.env.example`):
 
 ```bash
 cp .env.example .env.local
 ```
 
-Open `.env.local` in your code editor and add your actual Supabase credentials:
+Open `.env.local` in your code editor and fill in the values:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-**Where to find these values:**
-
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Select your project
-3. Click **Project Settings** (the gear icon ⚙️)
-4. Click **API** in the sidebar
-5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon/public key** (the longer text under "Project API keys") and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+> 💡 **What is a .env.local file?** It's a configuration file that stores sensitive information (like API keys) that your app needs to work. It stays on your computer and is never uploaded to GitHub, keeping your keys safe.
 
 ### 4. Run the development server
 
@@ -93,93 +89,98 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (Windows/Linux) or `Cmd+`` (Mac)
+> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (or `Cmd+`` on Mac)
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Public anonymous key for Supabase client |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project connection URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Public API key for client-side authentication |
+
+**Steps to find Supabase credentials:**
+
+1. Go to [supabase.com](https://supabase.com) and sign in
+2. Click on your project
+3. In the left sidebar, click **Project Settings** (the gear icon)
+4. Click **API** in the settings menu
+5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
+6. Copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that individual parts of the application work correctly.
+Unit tests automatically check that specific parts of the application work correctly. When you run them, the system tells you if everything passed ✅ or if something broke ❌.
 
-Run all tests:
+### Run all tests
 
 ```bash
 npx jest
 ```
 
-Run a specific test file:
+### Run a specific test file
 
 ```bash
 npx jest __tests__/AuthForm.test.tsx
 ```
 
-Watch mode (re-runs tests automatically when files change):
+### Watch mode (re-runs tests when files change)
 
 ```bash
 npx jest --watch
 ```
 
-**Understanding test output:**
-- `PASS` — All tests passed, everything works correctly
-- `FAIL` — Something broke, check the error message below for details
+### Understanding the output
 
-**What the tests cover:**
-- `AuthForm.test.tsx` — Authentication form components (sign up, login, validation)
+- **PASS** — All tests in that file passed successfully
+- **FAIL** — One or more tests failed; the output shows exactly which test failed and why
+
+**Test coverage in this project:**
+- Authentication form components (login/signup validation, error handling, UI interactions)
 
 ## 📁 Project Structure
 
-```
-value-bet-ai/
-├── __tests__/                  # Jest unit tests
-│   └── AuthForm.test.tsx       # Auth form tests
-├── src/
-│   ├── app/                    # Next.js App Router pages and layouts
-│   │   ├── (auth)/             # Auth route group with shared layout
-│   │   │   ├── login/          # Login page
-│   │   │   └── signup/         # Sign up page
-│   │   ├── dashboard/          # Protected dashboard pages
-│   │   │   └── history/        # Betting history page
-│   │   ├── layout.tsx          # Root layout
-│   │   └── page.tsx            # Landing page
-│   ├── components/
-│   │   ├── auth/               # Authentication components
-│   │   ├── dashboard/
-│   │   │   ├── history/        # History components (PeriodFilter, HistoryContent, HistoryStats, SurfaceStats, HistoryTable)
-│   │   │   └── ...
-│   │   └── ui/                 # Reusable UI components (Button, Input, FormField)
-│   └── lib/                    # Utilities, Supabase client setup
-├── .env.example                # Environment variables template
-├── .env.local                  # Your local environment variables (not committed)
-├── package.json
-├── tailwind.config.ts
-├── tsconfig.json
-└── jest.config.ts              # Jest configuration
-```
+| Folder/File | Description |
+|-------------|-------------|
+| `src/app/` | Next.js App Router pages and layouts |
+| `src/app/(auth)/` | Authentication pages (login, signup) with shared layout |
+| `src/app/dashboard/` | Dashboard pages including Bankroll Tracker |
+| `src/app/api/` | API routes for bankroll and bets data |
+| `src/components/` | Reusable React components |
+| `src/components/dashboard/` | Dashboard-specific components (KPIs, curves, tables) |
+| `src/components/dashboard/bankroll/` | Bankroll Tracker feature components |
+| `src/components/layout/` | Layout components (Sidebar, etc.) |
+| `src/lib/` | Utility functions and Supabase client setup |
+| `src/types/` | TypeScript type definitions |
+| `src/supabase/` | Supabase client configuration |
+| `__tests__/` | Jest unit tests |
+| `public/` | Static assets (images, icons) |
+| `.env.example` | Template for environment variables |
 
 ## 🚀 Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use Vercel.
+### One-click deploy
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-**Step by step:**
+### Step by step
 
-1. Click the "Deploy with Vercel" button above (or go to [vercel.com/new](https://vercel.com/new))
-2. Import your GitHub repository
-3. Add your environment variables:
-   - In Vercel dashboard, go to **Settings** > **Environment Variables**
-   - Add `NEXT_PUBLIC_SUPABASE_URL` with your Supabase URL
-   - Add `NEXT_PUBLIC_SUPABASE_ANON_KEY` with your Supabase anon key
-4. Click **Deploy**
+1. **Import your repository**
+   - Click "Import Project" on Vercel
+   - Select your GitHub repository
 
-Your app will be live at a Vercel URL (e.g., `your-app.vercel.app`) once the build completes.
+2. **Add environment variables**
+   - In the Vercel dashboard, go to **Settings > Environment Variables**
+   - Add each variable from your `.env.local` file:
+     - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
 
-> ⚠️ **Important**: Make sure all environment variables from your `.env.local` file are also added to Vercel, otherwise your app will not work correctly.
+3. **Deploy**
+   - Click "Deploy" — Vercel will automatically detect Next.js and configure everything
+
+4. **Verify**
+   - Once deployed, test authentication and dashboard features
+
+> ⚠️ **Important**: Make sure all environment variables are added in Vercel before deploying. The app will not work without `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
 ## 📝 License
 

@@ -257,6 +257,7 @@ export interface BankrollPoint {
   date: string;
   bankroll: number;
   flatBet: number;
+  bet?: string;
 }
 
 export const BANKROLL_HISTORY: BankrollPoint[] = [
@@ -268,6 +269,116 @@ export const BANKROLL_HISTORY: BankrollPoint[] = [
   { date: "2025-03-15", bankroll: 1415, flatBet: 1118 },
   { date: "2025-04-01", bankroll: 1487, flatBet: 1142 },
   { date: "2025-04-15", bankroll: 1565, flatBet: 1165 },
+];
+
+// Bankroll Tracker Types
+export type BankrollMode = 'auto' | 'custom';
+
+export type BetResult = 'win' | 'lose' | 'push';
+
+export interface BankrollBet {
+  id: string;
+  date: string;
+  match: string;
+  recommendedOdds: number;
+  units: number;
+  result: BetResult;
+}
+
+export interface BankrollCustomBet extends BankrollBet {
+  played: boolean;
+  actualOdds: number;
+}
+
+export interface BankrollStreak {
+  type: 'W' | 'L';
+  count: number;
+}
+
+export interface BankrollKPIs {
+  currentBankroll: number;
+  profitLoss: number;
+  roi: number;
+  streak: BankrollStreak;
+  betsTracked: number;
+}
+
+export const BANKROLL_BETS: BankrollBet[] = [
+  {
+    id: "b1",
+    date: "2025-03-28",
+    match: "Jannik Sinner vs Daniil Medvedev",
+    recommendedOdds: 2.10,
+    units: 3,
+    result: "win",
+  },
+  {
+    id: "b2",
+    date: "2025-03-27",
+    match: "Carlos Alcaraz vs Grigor Dimitrov",
+    recommendedOdds: 1.85,
+    units: 2,
+    result: "win",
+  },
+  {
+    id: "b3",
+    date: "2025-03-26",
+    match: "Taylor Fritz vs Alexander Zverev",
+    recommendedOdds: 3.20,
+    units: 1,
+    result: "lose",
+  },
+  {
+    id: "b4",
+    date: "2025-03-15",
+    match: "Daniil Medvedev vs Casper Ruud",
+    recommendedOdds: 1.95,
+    units: 2,
+    result: "win",
+  },
+  {
+    id: "b5",
+    date: "2025-03-14",
+    match: "Novak Djokovic vs Jannik Sinner",
+    recommendedOdds: 2.25,
+    units: 3,
+    result: "win",
+  },
+  {
+    id: "b6",
+    date: "2025-04-10",
+    match: "Rafael Nadal vs Carlos Alcaraz",
+    recommendedOdds: 2.80,
+    units: 2,
+    result: "lose",
+  },
+  {
+    id: "b7",
+    date: "2025-04-09",
+    match: "Stefanos Tsitsipas vs Holger Rune",
+    recommendedOdds: 1.65,
+    units: 2,
+    result: "win",
+  },
+  {
+    id: "b8",
+    date: "2025-04-08",
+    match: "Andrey Rublev vs Alex de Minaur",
+    recommendedOdds: 1.75,
+    units: 1,
+    result: "push",
+  },
+];
+
+export const BANKROLL_CURVE_DATA: BankrollPoint[] = [
+  { date: "2025-03-01", bankroll: 500, flatBet: 500, bet: "Sinner 2.10" },
+  { date: "2025-03-05", bankroll: 533, flatBet: 510, bet: "Alcaraz 1.85" },
+  { date: "2025-03-10", bankroll: 513, flatBet: 500, bet: "Fritz 3.20" },
+  { date: "2025-03-15", bankroll: 532.50, flatBet: 509, bet: "Medvedev 1.95" },
+  { date: "2025-03-20", bankroll: 560.75, flatBet: 518, bet: "Djokovic 2.25" },
+  { date: "2025-03-25", bankroll: 540.75, flatBet: 513, bet: "Nadal 2.80" },
+  { date: "2025-03-30", bankroll: 554.35, flatBet: 525, bet: "Tsitsipas 1.65" },
+  { date: "2025-04-05", bankroll: 554.35, flatBet: 530, bet: "Rublev 1.75" },
 ];
 
 // Bet History

@@ -1,0 +1,13 @@
+{
+  "task": "Crée moi la page Bankroll Tracker dans dashboard, je veux que tu l'ajoutes le lien de la page dans la sidebar du dashbord : En haut de la page, l'utilisateur entre sa bankroll de départ (ex: 500€) et choisit son mode via un toggle :\nMode Automatique (défaut)\nSuit tous les bets de l'IA automatiquement. Le système calcule le P&L en appliquant les unités recommandées sur sa bankroll. Il voit sa courbe en temps réel, son profit/perte en €, son ROI personnel et le nombre de bets suivis. Zéro action requise.\nMode Personnalisé\nLa liste de tous les bets apparaît. Pour chaque bet il peut cocher/décocher s'il l'a joué, et modifier la cote obtenue (il a peut-être eu 1.72 sur Betclic au lieu de 1.70 sur Winamax). Le tracker recalcule sa courbe en fonction de ses paris réels.\nÉléments visuels de la page :\nCourbe de bankroll dans le temps \nKPIs : bankroll actuelle en €, profit/perte en €, ROI en %, série en cours\nTableau récapitulatif des derniers bets avec résultat et gain/perte en €",
+  "stack": "auto",
+  "summary": "Crée moi la page Bankroll Tracker dans dashboard, je veux que tu l'ajoutes le lien de la page dans la sidebar du dashbord : En haut de la page, l'utilisateur entre sa bankroll de départ (ex: 500€) et choisit son mode via un toggle :\nMode Automatique (défaut)\nSuit tous les bets de l'IA automatiquement. Le système calcule le P&L en appliquant les unités recommandées sur sa bankroll. Il voit sa courbe en temps réel, son profit/perte en €, son ROI personnel et le nombre de bets suivis. Zéro action requise.\nMode Personnalisé\nLa liste de tous les bets apparaît. Pour chaque bet il peut cocher/décocher s'il l'a joué, et modifier la cote obtenue (il a peut-être eu 1.72 sur Betclic au lieu de 1.70 sur Winamax). Le tracker recalcule sa courbe en fonction de ses paris réels.\nÉléments visuels de la page :\nCourbe de bankroll dans le temps \nKPIs : bankroll actuelle en €, profit/perte en €, ROI en %, série en cours\nTableau récapitulatif des derniers bets avec résultat et gain/perte en €",
+  "api_contracts": [],
+  "shared_types": "",
+  "design_tokens": "",
+  "agent_tasks": {
+    "data_engineer": null,
+    "backend_dev": null,
+    "frontend_dev": null
+  }
+}

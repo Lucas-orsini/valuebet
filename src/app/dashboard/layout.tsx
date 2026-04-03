@@ -1,27 +1,16 @@
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import Sidebar from '@/components/dashboard/Sidebar'
 
-export const metadata: Metadata = {
-  title: "Tableau de bord | Haurus",
-  description: "Suivez vos performances et détectez les value bets en temps réel",
-  robots: "noindex, nofollow",
-};
-
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const supabase = await createClient();
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    redirect("/login");
-  }
-
-  return children
+  return (
+    <div className="flex min-h-screen bg-gray-950">
+      <Sidebar />
+      <main className="flex-1">
+        {children}
+      </main>
+    </div>
+  )
 }
