@@ -23,7 +23,8 @@ interface TooltipData {
 
 export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [lastRefresh] = useState<Date>(new Date());
 
   const sortedItems = [...items].sort((a, b) => b.edge - a.edge);
 
@@ -31,11 +32,6 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
     item: ValueOfTheDayItem,
     event: React.MouseEvent<HTMLDivElement>
   ) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setTooltipPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top,
-    });
     setTooltip({
       playerName: item.playerName,
       odds: item.odds,
@@ -49,6 +45,13 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
   const handleMouseLeave = () => {
     setTooltip(null);
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    setMousePosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
   };
 
   const getRoiBadgeLabel = (roiLabel: RoiLabel): string => {
@@ -66,9 +69,19 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
     }
   };
 
+  const formatDateLocale = (date: Date): string => {
+    return date.toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
+
   if (sortedItems.length === 0) {
     return (
-      <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
+      <div
+        className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col"
+        onMouseMove={handleMouseMove}
+      >
         {/* Header */}
         <div className="px-4 py-3 border-b border-white/[0.06] shrink-0">
           <div className="flex items-center gap-2">
@@ -81,6 +94,9 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
           </div>
           <p className="text-[11px] text-zinc-500 mt-0.5">
             Meilleures opportunités détectées
+          </p>
+          <p className="text-[10px] text-zinc-600 mt-1">
+            Mis à jour le {formatDateLocale(lastRefresh)}
           </p>
         </div>
 
@@ -101,7 +117,10 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
   }
 
   return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
+    <div
+      className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col"
+      onMouseMove={handleMouseMove}
+    >
       {/* Header */}
       <div className="px-4 py-3 border-b border-white/[0.06] shrink-0">
         <div className="flex items-center justify-between">
@@ -120,6 +139,9 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
         </div>
         <p className="text-[11px] text-zinc-500 mt-0.5">
           Meilleures opportunités détectées
+        </p>
+        <p className="text-[10px] text-zinc-600 mt-1">
+          Mis à jour le {formatDateLocale(lastRefresh)}
         </p>
       </div>
 
@@ -166,7 +188,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
                   {/* Odds & Badge */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-sm font-semibold text-zinc-100 tabular-nums">
+                    <span className="text-sm font-semibold text-zinc-100 tabular-nums min-w-[2.5rem] text-right">
                       {item.odds.toFixed(2)}
                     </span>
                     <div className="flex flex-col items-end gap-1">
@@ -217,8 +239,8 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
             transition={{ duration: 0.15 }}
             className="fixed z-50 pointer-events-none"
             style={{
-              left: tooltipPosition.x,
-              top: tooltipPosition.y - 8,
+              left: mousePosition.x,
+              top: mousePosition.y - 8,
               transform: "translate(-50%, -100%)",
             }}
           >
