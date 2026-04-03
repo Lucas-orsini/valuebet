@@ -1,14 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { HistoryContent } from "@/components/dashboard/history/HistoryContent";
-import type { TimeRange } from "@/lib/dashboard-data";
 
 export default function HistoryPage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("ALL");
-
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-zinc-100 overflow-hidden">
       {/* Sidebar */}
@@ -16,19 +12,17 @@ export default function HistoryPage() {
 
       {/* Main content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header with time range filter */}
+        {/* Header */}
         <DashboardHeader
           title="Historique"
           subtitle="Historique complet et statistiques de vos paris"
-          timeRange={timeRange}
-          onTimeRangeChange={setTimeRange}
         />
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
             {/* Content with stats, chart, and table */}
-            <HistoryContent timeRange={timeRange} />
+            <HistoryContent />
           </div>
         </div>
 
