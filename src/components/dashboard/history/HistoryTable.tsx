@@ -11,20 +11,40 @@ import {
   ChevronsRight,
   ScrollText,
   X,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ROI_COLORS, STATUS_COLORS } from "@/lib/dashboard-data";
-import type { BetHistoryItem, RoiLabel } from "@/lib/dashboard-data";
+import { ROI_COLORS, STATUS_COLORS, TOURNAMENTS } from "@/lib/dashboard-data";
+import type { BetHistoryItem, RoiLabel, Surface } from "@/lib/dashboard-data";
 
 interface HistoryTableProps {
   bets: BetHistoryItem[];
   isEmpty: boolean;
-  isFilteredEmpty: boolean;
-  hasActiveFilters: boolean;
-  onClearFilters: () => void;
+}
+
+interface FilterState {
+  search: string;
+  tournament: string;
+  surface: string;
+  roi: RoiLabel | "";
 }
 
 const ITEMS_PER_PAGE = 15;
+
+const SURFACES: { value: Surface | ""; label: string }[] = [
+  { value: "", label: "Toutes surfaces" },
+  { value: "hard", label: "Dur" },
+  { value: "clay", label: "Terre battue" },
+  { value: "grass", label: "Gazon" },
+];
+
+const ROI_FILTERS: { value: RoiLabel | ""; label: string }[] = [
+  { value: "", label: "Tous les ROI" },
+  { value: "green", label: "🟢 HIGH" },
+  { value: "yellow", label: "🟡 MED" },
+  { value: "orange", label: "🟠 LOW" },
+  { value: "red", label: "🔴 MIN" },
+];
 
 const ROI_LABELS: Record<RoiLabel, string> = {
   green: "HIGH",
@@ -33,21 +53,73 @@ const ROI_LABELS: Record<RoiLabel, string> = {
   red: "MIN",
 };
 
-export function HistoryTable({
-  bets,
-  isEmpty,
-  isFilteredEmpty,
-  hasActiveFilters,
-  onClearFilters,
-}: HistoryTableProps) {
+export function HistoryTable({ bets, isEmpty }: HistoryTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<FilterState>({
+    search: "",
+    tournament: "",
+    surface: "",
+    roi: "",
+  });
 
-  const totalPages = Math.ceil(bets.length / ITEMS_PER_PAGE);
+  // Filtered bets
+  const filteredBets = useMemo(() => {
+    return bets.filter((bet) => {
+      // Search query
+      if (filters.search) {
+        const query = filters.search.toLowerCase();
+        const matchesPlayer = bet.player.toLowerCase().includes(query);
+        const matchesOpponent = bet.opponent.toLowerCase().includes(query);
+        if (!matchesPlayer && !matchesOpponent) return false;
+      }
+
+      // Tournament filter
+      if (filters.tournament && filters.tournament !== "Tous les tournois") {
+        if (bet.tournament !== filters.tournament) return false;
+      }
+
+      // Surface filter
+      if (filters.surface) {
+        if (bet.surface !== filters.surface) return false;
+      }
+
+      // ROI label filter
+      if (filters.roi) {
+        if (bet.roiLabel !== filters.roi) return false;
+      }
+
+      return true;
+    });
+  }, [bets, filters]);
+
+  const hasActiveFilters = Boolean(
+    filters.search ||
+      filters.tournament ||
+      filters.surface ||
+      filters.roi
+  );
+
+  const clearFilters = () => {
+    setFilters({
+      search: "",
+      tournament: "",
+      surface: "",
+      roi: "",
+    });
+  };
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(filteredBets.length / ITEMS_PER_PAGE));
 
   const paginatedBets = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return bets.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [bets, currentPage]);
+    return filteredBets.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredBets, currentPage]);
+
+  // Reset to page 1 when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   const goToPage = (page: number) => {
     const newPage = Math.max(1, Math.min(page, totalPages));
@@ -59,19 +131,12 @@ export function HistoryTable({
   const goToPreviousPage = () => goToPage(currentPage - 1);
   const goToNextPage = () => goToPage(currentPage + 1);
 
-  // Reset to page 1 when bets change
-  useMemo(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(1);
-    }
-  }, [totalPages, currentPage]);
-
   // Stats
-  const totalProfit = bets.reduce((sum, bet) => sum + bet.profit, 0);
-  const wonBets = bets.filter((bet) => bet.status === "won").length;
-  const lostBets = bets.filter((bet) => bet.status === "lost").length;
-  const voidBets = bets.filter((bet) => bet.status === "void").length;
-  const winRate = bets.length > 0 ? (wonBets / bets.length) * 100 : 0;
+  const totalProfit = filteredBets.reduce((sum, bet) => sum + bet.profit, 0);
+  const wonBets = filteredBets.filter((bet) => bet.status === "won").length;
+  const lostBets = filteredBets.filter((bet) => bet.status === "lost").length;
+  const voidBets = filteredBets.filter((bet) => bet.status === "void").length;
+  const winRate = filteredBets.length > 0 ? (wonBets / filteredBets.length) * 100 : 0;
 
   // Empty state
   if (isEmpty) {
@@ -80,32 +145,34 @@ export function HistoryTable({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.3 }}
-        className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+        className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl overflow-hidden"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-zinc-100">
+            <h2 className="text-sm font-semibold text-[var(--text-1)]">
               Historique des paris
             </h2>
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-500 text-[10px] font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--text-3)] text-[10px] font-medium">
               0
             </span>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-          <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center mb-4">
-            <ScrollText size={22} className="text-zinc-500" strokeWidth={1.5} />
+          <div className="w-12 h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center mb-4">
+            <ScrollText size={22} className="text-[var(--text-3)]" strokeWidth={1.5} />
           </div>
-          <p className="text-sm font-medium text-zinc-300 mb-1">
+          <p className="text-sm font-medium text-[var(--text-2)] mb-1">
             Aucun pari enregistré
           </p>
-          <p className="text-xs text-zinc-600 max-w-xs">
+          <p className="text-xs text-[var(--text-3)] max-w-xs">
             Vos paris apparaîtront ici une fois enregistrés.
           </p>
         </div>
       </motion.div>
     );
   }
+
+  const isFilteredEmpty = filteredBets.length === 0;
 
   // Filtered empty state
   if (isFilteredEmpty) {
@@ -114,21 +181,21 @@ export function HistoryTable({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.3 }}
-        className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+        className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl overflow-hidden"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-zinc-100">
+            <h2 className="text-sm font-semibold text-[var(--text-1)]">
               Historique des paris
             </h2>
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-500 text-[10px] font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--text-3)] text-[10px] font-medium">
               0
             </span>
           </div>
           {hasActiveFilters && (
             <button
-              onClick={onClearFilters}
-              className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              onClick={clearFilters}
+              className="flex items-center gap-1.5 text-xs text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
             >
               <X size={12} />
               Effacer les filtres
@@ -136,19 +203,19 @@ export function HistoryTable({
           )}
         </div>
         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-          <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center mb-4">
-            <ScrollText size={22} className="text-zinc-500" strokeWidth={1.5} />
+          <div className="w-12 h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center mb-4">
+            <ScrollText size={22} className="text-[var(--text-3)]" strokeWidth={1.5} />
           </div>
-          <p className="text-sm font-medium text-zinc-300 mb-1">
+          <p className="text-sm font-medium text-[var(--text-2)] mb-1">
             Aucun pari trouvé
           </p>
-          <p className="text-xs text-zinc-600 max-w-xs mb-4">
+          <p className="text-xs text-[var(--text-3)] max-w-xs mb-4">
             Aucun résultat ne correspond à vos critères de recherche.
           </p>
           {hasActiveFilters && (
             <button
-              onClick={onClearFilters}
-              className="h-8 px-4 rounded-md border border-white/[0.08] text-xs text-zinc-400 hover:text-zinc-200 hover:border-white/[0.15] transition-colors"
+              onClick={clearFilters}
+              className="h-8 px-4 rounded-md border border-[var(--border)] text-xs text-[var(--text-3)] hover:text-[var(--text-2)] hover:border-[var(--border-md)] transition-colors"
             >
               Effacer les filtres
             </button>
@@ -163,22 +230,22 @@ export function HistoryTable({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
-      className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+      className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-zinc-100">
+          <h2 className="text-sm font-semibold text-[var(--text-1)]">
             Historique des paris
           </h2>
-          <span className="px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-500 text-[10px] font-medium">
-            {bets.length}
+          <span className="px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--text-3)] text-[10px] font-medium">
+            {filteredBets.length}
           </span>
         </div>
         {hasActiveFilters && (
           <button
-            onClick={onClearFilters}
-            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+            onClick={clearFilters}
+            className="flex items-center gap-1.5 text-xs text-[var(--text-3)] hover:text-[var(--text-2)] transition-colors"
           >
             <X size={12} />
             Effacer les filtres
@@ -186,41 +253,112 @@ export function HistoryTable({
         )}
       </div>
 
+      {/* Filters bar */}
+      <div className="flex flex-wrap items-center gap-3 px-5 py-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[200px] max-w-[300px]">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-3)]"
+          />
+          <input
+            type="text"
+            value={filters.search}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, search: e.target.value }))
+            }
+            placeholder="Rechercher un joueur…"
+            className="w-full h-9 pl-9 pr-3 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-sm text-[var(--text-1)] placeholder:text-[var(--text-3)] focus:outline-none focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--accent)]/20 transition-colors"
+          />
+        </div>
+
+        {/* Tournament */}
+        <select
+          value={filters.tournament}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, tournament: e.target.value }))
+          }
+          className="h-9 px-3 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-sm text-[var(--text-2)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors appearance-none pr-8 cursor-pointer hover:border-[var(--border-md)]"
+        >
+          {TOURNAMENTS.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+
+        {/* Surface */}
+        <select
+          value={filters.surface}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              surface: e.target.value as Surface | "",
+            }))
+          }
+          className="h-9 px-3 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-sm text-[var(--text-2)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors appearance-none pr-8 cursor-pointer hover:border-[var(--border-md)]"
+        >
+          {SURFACES.map((s) => (
+            <option key={s.value || "all"} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+
+        {/* ROI */}
+        <select
+          value={filters.roi}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              roi: e.target.value as RoiLabel | "",
+            }))
+          }
+          className="h-9 px-3 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-sm text-[var(--text-2)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors appearance-none pr-8 cursor-pointer hover:border-[var(--border-md)]"
+        >
+          {ROI_FILTERS.map((r) => (
+            <option key={r.value || "all"} value={r.value}>
+              {r.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
-              <th className="px-5 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+            <tr className="border-b border-[var(--border)]">
+              <th className="px-5 py-3 text-left text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Joueur
               </th>
-              <th className="px-3 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Tournoi
               </th>
-              <th className="px-3 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-left text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Surface
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-center text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Cote
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-center text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Mise
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-center text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 ROI
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-center text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Résultat
               </th>
-              <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-3 py-3 text-center text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Date
               </th>
-              <th className="px-5 py-3 text-right text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="px-5 py-3 text-right text-[10px] font-medium text-[var(--text-3)] uppercase tracking-wider">
                 Profit
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-[var(--border)]">
             <AnimatePresence mode="popLayout">
               {paginatedBets.map((bet, index) => (
                 <HistoryRow key={bet.id} bet={bet} index={index} />
@@ -232,19 +370,19 @@ export function HistoryTable({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-5 py-3 border-t border-white/[0.06] bg-white/[0.02]">
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
+        <div className="flex items-center justify-between px-5 py-3 border-t border-[var(--border)] bg-[var(--surface-2)]">
+          <div className="flex items-center gap-2 text-xs text-[var(--text-3)]">
             <span>
               Affichage {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
-              {Math.min(currentPage * ITEMS_PER_PAGE, bets.length)} sur{" "}
-              {bets.length}
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredBets.length)} sur{" "}
+              {filteredBets.length}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={goToFirstPage}
               disabled={currentPage === 1}
-              className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-md border border-[var(--border)] text-[var(--text-3)] hover:text-[var(--text-2)] hover:border-[var(--border-md)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Première page"
             >
               <ChevronsLeft size={14} />
@@ -252,7 +390,7 @@ export function HistoryTable({
             <button
               onClick={goToPreviousPage}
               disabled={currentPage === 1}
-              className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-md border border-[var(--border)] text-[var(--text-3)] hover:text-[var(--text-2)] hover:border-[var(--border-md)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Page précédente"
             >
               <ChevronLeft size={14} />
@@ -276,8 +414,8 @@ export function HistoryTable({
                     className={cn(
                       "flex items-center justify-center w-8 h-8 rounded-md text-xs font-medium transition-colors",
                       currentPage === pageNum
-                        ? "bg-[#F2CB38]/15 text-[#F2CB38] border border-[#F2CB38]/20"
-                        : "border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.15]"
+                        ? "bg-[var(--accent)]/15 text-[var(--accent)] border border-[var(--accent)]/20"
+                        : "border border-[var(--border)] text-[var(--text-3)] hover:text-[var(--text-2)] hover:border-[var(--border-md)]"
                     )}
                   >
                     {pageNum}
@@ -288,7 +426,7 @@ export function HistoryTable({
             <button
               onClick={goToNextPage}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-md border border-[var(--border)] text-[var(--text-3)] hover:text-[var(--text-2)] hover:border-[var(--border-md)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Page suivante"
             >
               <ChevronRight size={14} />
@@ -296,7 +434,7 @@ export function HistoryTable({
             <button
               onClick={goToLastPage}
               disabled={currentPage === totalPages}
-              className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.15] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-md border border-[var(--border)] text-[var(--text-3)] hover:text-[var(--text-2)] hover:border-[var(--border-md)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Dernière page"
             >
               <ChevronsRight size={14} />
@@ -306,21 +444,23 @@ export function HistoryTable({
       )}
 
       {/* Footer stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 px-5 py-4 border-t border-white/[0.06] bg-white/[0.02]">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 px-5 py-4 border-t border-[var(--border)] bg-[var(--surface-2)]">
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-1">
             Paris affichés
           </p>
-          <p className="text-sm font-bold text-zinc-100">{paginatedBets.length}</p>
+          <p className="text-sm font-bold text-[var(--text-1)]">
+            {paginatedBets.length}
+          </p>
         </div>
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-1">
             Profit total
           </p>
           <p
             className={cn(
               "text-sm font-bold",
-              totalProfit >= 0 ? "text-green-400" : "text-red-400"
+              totalProfit >= 0 ? "text-[var(--green)]" : "text-[var(--red)]"
             )}
           >
             {totalProfit >= 0 ? "+" : ""}
@@ -328,28 +468,30 @@ export function HistoryTable({
           </p>
         </div>
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-1">
             Victoires
           </p>
-          <p className="text-sm font-bold text-green-400">
+          <p className="text-sm font-bold text-[var(--green)]">
             {wonBets}
-            <span className="text-zinc-500 font-normal">/{bets.length}</span>
+            <span className="text-[var(--text-3)] font-normal">/{filteredBets.length}</span>
           </p>
         </div>
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
-            Defaites
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-1">
+            Défaites
           </p>
-          <p className="text-sm font-bold text-red-400">
+          <p className="text-sm font-bold text-[var(--red)]">
             {lostBets}
-            <span className="text-zinc-500 font-normal">/{bets.length}</span>
+            <span className="text-[var(--text-3)] font-normal">/{filteredBets.length}</span>
           </p>
         </div>
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-1">
             Win rate
           </p>
-          <p className="text-sm font-bold text-zinc-100">{winRate.toFixed(1)}%</p>
+          <p className="text-sm font-bold text-[var(--text-1)]">
+            {winRate.toFixed(1)}%
+          </p>
         </div>
       </div>
     </motion.div>
@@ -379,38 +521,40 @@ function HistoryRow({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ delay: index * 0.02 }}
-      className="hover:bg-white/[0.02] transition-colors cursor-pointer"
+      className="hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
     >
       {/* Player */}
       <td className="px-5 py-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-sm text-zinc-200 font-medium">
+          <span className="text-sm text-[var(--text-1)] font-medium">
             {bet.player}
           </span>
-          <span className="text-xs text-zinc-500">vs {bet.opponent}</span>
+          <span className="text-xs text-[var(--text-3)]">vs {bet.opponent}</span>
         </div>
       </td>
 
       {/* Tournament */}
       <td className="px-3 py-4">
-        <span className="text-xs text-zinc-400">{bet.tournament}</span>
+        <span className="text-xs text-[var(--text-3)]">{bet.tournament}</span>
       </td>
 
       {/* Surface */}
       <td className="px-3 py-4">
-        <span className="text-xs text-zinc-400">{surfaceLabels[bet.surface]}</span>
+        <span className="text-xs text-[var(--text-3)]">
+          {surfaceLabels[bet.surface]}
+        </span>
       </td>
 
       {/* Odds */}
       <td className="px-3 py-4 text-center">
-        <span className="text-sm font-semibold text-zinc-100 tabular-nums">
+        <span className="text-sm font-semibold text-[var(--text-1)] tabular-nums">
           {bet.odds.toFixed(2)}
         </span>
       </td>
 
       {/* Units */}
       <td className="px-3 py-4 text-center">
-        <span className="text-sm text-zinc-300">{bet.units}u</span>
+        <span className="text-sm text-[var(--text-2)]">{bet.units}u</span>
       </td>
 
       {/* ROI */}
@@ -443,7 +587,7 @@ function HistoryRow({
 
       {/* Date */}
       <td className="px-3 py-4 text-center">
-        <span className="text-xs text-zinc-500 font-mono">
+        <span className="text-xs text-[var(--text-3)] font-mono">
           {new Date(bet.date).toLocaleDateString("fr-FR", {
             day: "numeric",
             month: "short",
@@ -456,7 +600,7 @@ function HistoryRow({
         <span
           className={cn(
             "text-sm font-semibold tabular-nums flex items-center justify-end gap-1",
-            bet.profit >= 0 ? "text-green-400" : "text-red-400"
+            bet.profit >= 0 ? "text-[var(--green)]" : "text-[var(--red)]"
           )}
         >
           {bet.profit >= 0 ? (
