@@ -6,11 +6,13 @@ import { motion } from "framer-motion";
 interface DashboardHeaderProps {
   title: string;
   subtitle?: string;
+  actions?: React.ReactNode;
 }
 
 export function DashboardHeader({
   title,
   subtitle,
+  actions,
 }: DashboardHeaderProps) {
   const now = new Date();
   const formattedDate = now.toLocaleDateString("fr-FR", {
@@ -37,6 +39,9 @@ export function DashboardHeader({
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
           <span className="text-xs text-zinc-400">{formattedDate}</span>
         </div>
+
+        {/* Custom actions slot */}
+        {actions}
 
         {/* Search */}
         <button className="flex items-center justify-center w-8 h-8 rounded-md bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-zinc-400 hover:text-zinc-200 transition-colors">
