@@ -5,6 +5,7 @@ import { BetsTable } from "@/components/dashboard/BetsTable";
 import { BankrollChart } from "@/components/dashboard/BankrollChart";
 import { ValueOfTheDay } from "@/components/dashboard/ValueOfTheDay";
 import { BetHistoryTable } from "@/components/dashboard/BetHistoryTable";
+import { SurfaceStats } from "@/components/dashboard/SurfaceStats";
 import { KPI_DATA } from "@/lib/dashboard-data";
 
 export default function DashboardPage() {
@@ -39,6 +40,9 @@ export default function DashboardPage() {
                 <ValueOfTheDay />
               </div>
             </div>
+
+            {/* Surface Stats - full width */}
+            <SurfaceStats />
 
             {/* Bet History - fills remaining vertical space */}
             <div className="flex-1 min-h-0">

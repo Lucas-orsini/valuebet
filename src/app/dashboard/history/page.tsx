@@ -3,30 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { HistoryContent } from "@/components/dashboard/history/HistoryContent";
-import { TimeFilter, type TimePeriod } from "@/components/dashboard/history/TimeFilter";
 
 export const metadata = {
   title: "Historique | Haurus",
   description: "Consultez l'historique complet de vos paris et performances",
   robots: "noindex, nofollow",
 };
-
-// Client wrapper component that manages TimeFilter state
-function TimeFilterActions() {
-  "use client";
-  
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("ALL");
-
-  return (
-    <TimeFilter
-      selectedPeriod={selectedPeriod}
-      onPeriodChange={setSelectedPeriod}
-    />
-  );
-}
-
-// Import useState at the top level
-import { useState } from "react";
 
 export default async function HistoryPage() {
   const supabase = await createClient();
@@ -50,7 +32,6 @@ export default async function HistoryPage() {
         <DashboardHeader
           title="Historique"
           subtitle="Historique complet et statistiques de vos paris"
-          actions={<TimeFilterActions />}
         />
 
         {/* Scrollable content */}

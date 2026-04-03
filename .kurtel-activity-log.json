@@ -1,13 +1,13 @@
 [
   {
-    "timestamp": "2026-04-03T08:28:14.853Z",
+    "timestamp": "2026-04-03T08:11:17.197Z",
     "agent": "qa",
     "event": "task_started",
     "description": "Ezra démarre la phase de tests",
     "details": {}
   },
   {
-    "timestamp": "2026-04-03T08:30:16.069Z",
+    "timestamp": "2026-04-03T08:12:22.240Z",
     "agent": "qa",
     "event": "test_passed",
     "description": "Tous les tests passent dès la première run : ",
