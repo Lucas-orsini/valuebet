@@ -8,7 +8,6 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: "LayoutDashboard" },
   { href: "/dashboard/bets", label: "Mes paris", icon: "Trophy" },
-  { href: "/dashboard/bankroll", label: "Bankroll", icon: "Wallet" },
   { href: "/dashboard/history", label: "Historique", icon: "ScrollText" },
   { href: "/dashboard/analytics", label: "Analyses", icon: "BarChart3" },
   { href: "/dashboard/settings", label: "Paramètres", icon: "Settings" },
