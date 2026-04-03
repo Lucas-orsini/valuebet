@@ -13,6 +13,7 @@ import {
   LogOut,
   ChevronRight,
   Loader2,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS, USER } from "@/lib/dashboard-data";
@@ -24,7 +25,14 @@ const iconMap: Record<string, React.ElementType> = {
   ScrollText,
   BarChart3,
   Settings,
+  Wallet,
 };
+
+// Navigation items with bankroll added
+const NAV_ITEMS_WITH_BANKROLL = [
+  ...NAV_ITEMS,
+  { href: "/dashboard/bankroll", label: "Bankroll Tracker", icon: "Wallet" },
+];
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -90,7 +98,7 @@ export function DashboardSidebar() {
         <p className="px-2 mb-2 text-[10px] font-medium text-zinc-600 uppercase tracking-wider">
           Navigation
         </p>
-        {NAV_ITEMS.map((item) => {
+        {NAV_ITEMS_WITH_BANKROLL.map((item) => {
           const Icon = iconMap[item.icon];
           const isActive = pathname === item.href;
 
