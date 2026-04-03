@@ -87,6 +87,38 @@ export const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   },
 };
 
+// Time Range types and constants
+export type TimeRange = "7D" | "30D" | "90D" | "ALL";
+
+export interface TimeRangeOption {
+  value: TimeRange;
+  label: string;
+}
+
+export const TIME_RANGES: TimeRangeOption[] = [
+  { value: "7D", label: "7 jours" },
+  { value: "30D", label: "30 jours" },
+  { value: "90D", label: "90 jours" },
+  { value: "ALL", label: "Tout" },
+];
+
+// Helper function to check if a date is within the time range
+export function isInRange(date: Date, range: TimeRange): boolean {
+  if (range === "ALL") return true;
+
+  const now = new Date();
+  const ranges: Record<Exclude<TimeRange, "ALL">, number> = {
+    "7D": 7,
+    "30D": 30,
+    "90D": 90,
+  };
+
+  const days = ranges[range];
+  const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+  
+  return date >= cutoffDate;
+}
+
 // Active Bets
 export type BetStatus = "pending" | "won" | "lost" | "void";
 export type RoiLabel = "green" | "yellow" | "orange" | "red";

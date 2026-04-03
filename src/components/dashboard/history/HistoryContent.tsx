@@ -4,20 +4,30 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { HistoryStats } from "./HistoryStats";
 import { HistoryTable } from "./HistoryTable";
-import { BET_HISTORY } from "@/lib/dashboard-data";
+import { SurfaceStats } from "./SurfaceStats";
+import { BET_HISTORY, isInRange } from "@/lib/dashboard-data";
+import type { TimeRange } from "@/lib/dashboard-data";
 
-export function HistoryContent() {
+export function HistoryContent({ timeRange = "ALL" }: { timeRange?: TimeRange }) {
   const [isLoading] = useState(false);
 
-  // Stats calculation for the filtered data (all bets by default)
+  // Filter bets by time range
+  const filteredBets = useMemo(() => {
+    return BET_HISTORY.filter((bet) => {
+      const betDate = new Date(bet.date);
+      return isInRange(betDate, timeRange);
+    });
+  }, [timeRange]);
+
+  // Stats calculation for the filtered data
   const stats = useMemo(() => {
-    const totalBets = BET_HISTORY.length;
-    const wonBets = BET_HISTORY.filter((b) => b.status === "won").length;
-    const lostBets = BET_HISTORY.filter((b) => b.status === "lost").length;
-    const voidBets = BET_HISTORY.filter((b) => b.status === "void").length;
+    const totalBets = filteredBets.length;
+    const wonBets = filteredBets.filter((b) => b.status === "won").length;
+    const lostBets = filteredBets.filter((b) => b.status === "lost").length;
+    const voidBets = filteredBets.filter((b) => b.status === "void").length;
     const winRate = totalBets > 0 ? (wonBets / totalBets) * 100 : 0;
-    const totalProfit = BET_HISTORY.reduce((sum, b) => sum + b.profit, 0);
-    const totalUnits = BET_HISTORY.reduce((sum, b) => sum + b.units, 0);
+    const totalProfit = filteredBets.reduce((sum, b) => sum + b.profit, 0);
+    const totalUnits = filteredBets.reduce((sum, b) => sum + b.units, 0);
     const roi = totalUnits > 0 ? (totalProfit / totalUnits) * 100 : 0;
 
     // Calculate deltas (comparing to previous period - simplified for demo)
@@ -39,7 +49,7 @@ export function HistoryContent() {
       lostBets,
       voidBets,
     };
-  }, []);
+  }, [filteredBets]);
 
   // Loading state
   if (isLoading) {
@@ -50,27 +60,27 @@ export function HistoryContent() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl p-5 animate-pulse"
+              className="bg-[#111] border border-white/[0.07] rounded-xl p-5 animate-pulse"
             >
-              <div className="h-3 bg-[var(--surface-2)] rounded w-20 mb-3" />
-              <div className="h-8 bg-[var(--surface-2)] rounded w-24 mb-2" />
-              <div className="h-3 bg-[var(--surface-2)] rounded w-16" />
+              <div className="h-3 bg-[#1a1a1a] rounded w-20 mb-3" />
+              <div className="h-8 bg-[#1a1a1a] rounded w-24 mb-2" />
+              <div className="h-3 bg-[#1a1a1a] rounded w-16" />
             </div>
           ))}
         </div>
 
         {/* Table skeleton */}
-        <div className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl overflow-hidden animate-pulse">
-          <div className="h-12 bg-[var(--surface-2)]" />
+        <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden animate-pulse">
+          <div className="h-12 bg-[#1a1a1a]" />
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-16 border-t border-[var(--border)]" />
+            <div key={i} className="h-16 border-t border-white/[0.06]" />
           ))}
         </div>
       </div>
     );
   }
 
-  const isEmpty = BET_HISTORY.length === 0;
+  const isEmpty = filteredBets.length === 0;
 
   return (
     <motion.div
@@ -80,10 +90,13 @@ export function HistoryContent() {
       className="space-y-6"
     >
       {/* Stats cards */}
-      <HistoryStats stats={stats} />
+      <HistoryStats stats={stats} timeRange={timeRange} />
+
+      {/* Surface stats with filtered bets */}
+      <SurfaceStats timeRange={timeRange} bets={filteredBets} />
 
       {/* Table with integrated filters */}
-      <HistoryTable bets={BET_HISTORY} isEmpty={isEmpty} />
+      <HistoryTable bets={filteredBets} isEmpty={isEmpty} timeRange={timeRange} />
     </motion.div>
   );
 }

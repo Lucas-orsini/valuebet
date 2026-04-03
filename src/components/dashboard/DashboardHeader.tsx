@@ -2,15 +2,22 @@
 
 import { RefreshCw, Bell, Search } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { TIME_RANGES } from "@/lib/dashboard-data";
+import type { TimeRange } from "@/lib/dashboard-data";
 
 interface DashboardHeaderProps {
   title: string;
   subtitle?: string;
+  timeRange?: TimeRange;
+  onTimeRangeChange?: (range: TimeRange) => void;
 }
 
 export function DashboardHeader({
   title,
   subtitle,
+  timeRange,
+  onTimeRangeChange,
 }: DashboardHeaderProps) {
   const now = new Date();
   const formattedDate = now.toLocaleDateString("fr-FR", {
@@ -20,13 +27,39 @@ export function DashboardHeader({
     year: "numeric",
   });
 
+  const showTimeFilter = timeRange !== undefined && onTimeRangeChange !== undefined;
+
   return (
     <header className="flex items-center justify-between h-14 px-6 border-b border-white/[0.06] shrink-0 bg-[#0a0a0a]">
-      {/* Title */}
-      <div className="flex flex-col">
-        <h1 className="text-sm font-semibold text-zinc-100">{title}</h1>
-        {subtitle && (
-          <p className="text-xs text-zinc-500">{subtitle}</p>
+      {/* Title + Time filter */}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
+          <h1 className="text-sm font-semibold text-zinc-100">{title}</h1>
+          {subtitle && (
+            <p className="text-xs text-zinc-500">{subtitle}</p>
+          )}
+        </div>
+
+        {/* Time range tabs - shown when props are provided */}
+        {showTimeFilter && (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+              {TIME_RANGES.map((range) => (
+                <button
+                  key={range.value}
+                  onClick={() => onTimeRangeChange(range.value)}
+                  className={cn(
+                    "px-2 py-1 rounded-md text-xs font-medium transition-colors h-8",
+                    timeRange === range.value
+                      ? "bg-[#F2CB38]/10 text-[#F2CB38] border border-[#F2CB38]/20"
+                      : "text-zinc-500 hover:text-zinc-300"
+                  )}
+                >
+                  {range.value}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
