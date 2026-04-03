@@ -5,29 +5,23 @@ import { motion } from "framer-motion";
 import { HistoryStats } from "./HistoryStats";
 import { HistoryTable } from "./HistoryTable";
 import { SurfaceStats } from "./SurfaceStats";
-import { BET_HISTORY, isInRange } from "@/lib/dashboard-data";
-import type { TimeRange } from "@/lib/dashboard-data";
+import { BET_HISTORY } from "@/lib/dashboard-data";
 
-export function HistoryContent({ timeRange = "ALL" }: { timeRange?: TimeRange }) {
+export function HistoryContent() {
   const [isLoading] = useState(false);
 
-  // Filter bets by time range
-  const filteredBets = useMemo(() => {
-    return BET_HISTORY.filter((bet) => {
-      const betDate = new Date(bet.date);
-      return isInRange(betDate, timeRange);
-    });
-  }, [timeRange]);
+  // All bets for the table
+  const allBets = BET_HISTORY;
 
-  // Stats calculation for the filtered data
+  // Stats calculation for all data
   const stats = useMemo(() => {
-    const totalBets = filteredBets.length;
-    const wonBets = filteredBets.filter((b) => b.status === "won").length;
-    const lostBets = filteredBets.filter((b) => b.status === "lost").length;
-    const voidBets = filteredBets.filter((b) => b.status === "void").length;
+    const totalBets = allBets.length;
+    const wonBets = allBets.filter((b) => b.status === "won").length;
+    const lostBets = allBets.filter((b) => b.status === "lost").length;
+    const voidBets = allBets.filter((b) => b.status === "void").length;
     const winRate = totalBets > 0 ? (wonBets / totalBets) * 100 : 0;
-    const totalProfit = filteredBets.reduce((sum, b) => sum + b.profit, 0);
-    const totalUnits = filteredBets.reduce((sum, b) => sum + b.units, 0);
+    const totalProfit = allBets.reduce((sum, b) => sum + b.profit, 0);
+    const totalUnits = allBets.reduce((sum, b) => sum + b.units, 0);
     const roi = totalUnits > 0 ? (totalProfit / totalUnits) * 100 : 0;
 
     // Calculate deltas (comparing to previous period - simplified for demo)
@@ -49,7 +43,7 @@ export function HistoryContent({ timeRange = "ALL" }: { timeRange?: TimeRange })
       lostBets,
       voidBets,
     };
-  }, [filteredBets]);
+  }, [allBets]);
 
   // Loading state
   if (isLoading) {
@@ -80,7 +74,7 @@ export function HistoryContent({ timeRange = "ALL" }: { timeRange?: TimeRange })
     );
   }
 
-  const isEmpty = filteredBets.length === 0;
+  const isEmpty = allBets.length === 0;
 
   return (
     <motion.div
@@ -90,13 +84,13 @@ export function HistoryContent({ timeRange = "ALL" }: { timeRange?: TimeRange })
       className="space-y-6"
     >
       {/* Stats cards */}
-      <HistoryStats stats={stats} timeRange={timeRange} />
+      <HistoryStats stats={stats} />
 
-      {/* Surface stats with filtered bets */}
-      <SurfaceStats timeRange={timeRange} bets={filteredBets} />
+      {/* Surface stats */}
+      <SurfaceStats />
 
       {/* Table with integrated filters */}
-      <HistoryTable bets={filteredBets} isEmpty={isEmpty} timeRange={timeRange} />
+      <HistoryTable bets={allBets} isEmpty={isEmpty} />
     </motion.div>
   );
 }
