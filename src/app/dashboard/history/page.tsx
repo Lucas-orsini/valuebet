@@ -1,25 +1,13 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useState } from "react";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { HistoryContent } from "@/components/dashboard/history/HistoryContent";
+import type { TimeRange } from "@/lib/dashboard-data";
 
-export const metadata = {
-  title: "Historique | Haurus",
-  description: "Consultez l'historique complet de vos paris et performances",
-  robots: "noindex, nofollow",
-};
-
-export default async function HistoryPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    redirect("/login");
-  }
+export default function HistoryPage() {
+  const [timeRange, setTimeRange] = useState<TimeRange>("ALL");
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-zinc-100 overflow-hidden">
@@ -28,17 +16,19 @@ export default async function HistoryPage() {
 
       {/* Main content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
+        {/* Header with time range filter */}
         <DashboardHeader
           title="Historique"
           subtitle="Historique complet et statistiques de vos paris"
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
         />
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-[1400px] mx-auto flex flex-col gap-6">
             {/* Content with stats, chart, and table */}
-            <HistoryContent />
+            <HistoryContent timeRange={timeRange} />
           </div>
         </div>
 

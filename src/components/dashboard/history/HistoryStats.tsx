@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { TimeRange } from "@/lib/dashboard-data";
 
 interface StatsData {
   totalBets: number;
@@ -20,6 +22,7 @@ interface StatsData {
 
 interface HistoryStatsProps {
   stats: StatsData;
+  timeRange?: TimeRange;
 }
 
 interface StatCardProps {
@@ -95,11 +98,6 @@ function StatCard({
               {typeof delta === "number" && label.includes("%")
                 ? delta.toFixed(1)
                 : Math.abs(delta)}
-              {typeof delta === "number" && !label.includes("%") && !label.includes("€")
-                ? ""
-                : label.includes("€") || label.includes("%")
-                ? ""
-                : ""}
             </span>
           </div>
           {deltaLabel && (

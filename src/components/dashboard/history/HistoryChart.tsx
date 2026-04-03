@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import type { TimeRange } from "@/lib/dashboard-data";
 
 interface ChartDataPoint {
   date: string;
@@ -25,9 +26,10 @@ interface ChartDataPoint {
 
 interface HistoryChartProps {
   data: ChartDataPoint[];
+  timeRange?: TimeRange;
 }
 
-type Period = "7D" | "30D" | "90D" | "ALL";
+type Period = "7D" | "30D" | "90D" | "1M" | "3M" | "6M" | "1Y" | "ALL";
 
 const PERIODS: Period[] = ["7D", "30D", "90D", "ALL"];
 
@@ -93,24 +95,49 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   );
 }
 
-export function HistoryChart({ data }: HistoryChartProps) {
+export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("ALL");
 
+  // First filter by header time range, then by chart period
   const filteredData = useMemo(() => {
-    if (selectedPeriod === "ALL" || data.length === 0) return data;
+    // Filter by header time range (timeRange filters the raw data)
+    let result = data;
+    
+    if (timeRange !== "ALL" && data.length > 0) {
+      const now = new Date();
+      const ranges: Record<Exclude<TimeRange, "ALL">, number> = {
+        "7D": 7,
+        "30D": 30,
+        "90D": 90,
+        "1M": 30,
+        "3M": 90,
+        "6M": 180,
+        "1Y": 365,
+      };
+      const days = ranges[timeRange as Exclude<TimeRange, "ALL">];
+      const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+      result = data.filter((point) => new Date(point.date) >= cutoffDate);
+    }
+
+    // Then filter by chart period (7D/30D/90D/ALL)
+    if (selectedPeriod === "ALL" || result.length === 0) return result;
 
     const now = new Date();
     const daysMap: Record<Period, number> = {
       "7D": 7,
       "30D": 30,
       "90D": 90,
+      "1M": 30,
+      "3M": 90,
+      "6M": 180,
+      "1Y": 365,
       ALL: Infinity,
     };
     const days = daysMap[selectedPeriod];
     const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-    return data.filter((point) => new Date(point.date) >= cutoffDate);
-  }, [data, selectedPeriod]);
+    return result.filter((point) => new Date(point.date) >= cutoffDate);
+  }, [data, selectedPeriod, timeRange]);
 
   const stats = useMemo(() => {
     if (filteredData.length === 0) {
