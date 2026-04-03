@@ -8,6 +8,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: "LayoutDashboard" },
   { href: "/dashboard/bets", label: "Mes paris", icon: "Trophy" },
+  { href: "/dashboard/bankroll", label: "Bankroll Tracker", icon: "Wallet" },
   { href: "/dashboard/history", label: "Historique", icon: "ScrollText" },
   { href: "/dashboard/analytics", label: "Analyses", icon: "BarChart3" },
   { href: "/dashboard/settings", label: "Paramètres", icon: "Settings" },
@@ -252,11 +253,40 @@ export const VALUE_OF_THE_DAY: ValueOfTheDayItem[] = [
   },
 ];
 
-// Bankroll History
+// Bankroll Tracking Types
+export type BankrollMode = 'auto' | 'custom';
+
 export interface BankrollPoint {
   date: string;
   bankroll: number;
   flatBet: number;
+}
+
+export interface TrackedBet {
+  id: string;
+  date: string;
+  match: string;
+  selection: string;
+  recommendedOdds: number;
+  units: number;
+  status: BetStatus;
+  result?: 'win' | 'lose';
+  actualOdds?: number;
+}
+
+export interface BankrollKPIs {
+  currentBankroll: number;
+  profit: number;
+  roi: number;
+  streak: number;
+  streakType: 'W' | 'L' | 'neutral';
+  betsTracked: number;
+}
+
+export interface UserBetSettings {
+  betId: string;
+  isTracked: boolean;
+  customOdds: number;
 }
 
 export const BANKROLL_HISTORY: BankrollPoint[] = [
@@ -268,6 +298,117 @@ export const BANKROLL_HISTORY: BankrollPoint[] = [
   { date: "2025-03-15", bankroll: 1415, flatBet: 1118 },
   { date: "2025-04-01", bankroll: 1487, flatBet: 1142 },
   { date: "2025-04-15", bankroll: 1565, flatBet: 1165 },
+];
+
+export const TRACKED_BETS: TrackedBet[] = [
+  {
+    id: "tb1",
+    date: "2025-04-14",
+    match: "Jannik Sinner vs Daniil Medvedev",
+    selection: "Jannik Sinner",
+    recommendedOdds: 1.95,
+    units: 3,
+    status: "won",
+    result: "win",
+    actualOdds: 1.95,
+  },
+  {
+    id: "tb2",
+    date: "2025-04-13",
+    match: "Carlos Alcaraz vs Alexander Zverev",
+    selection: "Carlos Alcaraz",
+    recommendedOdds: 2.15,
+    units: 2,
+    status: "won",
+    result: "win",
+    actualOdds: 2.10,
+  },
+  {
+    id: "tb3",
+    date: "2025-04-12",
+    match: "Taylor Fritz vs Grigor Dimitrov",
+    selection: "Taylor Fritz",
+    recommendedOdds: 1.75,
+    units: 2,
+    status: "lost",
+    result: "lose",
+    actualOdds: 1.72,
+  },
+  {
+    id: "tb4",
+    date: "2025-04-11",
+    match: "Holger Rune vs Casper Ruud",
+    selection: "Holger Rune",
+    recommendedOdds: 2.40,
+    units: 1,
+    status: "won",
+    result: "win",
+    actualOdds: 2.45,
+  },
+  {
+    id: "tb5",
+    date: "2025-04-10",
+    match: "Novak Djokovic vs Andrey Rublev",
+    selection: "Novak Djokovic",
+    recommendedOdds: 1.65,
+    units: 3,
+    status: "won",
+    result: "win",
+    actualOdds: 1.68,
+  },
+  {
+    id: "tb6",
+    date: "2025-04-09",
+    match: "Stefanos Tsitsipas vs Alex de Minaur",
+    selection: "Stefanos Tsitsipas",
+    recommendedOdds: 1.85,
+    units: 2,
+    status: "lost",
+    result: "lose",
+    actualOdds: 1.80,
+  },
+  {
+    id: "tb7",
+    date: "2025-04-08",
+    match: "Daniil Medvedev vs Karen Khachanov",
+    selection: "Daniil Medvedev",
+    recommendedOdds: 1.70,
+    units: 2,
+    status: "pending",
+  },
+  {
+    id: "tb8",
+    date: "2025-04-07",
+    match: "Jannik Sinner vs Grigor Dimitrov",
+    selection: "Jannik Sinner",
+    recommendedOdds: 1.55,
+    units: 2,
+    status: "won",
+    result: "win",
+    actualOdds: 1.58,
+  },
+  {
+    id: "tb9",
+    date: "2025-04-06",
+    match: "Carlos Alcaraz vs Tommy Paul",
+    selection: "Carlos Alcaraz",
+    recommendedOdds: 1.45,
+    units: 1,
+    status: "won",
+    result: "win",
+    actualOdds: 1.48,
+  },
+  {
+    id: "tb10",
+    date: "2025-04-05",
+    match: "Taylor Fritz vs Frances Tiafoe",
+    selection: "Taylor Fritz",
+    recommendedOdds: 2.20,
+    units: 1,
+    status: "lost",
+    result: "lose",
+    actualOdds: 2.25,
+  },
 ];
 
 // Bet History
