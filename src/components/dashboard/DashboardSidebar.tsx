@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
-  Trophy,
   ScrollText,
-  BarChart3,
   Settings,
   LogOut,
   ChevronRight,
@@ -16,28 +14,96 @@ import {
   Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { NAV_ITEMS, USER } from "@/lib/dashboard-data";
 import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
+
+// Navigation items interface
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+}
+
+// Navigation items with bankroll added
+const NAV_ITEMS: NavItem[] = [
+  { href: "/dashboard", label: "Tableau de bord", icon: "LayoutDashboard" },
+  { href: "/dashboard/history", label: "Historique", icon: "ScrollText" },
+  { href: "/dashboard/bankroll", label: "Bankroll Tracker", icon: "Wallet" },
+  { href: "/dashboard/settings", label: "Paramètres", icon: "Settings" },
+];
 
 const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard,
-  Trophy,
   ScrollText,
-  BarChart3,
   Settings,
   Wallet,
 };
 
-// Navigation items with bankroll added
-const NAV_ITEMS_WITH_BANKROLL = [
-  ...NAV_ITEMS,
-  { href: "/dashboard/bankroll", label: "Bankroll Tracker", icon: "Wallet" },
-];
+// User info interface
+interface UserInfo {
+  id: string;
+  email: string;
+  name: string;
+  plan: string;
+  initials: string;
+}
+
+// useUser hook to fetch user info from Supabase
+function useUser() {
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const supabase = createClient();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (session?.user) {
+          const user = session.user;
+          const fullName =
+            user.user_metadata?.full_name ||
+            user.email?.split("@")[0] ||
+            "Utilisateur";
+          const plan = user.user_metadata?.plan || "Gratuit";
+          const initials = fullName
+            .split(" ")
+            .map((n: string) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+
+          setUserInfo({
+            id: user.id,
+            email: user.email || "",
+            name: fullName,
+            plan,
+            initials,
+          });
+        } else {
+          setUserInfo(null);
+        }
+      } catch {
+        setError("Erreur lors du chargement des informations utilisateur");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  return { userInfo, isLoading, error };
+}
 
 export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { userInfo, isLoading, error } = useUser();
   const supabase = createClient();
 
   const handleLogout = async () => {
@@ -46,10 +112,10 @@ export function DashboardSidebar() {
     setIsLoggingOut(true);
 
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error: logoutError } = await supabase.auth.signOut();
 
-      if (error) {
-        console.error("Erreur lors de la déconnexion:", error.message);
+      if (logoutError) {
+        console.error("Erreur lors de la déconnexion:", logoutError.message);
         setIsLoggingOut(false);
         return;
       }
@@ -98,7 +164,7 @@ export function DashboardSidebar() {
         <p className="px-2 mb-2 text-[10px] font-medium text-zinc-600 uppercase tracking-wider">
           Navigation
         </p>
-        {NAV_ITEMS_WITH_BANKROLL.map((item) => {
+        {NAV_ITEMS.map((item) => {
           const Icon = iconMap[item.icon];
           const isActive = pathname === item.href;
 
@@ -135,26 +201,37 @@ export function DashboardSidebar() {
             Plan
           </span>
           <span className="px-2 py-0.5 rounded-full bg-[#F2CB38]/10 border border-[#F2CB38]/20 text-[#F2CB38] text-[10px] font-medium">
-            {USER.plan}
+            {isLoading ? "..." : userInfo?.plan || "Gratuit"}
           </span>
         </div>
 
         {/* User info */}
         <div className="flex items-center gap-2.5 p-2 rounded-md hover:bg-white/[0.03] transition-colors cursor-pointer group">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-600 to-zinc-700 flex items-center justify-center text-[11px] text-zinc-200 font-medium">
-            {USER.initials}
+            {isLoading ? "..." : userInfo?.initials || "?"}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-zinc-200 truncate">
-              {USER.name}
+              {isLoading ? "Chargement..." : userInfo?.name || "Utilisateur"}
             </p>
-            <p className="text-[11px] text-zinc-500 truncate">{USER.email}</p>
+            <p className="text-[11px] text-zinc-500 truncate">
+              {isLoading ? "..." : userInfo?.email || ""}
+            </p>
           </div>
           <ChevronRight
             size={14}
             className="text-zinc-600 group-hover:text-zinc-400 transition-colors"
           />
         </div>
+
+        {/* Settings link */}
+        <Link
+          href="/dashboard/settings"
+          className="flex items-center gap-2.5 w-full px-2 py-2 mt-1 rounded-md text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors"
+        >
+          <Settings size={15} strokeWidth={1.5} />
+          <span className="text-xs">Paramètres</span>
+        </Link>
 
         {/* Logout */}
         <button
