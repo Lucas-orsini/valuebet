@@ -5,28 +5,16 @@ export interface NavItem {
   icon: string;
 }
 
+// Navigation items: Tableau de bord, Historique, Bankroll Tracker, Paramètres
+// Note: "Mes paris" et "Analyses" retirés conformément au plan de restructuration
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: "LayoutDashboard" },
-  { href: "/dashboard/bets", label: "Mes paris", icon: "Trophy" },
   { href: "/dashboard/history", label: "Historique", icon: "ScrollText" },
-  { href: "/dashboard/analytics", label: "Analyses", icon: "BarChart3" },
   { href: "/dashboard/settings", label: "Paramètres", icon: "Settings" },
 ];
 
-// User data
-export interface User {
-  name: string;
-  email: string;
-  plan: string;
-  initials: string;
-}
-
-export const USER: User = {
-  name: "Thomas Martin",
-  email: "thomas.martin@gmail.com",
-  plan: "Pro",
-  initials: "TM",
-};
+// User data removed — now fetched dynamically from Supabase via DashboardSidebar useUser hook
+// See: src/components/dashboard/DashboardSidebar.tsx
 
 // KPI Data
 export interface KpiData {
