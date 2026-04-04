@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Info, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,16 +24,9 @@ interface TooltipData {
 const TOOLTIP_WIDTH = 220;
 const TOOLTIP_MARGIN = 16;
 
-function getTooltipArrowPosition(mouseX: number, triggerRect: DOMRect): number {
-  const relativeX = mouseX - triggerRect.left;
-  const percentage = (relativeX / triggerRect.width) * 100;
-  return Math.max(8, Math.min(92, percentage));
-}
-
 export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
-  const [mouseX, setMouseX] = useState<number | null>(null);
-  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number } | null>(null);
   const [lastRefresh] = useState<Date>(new Date());
 
   const sortedItems = [...items].sort((a, b) => b.edge - a.edge);
@@ -42,9 +35,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
     item: ValueOfTheDayItem,
     event: React.MouseEvent<HTMLDivElement>
   ) => {
-    const initialX = event.clientX;
-    setMouseX(initialX);
-    setTriggerRect(event.currentTarget.getBoundingClientRect());
+    setMousePosition({ x: event.clientX, y: event.clientY });
     setTooltip({
       playerName: item.playerName,
       odds: item.odds,
@@ -57,14 +48,12 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
   };
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    setMouseX(event.clientX);
-    setTriggerRect(event.currentTarget.getBoundingClientRect());
+    setMousePosition({ x: event.clientX, y: event.clientY });
   };
 
   const handleMouseLeave = () => {
-    setMouseX(null);
+    setMousePosition(null);
     setTooltip(null);
-    setTriggerRect(null);
   };
 
   const getRoiBadgeLabel = (roiLabel: RoiLabel): string => {
@@ -241,7 +230,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
       {/* Tooltip */}
       <AnimatePresence>
-        {tooltip && mouseX !== null && (
+        {tooltip && mousePosition !== null && (
           <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
@@ -249,14 +238,8 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
             transition={{ duration: 0.15 }}
             className="fixed z-50 pointer-events-none"
             style={{
-              left: Math.max(
-                TOOLTIP_WIDTH / 2 + TOOLTIP_MARGIN,
-                Math.min(
-                  mouseX,
-                  window.innerWidth - TOOLTIP_WIDTH / 2 - TOOLTIP_MARGIN
-                )
-              ),
-              top: 0,
+              left: mousePosition.x,
+              top: mousePosition.y - 16,
               transform: "translate(-50%, -100%)",
             }}
           >
@@ -308,7 +291,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
               <div
                 className="absolute -bottom-1.5 bg-[#1a1a1a] w-3 h-3 rotate-45 border-r border-b border-white/[0.12]"
                 style={{
-                  left: `calc(${triggerRect ? getTooltipArrowPosition(mouseX, triggerRect) : 50}% - 6px)`,
+                  left: mousePosition.x - 6,
                 }}
               />
             </div>
