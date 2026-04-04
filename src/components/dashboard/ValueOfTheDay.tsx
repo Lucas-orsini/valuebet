@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Info, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,9 +24,16 @@ interface TooltipData {
 const TOOLTIP_WIDTH = 220;
 const TOOLTIP_MARGIN = 16;
 
+function getTooltipArrowPosition(mouseX: number, triggerRect: DOMRect): number {
+  const relativeX = mouseX - triggerRect.left;
+  const percentage = (relativeX / triggerRect.width) * 100;
+  return Math.max(8, Math.min(92, percentage));
+}
+
 export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
   const [mouseX, setMouseX] = useState<number | null>(null);
+  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const [lastRefresh] = useState<Date>(new Date());
 
   const sortedItems = [...items].sort((a, b) => b.edge - a.edge);
@@ -37,6 +44,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
   ) => {
     const initialX = event.clientX;
     setMouseX(initialX);
+    setTriggerRect(event.currentTarget.getBoundingClientRect());
     setTooltip({
       playerName: item.playerName,
       odds: item.odds,
@@ -50,11 +58,13 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     setMouseX(event.clientX);
+    setTriggerRect(event.currentTarget.getBoundingClientRect());
   };
 
   const handleMouseLeave = () => {
     setMouseX(null);
     setTooltip(null);
+    setTriggerRect(null);
   };
 
   const getRoiBadgeLabel = (roiLabel: RoiLabel): string => {
@@ -295,7 +305,12 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
                   </span>
                 </div>
               </div>
-              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-[#1a1a1a] border-r border-b border-white/[0.12]" />
+              <div
+                className="absolute -bottom-1.5 bg-[#1a1a1a] w-3 h-3 rotate-45 border-r border-b border-white/[0.12]"
+                style={{
+                  left: `calc(${triggerRect ? getTooltipArrowPosition(mouseX, triggerRect) : 50}% - 6px)`,
+                }}
+              />
             </div>
           </motion.div>
         )}
