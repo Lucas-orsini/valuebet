@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import { Wallet, Sparkles } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BankrollMode } from "@/lib/bankroll-data";
 
@@ -13,217 +12,160 @@ interface BankrollHeaderProps {
   onModeChange: (mode: BankrollMode) => void;
 }
 
+const TOOLTIP_AUTO =
+  "Les paris sont automatiquement ajoutés depuis les recommandations de l'IA Haurus. Le ROI reflète la performance réelle.";
+
+const TOOLTIP_MANUAL =
+  "Sélectionnez manuellement les paris à inclure dans le suivi. Utilisez ce mode si vous ne suivez pas tous les paris recommandés.";
+
 export function BankrollHeader({
   initialBankroll,
   mode,
   onBankrollChange,
   onModeChange,
 }: BankrollHeaderProps) {
-  const [inputValue, setInputValue] = useState(initialBankroll.toString());
-  const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-    setError(null);
+  // Close tooltip on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setTooltipVisible(false);
+      }
+    };
 
-    if (value === "") {
-      setIsEditing(true);
-      return;
+    if (tooltipVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }
+  }, [tooltipVisible]);
 
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) {
-      setError("Veuillez entrer un nombre valide");
-      return;
-    }
-
-    if (numValue <= 0) {
-      setError("La bankroll doit être supérieure à 0");
-      return;
-    }
-
-    setIsEditing(true);
-  }, []);
-
-  const handleInputBlur = useCallback(() => {
-    setIsEditing(false);
-    const numValue = parseFloat(inputValue);
-
-    if (isNaN(numValue) || numValue <= 0) {
-      setInputValue(initialBankroll.toString());
-      setError("Valeur réinitialisée à la bankroll initiale");
-      return;
-    }
-
-    onBankrollChange(numValue);
-  }, [inputValue, initialBankroll, onBankrollChange]);
-
-  const handleModeToggle = useCallback(() => {
+  const handleModeToggle = () => {
     onModeChange(mode === "auto" ? "manual" : "auto");
-  }, [mode, onModeChange]);
-
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString("fr-FR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+    setTooltipVisible(false);
   };
 
-  return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl p-5">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        {/* Bankroll Input */}
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[#F2CB38]/10 border border-[#F2CB38]/20 flex items-center justify-center">
-              <Wallet size={18} className="text-[#F2CB38]" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-100">
-                Bankroll initiale
-              </h2>
-              <p className="text-xs text-zinc-500">
-                Entrez votre capital de départ
-              </p>
-            </div>
-          </div>
+  const handleHelpMouseEnter = () => {
+    setTooltipVisible(true);
+  };
 
-          <div className="mt-3">
-            <div className="relative">
-              <input
-                type="text"
-                inputMode="decimal"
-                value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleInputBlur}
-                placeholder="500"
-                className={cn(
-                  "w-full h-12 px-4 pr-12 rounded-lg bg-[#0a0a0a] border text-lg font-semibold text-zinc-100 placeholder:text-zinc-600 transition-colors",
-                  error
-                    ? "border-red-500/50 focus:border-red-500 focus:ring-1 focus:ring-red-500/20"
-                    : "border-white/[0.08] focus:border-[#F2CB38]/50 focus:ring-1 focus:ring-[#F2CB38]/20"
-                )}
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-zinc-500">
-                €
-              </span>
-            </div>
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-1.5 text-xs text-red-400"
-              >
-                {error}
-              </motion.p>
-            )}
-            {isEditing && !error && (
-              <p className="mt-1.5 text-xs text-zinc-500">
-                Appuyez sur Entrée ou cliquez ailleurs pour valider
-              </p>
-            )}
+  const handleHelpMouseLeave = () => {
+    setTooltipVisible(false);
+  };
+
+  const tooltipText = mode === "auto" ? TOOLTIP_AUTO : TOOLTIP_MANUAL;
+
+  return (
+    <div
+      ref={containerRef}
+      className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#111] border border-white/[0.07] rounded-xl p-5"
+    >
+      {/* Left side: Initial bankroll input */}
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="initialBankroll"
+          className="text-xs text-zinc-500 uppercase tracking-wider font-medium"
+        >
+          Bankroll initiale
+        </label>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <input
+              id="initialBankroll"
+              type="number"
+              value={initialBankroll}
+              onChange={(e) =>
+                onBankrollChange(Number(e.target.value) || 0)
+              }
+              className="w-32 h-9 pl-3 pr-8 rounded-md bg-[#0a0a0a] border border-white/[0.08] text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-[#F97316]/50 focus:ring-1 focus:ring-[#F97316]/20 transition-colors tabular-nums"
+              placeholder="1000"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">
+              €
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Divider */}
-        <div className="hidden lg:block w-px h-20 bg-white/[0.06]" />
-
-        {/* Mode Toggle */}
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-              <Sparkles size={18} className="text-indigo-400" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-100">
-                Mode de suivi
-              </h2>
-              <p className="text-xs text-zinc-500">
-                Choisissez comment suivre vos paris
-              </p>
-            </div>
-          </div>
-
-          {/* Toggle Switch */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleModeToggle}
-              className="relative w-full max-w-[280px] h-12 rounded-lg bg-[#0a0a0a] border border-white/[0.08] p-1 cursor-pointer"
+      {/* Right side: Mode toggle with help */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
+          {/* Mode labels */}
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                "text-sm font-medium transition-colors",
+                mode === "auto"
+                  ? "text-[#F97316]"
+                  : "text-zinc-500"
+              )}
             >
-              {/* Sliding background */}
-              <motion.div
-                className="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] rounded-md bg-gradient-to-r from-indigo-500 to-indigo-600"
-                animate={{ x: mode === "manual" ? "100%" : "0%" }}
-                transition={{ type: "spring", stiffness: 500, damping: 35 }}
-              />
+              Auto
+            </span>
+            <span className="text-zinc-600">/</span>
+            <span
+              className={cn(
+                "text-sm font-medium transition-colors",
+                mode === "manual"
+                  ? "text-[#F97316]"
+                  : "text-zinc-500"
+              )}
+            >
+              Manuel
+            </span>
+          </div>
 
-              {/* Labels */}
-              <div className="relative flex h-full">
-                <div
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 rounded-md transition-colors z-10",
-                    mode === "auto" ? "text-white" : "text-zinc-500"
-                  )}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 3v18" />
-                    <rect
-                      x="4"
-                      y="8"
-                      width="16"
-                      height="8"
-                      rx="2"
-                    />
-                    <path d="M4 14h16" />
-                  </svg>
-                  <span className="text-sm font-medium">Automatique</span>
-                </div>
-                <div
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 rounded-md transition-colors z-10",
-                    mode === "manual" ? "text-white" : "text-zinc-500"
-                  )}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                  <span className="text-sm font-medium">Personnalisé</span>
-                </div>
+          {/* Toggle switch */}
+          <button
+            onClick={handleModeToggle}
+            className="relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F97316]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#111]"
+            style={{
+              backgroundColor:
+                mode === "auto" ? "#F97316" : "rgba(255,255,255,0.1)",
+            }}
+            aria-label={`Mode actuel: ${mode === "auto" ? "automatique" : "manuel"}. Cliquer pour basculer."`}
+          >
+            <span
+              className={cn(
+                "absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200",
+                mode === "auto" ? "translate-x-6" : "translate-x-0.5"
+              )}
+            />
+          </button>
+        </div>
+
+        {/* Help button with tooltip */}
+        <div
+          ref={tooltipRef}
+          className="relative"
+          onMouseEnter={handleHelpMouseEnter}
+          onMouseLeave={handleHelpMouseLeave}
+        >
+          <button
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F97316]/10 border border-[#F97316]/20 text-[#F97316] hover:bg-[#F97316]/20 transition-colors"
+            aria-label="Aide sur le mode de suivi"
+          >
+            <HelpCircle size={14} strokeWidth={1.5} />
+          </button>
+
+          {/* Tooltip */}
+          {tooltipVisible && (
+            <div className="absolute right-0 top-full mt-2 w-72 p-3 rounded-lg bg-[#1a1a1a] border border-[#F97316]/30 shadow-xl z-50">
+              <div className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] mt-1.5 shrink-0" />
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  {tooltipText}
+                </p>
               </div>
-            </button>
-          </div>
-
-          {/* Mode description */}
-          <div className="mt-2">
-            {mode === "auto" ? (
-              <p className="text-xs text-zinc-500">
-                Suivi automatique des paris recommandés par l&apos;IA
-              </p>
-            ) : (
-              <p className="text-xs text-zinc-500">
-                Sélectionnez manuellement les paris à inclure dans le suivi
-              </p>
-            )}
-          </div>
+              {/* Tooltip arrow */}
+              <div className="absolute -top-1.5 right-4 w-3 h-3 rotate-45 bg-[#1a1a1a] border-l border-t border-[#F97316]/30" />
+            </div>
+          )}
         </div>
       </div>
     </div>
