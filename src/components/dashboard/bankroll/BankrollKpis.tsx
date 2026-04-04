@@ -75,7 +75,6 @@ interface KpiCardProps {
   label: string;
   value: number;
   icon: React.ReactNode;
-  variant: "default" | "success" | "danger" | "accent";
   decimals?: number;
   prefix?: string;
   suffix?: string;
@@ -90,7 +89,6 @@ function KpiCard({
   label,
   value,
   icon,
-  variant,
   decimals = 0,
   prefix = "",
   suffix = "",
@@ -100,16 +98,9 @@ function KpiCard({
   delay,
   started,
 }: KpiCardProps) {
-  const variantStyles = {
-    default: "text-zinc-100",
-    success: "text-green-400",
-    danger: "text-red-400",
-    accent: "text-[#F2CB38]",
-  };
-
   const subtextStyles = {
-    success: "text-green-400",
-    danger: "text-red-400",
+    success: "text-[#22C55E]", // green-positive
+    danger: "text-[#EF4444]",   // red-negative
     default: "text-zinc-500",
   };
 
@@ -121,15 +112,7 @@ function KpiCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div
-            className={cn(
-              "w-9 h-9 rounded-lg flex items-center justify-center",
-              variant === "success" && "bg-green-500/10 border border-green-500/20",
-              variant === "danger" && "bg-red-500/10 border border-red-500/20",
-              variant === "accent" && "bg-[#F2CB38]/10 border border-[#F2CB38]/20",
-              variant === "default" && "bg-white/[0.05] border border-white/[0.08]"
-            )}
-          >
+          <div className="w-9 h-9 rounded-lg bg-[#F2CB38]/10 border border-[#F2CB38]/20 flex items-center justify-center">
             {icon}
           </div>
           <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
@@ -138,14 +121,9 @@ function KpiCard({
         </div>
       </div>
 
-      {/* Value */}
+      {/* Value - always white (text-zinc-100) */}
       <div className="flex items-end gap-1">
-        <span
-          className={cn(
-            "text-3xl font-bold tracking-tight",
-            variantStyles[variant]
-          )}
-        >
+        <span className="text-3xl font-bold tracking-tight text-zinc-100">
           {value < 0 && value !== 0 ? "-" : ""}
           <AnimatedNumber
             target={Math.abs(value)}
@@ -161,7 +139,7 @@ function KpiCard({
         )}
       </div>
 
-      {/* Subtext */}
+      {/* Subtext - green if positive, red if negative */}
       {subtext && (
         <p className={cn("text-xs mt-2", subtextStyles[subtextVariant])}>
           {subtext}
@@ -204,7 +182,6 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
             strokeWidth={1.5}
           />
         ),
-        variant: "accent" as const,
         isCurrency: true,
         decimals: 2,
         subtext:
@@ -220,22 +197,13 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
       {
         label: "P&L",
         value: kpis.profitLoss,
-        icon:
-          kpis.profitLoss >= 0 ? (
-            <TrendingUp
-              size={18}
-              className="text-green-400"
-              strokeWidth={1.5}
-            />
-          ) : (
-            <TrendingDown
-              size={18}
-              className="text-red-400"
-              strokeWidth={1.5}
-            />
-          ),
-        variant:
-          kpis.profitLoss >= 0 ? ("success" as const) : ("danger" as const),
+        icon: (
+          <TrendingUp
+            size={18}
+            className="text-[#F2CB38]"
+            strokeWidth={1.5}
+          />
+        ),
         isCurrency: true,
         decimals: 2,
         suffix: "€",
@@ -249,7 +217,6 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
         icon: (
           <Trophy size={18} className="text-[#F2CB38]" strokeWidth={1.5} />
         ),
-        variant: kpis.roi >= 0 ? ("accent" as const) : ("danger" as const),
         decimals: 1,
         suffix: "%",
         subtext:
@@ -266,14 +233,10 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
         icon: (
           <Flame
             size={18}
-            className={
-              kpis.streak.type === "W" ? "text-green-400" : "text-red-400"
-            }
+            className="text-[#F2CB38]"
             strokeWidth={1.5}
           />
         ),
-        variant:
-          kpis.streak.type === "W" ? ("success" as const) : ("danger" as const),
         subtext: `${kpis.streak.type === "W" ? "Victoires" : "Défaites"} consécutives`,
         subtextVariant: "default" as const,
         delay: 0.3,

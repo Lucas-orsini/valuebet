@@ -11,7 +11,8 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Value of the Day** — Daily recommended bets with centered odds display, color-coded risk badges, and smooth hover animations: 🟢 Optimal ROI, 🟡 Correct ROI, 🟠 Risky ROI, 🔴 Very Risky ROI
 - **Smart Tooltip Positioning** — Hover tooltip that keeps its arrow aligned with your cursor horizontally while repositioning to stay within the viewport bounds
 - **Live Bet Status** — Instant status updates showing pending, won, or lost bets
-- **KPI Dashboard** — Global ROI, win/loss rate, total profit in units, and current winning streak at a glance
+- **KPI Dashboard** — Global ROI, win/loss rate, total profit in units, and current winning streak at a glance with yellow icons on yellow backgrounds
+- **KPI Color Coding** — Statistics displayed in white with evolution indicators in green (positive) or red (negative)
 - **Bankroll Performance Chart** — Visual curve of bankroll growth over time with flat betting comparison
 - **History Dashboard** — Comprehensive historical view with statistics overview and detailed bet records
 - **History Filtering** — Filter history data by time period: 1 month, 3 months, 6 months, 1 year, or all time
@@ -20,8 +21,9 @@ AI-powered sports betting value detection platform that identifies mispriced odd
 - **Surface Statistics** — ROI breakdown for Clay, Hard, and Grass courts
 - **History Chart** — Visual performance graph filtered by selected time period
 - **History Table** — Paginated table with search filters, player info, tournament, surface, odds, stake, profit, ROI label, and bet outcome
-- **Bankroll Tracker** — Track performance with Auto (AI tracking) or Custom (manual) modes
-- **Bankroll KPIs** — Real-time profit/loss tracking and performance metrics
+- **Bankroll Tracker** — Track performance with Auto (AI tracking) or Custom (manual) modes with contextual help tooltips
+- **Bankroll KPIs** — Real-time profit/loss tracking and performance metrics with intuitive color-coded styling
+- **Bankroll Tracker Help** — Question mark icon (?) that displays a tooltip explaining the difference between "Auto" and "Custom" modes
 
 ## 🛠️ Tech Stack
 
@@ -59,18 +61,13 @@ npm install
 
 ### 3. Set up environment variables
 
-Create a file named `.env.local` in the root directory of your project (same folder as `package.json`). This file stores secret keys that connect your app to Supabase.
-
-Open your terminal in VS Code:
-- **VS Code**: Press `` Ctrl+` `` (Windows/Linux) or `` Cmd+` `` (Mac) to open the integrated terminal
-
-Create the file:
+Create a file named `.env.local` in the root of your project. This file stores secret keys that connect your app to Supabase.
 
 ```bash
 touch .env.local
 ```
 
-Then open it in your editor and add these exact lines:
+Open `.env.local` in your code editor and add these two lines:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -83,28 +80,29 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 npm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open http://localhost:3000 in your browser.
 
-> 💡 **VS Code tip**: Open the integrated terminal with `` Ctrl+` `` (Windows/Linux) or `` Cmd+` `` (Mac)
+> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (or `Cmd+`` on Mac)
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | [Supabase Dashboard](https://supabase.com/dashboard) → Your Project → Project Settings → API → **Project URL** | Your Supabase project connection URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | [Supabase Dashboard](https://supabase.com/dashboard) → Your Project → Project Settings → API → **anon/public** key | Public API key for client-side authentication |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard > Project Settings > API > Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard > Project Settings > API > anon/public key | Public anon key for client-side auth |
 
-**Steps to find Supabase credentials:**
-1. Go to [supabase.com/dashboard](https://supabase.com/dashboard)
-2. Select your project
-3. Click **Project Settings** (gear icon)
-4. Click **API** in the sidebar
-5. Copy the **Project URL** and paste into `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon/public** key and paste into `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+**Steps to find your Supabase credentials:**
+
+1. Go to [supabase.com](https://supabase.com) and log in
+2. Click on your project
+3. Go to **Project Settings** (gear icon)
+4. Click on **API** in the sidebar
+5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
+6. Copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that individual parts of the code work correctly without needing the whole app running.
+Unit tests automatically check that specific parts of the app work correctly without needing the full app running.
 
 ### Run all tests
 
@@ -118,44 +116,38 @@ npx jest
 npx jest __tests__/dashboard-data.test.ts
 ```
 
-### Watch mode (re-runs tests automatically when files change)
+### Watch mode (re-runs on file change)
 
 ```bash
 npx jest --watch
 ```
 
-### Understanding test output
+### Reading test output
 
-- **PASS** — All tests in that file passed ✅
-- **FAIL** — Something broke, you'll see which test failed and why (expected vs received values)
+- **PASS** ✅ — All checks passed, the code works correctly
+- **FAIL** ❌ — Something broke, the output shows which test failed and why
 
-**What the tests cover:**
-- `__tests__/dashboard-data.test.ts` — Dashboard data fetching, ROI calculations, and data transformation logic
+The dashboard data tests cover: KPI calculations, bankroll metrics, ROI computations, and data transformations.
 
 ## 📁 Project Structure
 
 ```
-value-bet-ai/
-├── __tests__/                  # Jest unit tests
-│   └── dashboard-data.test.ts  # Dashboard data tests
-├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── page.tsx            # Landing page
-│   │   ├── dashboard/          # Protected dashboard routes
-│   │   └── layout.tsx          # Root layout with providers
-│   ├── components/
-│   │   ├── dashboard/          # Dashboard-specific components
-│   │   │   └── ValueOfTheDay.tsx # Daily value bets with smart tooltip
-│   │   └── ui/                 # Reusable UI components
-│   ├── lib/
-│   │   ├── supabase/           # Supabase client setup (SSR + Client)
-│   │   └── utils.ts            # Utility functions (cn, etc.)
-│   └── types/                  # TypeScript type definitions
-├── .env.local                  # Environment variables (not committed)
-├── .env.example                # Example env file template
-├── tailwind.config.ts          # Tailwind CSS configuration
-├── tsconfig.json               # TypeScript configuration
-└── package.json                # Dependencies and scripts
+src/
+├── app/                    # Next.js App Router pages and layouts
+├── components/
+│   ├── dashboard/
+│   │   ├── bankroll/
+│   │   │   ├── BankrollHeader.tsx    # Bankroll tracker header with Auto/Custom mode selector
+│   │   │   └── BankrollKpis.tsx      # Real-time bankroll performance KPIs
+│   │   ├── history/
+│   │   │   └── SurfaceStats.tsx      # ROI breakdown by court surface
+│   │   └── SurfaceStats.tsx          # Dashboard surface statistics
+│   └── ...              # Other shared components
+├── lib/
+│   ├── bankroll-data.ts # Bankroll calculations and data transformations
+│   └── supabase/        # Supabase client setup
+├── __tests__/           # Jest unit tests
+└── ...                  # Config files, utilities, types
 ```
 
 ## 🚀 Deploy to Vercel
@@ -164,32 +156,19 @@ value-bet-ai/
 
 ### Step by step
 
-1. **Push your code to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/value-bet-ai.git
-   git push -u origin main
-   ```
+1. Click the **Deploy with Vercel** button above
+2. Import your GitHub repository
+3. In the Vercel dashboard, go to **Settings > Environment Variables**
+4. Add each variable from your `.env.local` file:
 
-2. **Import to Vercel**
-   - Go to [vercel.com/new](https://vercel.com/new)
-   - Click **Import Git Repository**
-   - Select your GitHub repo
+   - `NEXT_PUBLIC_SUPABASE_URL` — your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — your Supabase anon key
 
-3. **Add environment variables**
-   - In Vercel dashboard, go to **Settings** → **Environment Variables**
-   - Add both variables from your `.env.local`:
-     - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase URL
-     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
+5. Click **Deploy**
 
-4. **Deploy**
-   - Click **Deploy**
-   - Vercel will automatically detect Next.js and configure everything
+Your app will be live at a URL like `your-project.vercel.app`.
 
-> ⚠️ **Important**: Make sure to add all `.env.local` variables to Vercel before deploying, otherwise authentication and database features won't work.
+> ⚠️ **Important**: Make sure to add all environment variables in Vercel before deploying, otherwise the app will not connect to Supabase.
 
 ## 📝 License
 

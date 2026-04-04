@@ -1,340 +1,208 @@
 import type { Variants } from "framer-motion";
 
-// ============================================================================
-// TYPES
-// ============================================================================
+// Bankroll Mode
+export type BankrollMode = "auto" | "custom";
 
-export type BankrollMode = "auto" | "manual";
-
-export type BetResult = "win" | "loss" | "pending";
-
-export interface Bet {
+// Bet types
+export interface BankrollBet {
   id: string;
-  match: string;
-  date: string;
-  type: string;
-  aiOdds: number;
+  player: string;
+  opponent: string;
+  tournament: string;
+  surface: string;
+  odds: number;
   units: number;
-  result: BetResult;
-  isTracked: boolean;
+  roiLabel: "green" | "yellow" | "orange" | "red";
+  status: "pending" | "won" | "lost" | "void";
+  profit: number;
+  date: string;
+  isTracked?: boolean;
 }
 
-export interface Streak {
-  type: "W" | "L";
+// Mock bets for demonstration
+export const MOCK_BETS: BankrollBet[] = [
+  {
+    id: "b1",
+    player: "Jannik Sinner",
+    opponent: "Daniil Medvedev",
+    tournament: "ATP Finals",
+    surface: "Hard",
+    odds: 1.95,
+    units: 3,
+    roiLabel: "green",
+    status: "won",
+    profit: 5.85,
+    date: "2025-03-28",
+    isTracked: true,
+  },
+  {
+    id: "b2",
+    player: "Carlos Alcaraz",
+    opponent: "Alexander Zverev",
+    tournament: "ATP Finals",
+    surface: "Hard",
+    odds: 2.15,
+    units: 2,
+    roiLabel: "yellow",
+    status: "won",
+    profit: 3.70,
+    date: "2025-03-27",
+    isTracked: true,
+  },
+  {
+    id: "b3",
+    player: "Taylor Fritz",
+    opponent: "Grigor Dimitrov",
+    tournament: "Davis Cup",
+    surface: "Hard",
+    odds: 1.75,
+    units: 2,
+    roiLabel: "orange",
+    status: "lost",
+    profit: -4.00,
+    date: "2025-03-26",
+    isTracked: false,
+  },
+  {
+    id: "b4",
+    player: "Holger Rune",
+    opponent: "Casper Ruud",
+    tournament: "Monte Carlo",
+    surface: "Clay",
+    odds: 2.40,
+    units: 1,
+    roiLabel: "red",
+    status: "pending",
+    profit: 0,
+    date: "2025-04-10",
+    isTracked: true,
+  },
+  {
+    id: "b5",
+    player: "Rafael Nadal",
+    opponent: "Carlos Alcaraz",
+    tournament: "Roland Garros",
+    surface: "Clay",
+    odds: 2.80,
+    units: 2,
+    roiLabel: "orange",
+    status: "won",
+    profit: 4.60,
+    date: "2025-05-28",
+    isTracked: true,
+  },
+  {
+    id: "b6",
+    player: "Stefanos Tsitsipas",
+    opponent: "Novak Djokovic",
+    tournament: "Wimbledon",
+    surface: "Grass",
+    odds: 3.20,
+    units: 1,
+    roiLabel: "green",
+    status: "won",
+    profit: 3.20,
+    date: "2025-07-05",
+    isTracked: false,
+  },
+];
+
+// Streak interface
+export interface BankrollStreak {
   count: number;
+  type: "W" | "L";
 }
 
+// Bankroll KPI interface
 export interface BankrollKpi {
-  initialBankroll: number;
   currentBankroll: number;
+  initialBankroll: number;
   profitLoss: number;
   roi: number;
   betsTracked: number;
-  streak: Streak;
+  streak: BankrollStreak;
 }
 
+// Curve point interface
 export interface CurvePoint {
   date: string;
   bankroll: number;
   pnl: number;
 }
 
-// ============================================================================
-// ANIMATION VARIANTS
-// ============================================================================
-
+// Animation variants
 export const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0 },
 };
 
 export const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    transition: {
+      staggerChildren: 0.1,
+    },
   },
 };
 
-// ============================================================================
-// MOCK DATA
-// ============================================================================
-
-export const MOCK_BETS: Bet[] = [
-  {
-    id: "b1",
-    match: "Sinner vs Medvedev",
-    date: "2025-11-01",
-    type: "1N2",
-    aiOdds: 1.95,
-    units: 3,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b2",
-    match: "Alcaraz vs Zverev",
-    date: "2025-11-02",
-    type: "1N2",
-    aiOdds: 2.15,
-    units: 2,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b3",
-    match: "Fritz vs Dimitrov",
-    date: "2025-11-03",
-    type: "1N2",
-    aiOdds: 1.75,
-    units: 2,
-    result: "loss",
-    isTracked: true,
-  },
-  {
-    id: "b4",
-    match: "Rune vs Ruud",
-    date: "2025-11-05",
-    type: "1N2",
-    aiOdds: 2.40,
-    units: 1,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b5",
-    match: "Sinner vs Alcaraz",
-    date: "2025-11-07",
-    type: "1N2",
-    aiOdds: 1.85,
-    units: 3,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b6",
-    match: "Medvedev vs Rublev",
-    date: "2025-11-08",
-    type: "1N2",
-    aiOdds: 1.65,
-    units: 2,
-    result: "pending",
-    isTracked: true,
-  },
-  {
-    id: "b7",
-    match: "Zverev vs Tsitsipas",
-    date: "2025-11-10",
-    type: "1N2",
-    aiOdds: 2.30,
-    units: 1,
-    result: "loss",
-    isTracked: true,
-  },
-  {
-    id: "b8",
-    match: "Fritz vs Paul",
-    date: "2025-11-11",
-    type: "1N2",
-    aiOdds: 1.90,
-    units: 2,
-    result: "win",
-    isTracked: false,
-  },
-  {
-    id: "b9",
-    match: "Dimitrov vs Shelton",
-    date: "2025-11-12",
-    type: "1N2",
-    aiOdds: 1.72,
-    units: 2,
-    result: "win",
-    isTracked: false,
-  },
-  {
-    id: "b10",
-    match: "Rune vs De Minaur",
-    date: "2025-11-14",
-    type: "1N2",
-    aiOdds: 2.05,
-    units: 2,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b11",
-    match: "Ruud vs Hurkacz",
-    date: "2025-11-15",
-    type: "1N2",
-    aiOdds: 1.95,
-    units: 3,
-    result: "pending",
-    isTracked: true,
-  },
-  {
-    id: "b12",
-    match: "Alcaraz vs Djokovic",
-    date: "2025-11-16",
-    type: "1N2",
-    aiOdds: 2.50,
-    units: 1,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b13",
-    match: "Sinner vs Tsitsipas",
-    date: "2025-11-18",
-    type: "1N2",
-    aiOdds: 1.68,
-    units: 3,
-    result: "loss",
-    isTracked: true,
-  },
-  {
-    id: "b14",
-    match: "Medvedev vs Humbert",
-    date: "2025-11-19",
-    type: "1N2",
-    aiOdds: 1.82,
-    units: 2,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b15",
-    match: "Zverev vs Fritz",
-    date: "2025-11-21",
-    type: "1N2",
-    aiOdds: 1.78,
-    units: 2,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b16",
-    match: "Rublev vs Paul",
-    date: "2025-11-22",
-    type: "1N2",
-    aiOdds: 2.10,
-    units: 1,
-    result: "pending",
-    isTracked: false,
-  },
-  {
-    id: "b17",
-    match: "Dimitrov vs Rune",
-    date: "2025-11-23",
-    type: "1N2",
-    aiOdds: 1.95,
-    units: 2,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b18",
-    match: "Hurkacz vs Shelton",
-    date: "2025-11-24",
-    type: "1N2",
-    aiOdds: 2.25,
-    units: 1,
-    result: "loss",
-    isTracked: true,
-  },
-  {
-    id: "b19",
-    match: "De Minaur vs Thompson",
-    date: "2025-11-26",
-    type: "1N2",
-    aiOdds: 1.70,
-    units: 3,
-    result: "win",
-    isTracked: true,
-  },
-  {
-    id: "b20",
-    match: "Alcaraz vs Sinner",
-    date: "2025-11-27",
-    type: "1N2",
-    aiOdds: 2.80,
-    units: 1,
-    result: "win",
-    isTracked: true,
-  },
-];
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
-
-/**
- * Get tracked bets based on mode and selected bet IDs
- */
-export function getTrackedBets(
-  bets: Bet[],
-  mode: BankrollMode,
-  selectedBetIds: Set<string>
-): Bet[] {
-  const completedBets = bets.filter((b) => b.result !== "pending");
-
-  if (mode === "auto") {
-    return completedBets.filter((b) => b.isTracked);
-  }
-
-  return completedBets.filter((b) => selectedBetIds.has(b.id));
-}
-
-/**
- * Calculate bankroll KPIs based on tracked bets
- */
+// Calculate KPIs based on bets, mode, and selected bets
 export function calculateKpis(
-  bets: Bet[],
+  bets: BankrollBet[],
   initialBankroll: number,
   mode: BankrollMode,
   selectedBetIds: Set<string>
 ): BankrollKpi {
+  // Filter bets based on mode
   const trackedBets = getTrackedBets(bets, mode, selectedBetIds);
-
-  // Calculate profit/loss
-  let profitLoss = 0;
-  const results: ("W" | "L")[] = [];
-
-  for (const bet of trackedBets) {
-    if (bet.result === "win") {
-      profitLoss += (bet.aiOdds - 1) * bet.units;
-      results.push("W");
-    } else if (bet.result === "loss") {
-      profitLoss -= bet.units;
-      results.push("L");
-    }
-  }
-
+  
+  // Calculate profit/loss from tracked bets
+  const profitLoss = trackedBets.reduce((sum, bet) => sum + bet.profit, 0);
+  
+  // Calculate current bankroll
   const currentBankroll = initialBankroll + profitLoss;
-
-  // Calculate ROI based on total staked
-  const totalStaked = trackedBets.reduce((sum, b) => sum + b.units, 0);
-  const roi = totalStaked > 0 ? (profitLoss / totalStaked) * 100 : 0;
-
+  
+  // Calculate total units staked
+  const totalUnits = trackedBets.reduce((sum, bet) => sum + bet.units, 0);
+  
+  // Calculate ROI
+  const roi = totalUnits > 0 ? (profitLoss / totalUnits) * 100 : 0;
+  
   // Calculate streak
-  let streak: Streak = { type: "W", count: 0 };
-
-  if (results.length > 0) {
-    const lastResult = results[results.length - 1];
-    streak = { type: lastResult, count: 1 };
-
-    // Count consecutive results from the end
-    for (let i = results.length - 2; i >= 0; i--) {
-      if (results[i] === lastResult) {
-        streak.count++;
+  const wonBets = trackedBets.filter((b) => b.status === "won").length;
+  const lostBets = trackedBets.filter((b) => b.status === "lost").length;
+  
+  // Find current streak
+  let streak: BankrollStreak = { count: 0, type: "W" };
+  const settledBets = trackedBets.filter((b) => b.status !== "pending");
+  
+  if (settledBets.length > 0) {
+    // Sort by date descending
+    const sortedBets = [...settledBets].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    const mostRecent = sortedBets[0];
+    const streakType = mostRecent.status === "won" ? "W" : "L";
+    
+    let count = 1;
+    for (let i = 1; i < sortedBets.length; i++) {
+      if (
+        (streakType === "W" && sortedBets[i].status === "won") ||
+        (streakType === "L" && sortedBets[i].status === "lost")
+      ) {
+        count++;
       } else {
         break;
       }
     }
+    
+    streak = { count, type: streakType as "W" | "L" };
   }
-
+  
   return {
-    initialBankroll,
     currentBankroll,
+    initialBankroll,
     profitLoss,
     roi,
     betsTracked: trackedBets.length,
@@ -342,49 +210,72 @@ export function calculateKpis(
   };
 }
 
-/**
- * Generate curve data points for the bankroll chart
- */
+// Get tracked bets based on mode
+export function getTrackedBets(
+  bets: BankrollBet[],
+  mode: BankrollMode,
+  selectedBetIds: Set<string>
+): BankrollBet[] {
+  if (mode === "auto") {
+    // In auto mode, track all bets marked as isTracked
+    return bets.filter((b) => b.isTracked);
+  } else {
+    // In custom mode, only track selected bets
+    return bets.filter((b) => selectedBetIds.has(b.id));
+  }
+}
+
+// Generate curve data from bets
 export function generateCurveData(
-  bets: Bet[],
+  bets: BankrollBet[],
   initialBankroll: number
 ): CurvePoint[] {
+  if (bets.length === 0) {
+    return [
+      {
+        date: new Date().toISOString().split("T")[0],
+        bankroll: initialBankroll,
+        pnl: 0,
+      },
+    ];
+  }
+  
   // Sort bets by date
   const sortedBets = [...bets].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
-
-  const points: CurvePoint[] = [];
+  
+  const curvePoints: CurvePoint[] = [];
   let currentBankroll = initialBankroll;
-
-  // Add starting point
-  if (sortedBets.length > 0) {
-    const firstBetDate = new Date(sortedBets[0].date);
-    // Start from beginning of the month of the first bet
-    const startDate = new Date(firstBetDate.getFullYear(), firstBetDate.getMonth(), 1);
-    points.push({
-      date: startDate.toISOString().split("T")[0],
-      bankroll: initialBankroll,
-      pnl: 0,
-    });
-  }
-
-  // Add point for each completed bet
+  
+  // Add initial point
+  curvePoints.push({
+    date: sortedBets[0].date,
+    bankroll: initialBankroll,
+    pnl: 0,
+  });
+  
+  // Process each bet
   for (const bet of sortedBets) {
-    if (bet.result === "win") {
-      currentBankroll += (bet.aiOdds - 1) * bet.units;
-    } else if (bet.result === "loss") {
-      currentBankroll -= bet.units;
-    }
-
-    const pnl = currentBankroll - initialBankroll;
-
-    points.push({
+    currentBankroll += bet.profit;
+    curvePoints.push({
       date: bet.date,
-      bankroll: Math.round(currentBankroll * 100) / 100,
-      pnl: Math.round(pnl * 100) / 100,
+      bankroll: currentBankroll,
+      pnl: currentBankroll - initialBankroll,
     });
   }
-
-  return points;
+  
+  // Add current point if no bets or last bet is older than today
+  const lastDate = sortedBets[sortedBets.length - 1]?.date;
+  const today = new Date().toISOString().split("T")[0];
+  
+  if (!lastDate || lastDate < today) {
+    curvePoints.push({
+      date: today,
+      bankroll: currentBankroll,
+      pnl: currentBankroll - initialBankroll,
+    });
+  }
+  
+  return curvePoints;
 }

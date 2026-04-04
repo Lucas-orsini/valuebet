@@ -42,10 +42,10 @@ function SurfaceCard({ surface, delay }: { surface: SurfaceStats; delay: number 
     },
     hard: {
       icon: "🎾",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
-      accent: "text-blue-400",
-      bar: "bg-blue-500",
+      bg: "bg-orange-500/10",
+      border: "border-orange-500/20",
+      accent: "text-orange-400",
+      bar: "bg-orange-500",
     },
     grass: {
       icon: "🌿",
