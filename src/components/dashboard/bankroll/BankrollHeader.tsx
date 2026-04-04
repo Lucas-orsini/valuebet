@@ -22,7 +22,6 @@ export function BankrollHeader({
   const [inputValue, setInputValue] = useState(initialBankroll.toString());
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -134,8 +133,8 @@ export function BankrollHeader({
         {/* Mode Toggle */}
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-              <Sparkles size={18} className="text-orange-400" strokeWidth={1.5} />
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+              <Sparkles size={18} className="text-indigo-400" strokeWidth={1.5} />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-100">
@@ -147,15 +146,15 @@ export function BankrollHeader({
             </div>
           </div>
 
-          {/* Toggle Switch + Help Button */}
+          {/* Toggle Switch */}
           <div className="flex items-center gap-4">
             <button
               onClick={handleModeToggle}
               className="relative w-full max-w-[280px] h-12 rounded-lg bg-[#0a0a0a] border border-white/[0.08] p-1 cursor-pointer"
             >
-              {/* Sliding background — orange gradient */}
+              {/* Sliding background */}
               <motion.div
-                className="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] rounded-md bg-gradient-to-r from-orange-500 to-orange-600"
+                className="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] rounded-md bg-gradient-to-r from-indigo-500 to-indigo-600"
                 animate={{ x: mode === "manual" ? "100%" : "0%" }}
                 transition={{ type: "spring", stiffness: 500, damping: 35 }}
               />
@@ -211,50 +210,6 @@ export function BankrollHeader({
                 </div>
               </div>
             </button>
-
-            {/* Help Button */}
-            <button
-              type="button"
-              onClick={() => setShowTooltip((v) => !v)}
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
-              className="w-6 h-6 rounded flex items-center justify-center text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.05] transition-colors shrink-0"
-              aria-label="Aide sur les modes de suivi"
-            >
-              <span className="text-sm font-medium">?</span>
-            </button>
-          </div>
-
-          {/* Tooltip */}
-          <div
-            className={cn(
-              "absolute lg:relative mt-2 lg:mt-0 z-50 pointer-events-none transition-opacity duration-200 max-w-[280px]",
-              showTooltip ? "opacity-100" : "opacity-0"
-            )}
-          >
-            <div className="bg-[#1a1a1a] border border-white/[0.12] rounded-lg p-3 shadow-xl">
-              <p className="text-xs font-semibold text-zinc-200 mb-2">
-                Différence entre les modes
-              </p>
-              <div className="space-y-2">
-                <div>
-                  <p className="text-[11px] font-medium text-orange-400 mb-0.5">
-                    Automatique
-                  </p>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">
-                    Le suivi inclut automatiquement tous les paris recommandés par l&apos;IA Haurus.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium text-zinc-300 mb-0.5">
-                    Personnalisé
-                  </p>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">
-                    Sélectionnez manuellement les paris à inclure dans le calcul de votre bankroll.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Mode description */}

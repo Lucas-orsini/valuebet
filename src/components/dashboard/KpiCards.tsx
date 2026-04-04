@@ -60,7 +60,7 @@ function AnimatedValue({
 
   if (isStreak) {
     return (
-      <span className="text-3xl font-bold text-white tracking-tight tabular-nums">
+      <span className="text-3xl font-bold text-zinc-100 tracking-tight tabular-nums">
         {Math.round(count)}
       </span>
     );
@@ -72,7 +72,7 @@ function AnimatedValue({
       maximumFractionDigits: 1,
     });
     return (
-      <span className="text-3xl font-bold text-white tracking-tight tabular-nums">
+      <span className="text-3xl font-bold text-zinc-100 tracking-tight tabular-nums">
         {formatted}€
       </span>
     );
@@ -80,7 +80,7 @@ function AnimatedValue({
 
   if (isPercentage) {
     return (
-      <span className="text-3xl font-bold text-white tracking-tight tabular-nums">
+      <span className="text-3xl font-bold text-zinc-100 tracking-tight tabular-nums">
         {count.toFixed(1)}
         <span className="text-xl ml-0.5">%</span>
       </span>
@@ -88,7 +88,7 @@ function AnimatedValue({
   }
 
   return (
-    <span className="text-3xl font-bold text-white tracking-tight tabular-nums">
+    <span className="text-3xl font-bold text-zinc-100 tracking-tight tabular-nums">
       {count.toFixed(1)}%
     </span>
   );
