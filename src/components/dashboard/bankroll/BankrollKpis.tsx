@@ -100,13 +100,15 @@ function KpiCard({
   delay,
   started,
 }: KpiCardProps) {
-  const variantStyles = {
+  // Value is always white
+  const valueStyles = {
     default: "text-zinc-100",
-    success: "text-green-400",
-    danger: "text-red-400",
-    accent: "text-[#F2CB38]",
+    success: "text-zinc-100",
+    danger: "text-zinc-100",
+    accent: "text-zinc-100",
   };
 
+  // Subtext color based on variant
   const subtextStyles = {
     success: "text-green-400",
     danger: "text-red-400",
@@ -121,15 +123,17 @@ function KpiCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
+          {/* Icon container - yellow on yellow background */}
           <div
             className={cn(
               "w-9 h-9 rounded-lg flex items-center justify-center",
-              variant === "success" && "bg-green-500/10 border border-green-500/20",
-              variant === "danger" && "bg-red-500/10 border border-red-500/20",
-              variant === "accent" && "bg-[#F2CB38]/10 border border-[#F2CB38]/20",
-              variant === "default" && "bg-white/[0.05] border border-white/[0.08]"
+              variant === "success" && "bg-[#F2AB05]/10 border border-[#F2AB05]/20",
+              variant === "danger" && "bg-[#F2AB05]/10 border border-[#F2AB05]/20",
+              variant === "accent" && "bg-[#F2AB05]/10 border border-[#F2AB05]/20",
+              variant === "default" && "bg-[#F2AB05]/10 border border-[#F2AB05]/20"
             )}
           >
+            {/* Yellow icon */}
             {icon}
           </div>
           <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">
@@ -138,12 +142,12 @@ function KpiCard({
         </div>
       </div>
 
-      {/* Value */}
+      {/* Value - always white */}
       <div className="flex items-end gap-1">
         <span
           className={cn(
             "text-3xl font-bold tracking-tight",
-            variantStyles[variant]
+            valueStyles[variant]
           )}
         >
           {value < 0 && value !== 0 ? "-" : ""}
@@ -161,7 +165,7 @@ function KpiCard({
         )}
       </div>
 
-      {/* Subtext */}
+      {/* Subtext - colored based on positive/negative evolution */}
       {subtext && (
         <p className={cn("text-xs mt-2", subtextStyles[subtextVariant])}>
           {subtext}
@@ -200,7 +204,7 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
         icon: (
           <Wallet
             size={18}
-            className="text-[#F2CB38]"
+            className="text-[#F2AB05]"
             strokeWidth={1.5}
           />
         ),
@@ -224,18 +228,18 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
           kpis.profitLoss >= 0 ? (
             <TrendingUp
               size={18}
-              className="text-green-400"
+              className="text-[#F2AB05]"
               strokeWidth={1.5}
             />
           ) : (
             <TrendingDown
               size={18}
-              className="text-red-400"
+              className="text-[#F2AB05]"
               strokeWidth={1.5}
             />
           ),
         variant:
-          kpis.profitLoss >= 0 ? ("success" as const) : ("danger" as const),
+          kpis.profitLoss >= 0 ? ("accent" as const) : ("accent" as const),
         isCurrency: true,
         decimals: 2,
         suffix: "€",
@@ -247,9 +251,9 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
         label: "ROI",
         value: kpis.roi,
         icon: (
-          <Trophy size={18} className="text-[#F2CB38]" strokeWidth={1.5} />
+          <Trophy size={18} className="text-[#F2AB05]" strokeWidth={1.5} />
         ),
-        variant: kpis.roi >= 0 ? ("accent" as const) : ("danger" as const),
+        variant: kpis.roi >= 0 ? ("accent" as const) : ("accent" as const),
         decimals: 1,
         suffix: "%",
         subtext:
@@ -266,14 +270,11 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
         icon: (
           <Flame
             size={18}
-            className={
-              kpis.streak.type === "W" ? "text-green-400" : "text-red-400"
-            }
+            className="text-[#F2AB05]"
             strokeWidth={1.5}
           />
         ),
-        variant:
-          kpis.streak.type === "W" ? ("success" as const) : ("danger" as const),
+        variant: ("accent" as const),
         subtext: `${kpis.streak.type === "W" ? "Victoires" : "Défaites"} consécutives`,
         subtextVariant: "default" as const,
         delay: 0.3,
