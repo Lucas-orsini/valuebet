@@ -59,20 +59,29 @@ npm install
 
 ### 3. Set up environment variables
 
-Create a file named `.env.local` in the root of your project. This file stores sensitive configuration that your app needs to connect to Supabase.
+Create a `.env.local` file in the project root (this is a file where we store secret keys — it stays on your computer and is not uploaded to GitHub).
 
-Copy the template from `.env.example`:
+Copy the example file:
 
 ```bash
 cp .env.example .env.local
 ```
 
-Open `.env.local` in your code editor and fill in your Supabase credentials:
+Open `.env.local` in your code editor and fill in the values:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+**Where to find these values:**
+
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Click **Project Settings** (gear icon) in the left sidebar
+4. Click **API** under the Settings section
+5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
+6. Copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 4. Run the development server
 
@@ -82,82 +91,67 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> 💡 **VS Code tip**: open the integrated terminal with `Ctrl+`` (or Cmd+`` on Mac)
+> 💡 **VS Code tip**: Open the integrated terminal with `Ctrl+`` (or `Cmd+`` on Mac) — this is where you type commands.
 
 ## 🔑 Environment Variables
 
 | Variable | Required | Where to find it | Description |
 |----------|----------|------------------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | [Supabase Dashboard](https://supabase.com) → Project Settings → API → Project URL | Your Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | [Supabase Dashboard](https://supabase.com) → Project Settings → API → anon/public key | Public API key for client-side authentication |
-
-**Steps to find your Supabase credentials:**
-1. Go to [supabase.com](https://supabase.com) and sign in
-2. Select your project
-3. Click **Project Settings** (gear icon) in the left sidebar
-4. Click **API** under the Settings section
-5. Copy the **Project URL** and paste it as `NEXT_PUBLIC_SUPABASE_URL`
-6. Copy the **anon/public** key and paste it as `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase Dashboard → Project Settings → API → Project URL | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard → Project Settings → API → anon/public key | Anonymous API key for client-side auth |
 
 ## 🧪 Running Tests
 
-Unit tests automatically check that your app's components and functions work correctly without needing a browser.
+Unit tests automatically check that individual parts of the code work correctly.
 
-### Run all tests
+**Run all tests:**
 
 ```bash
 npx jest
 ```
 
-### Run a specific test file
+**Run a specific test file:**
 
 ```bash
 npx jest __tests__/dashboard-data.test.ts
 ```
 
-### Watch mode (re-runs tests on file change)
+**Watch mode (re-runs on file change):**
 
 ```bash
 npx jest --watch
 ```
 
-### Reading test output
+**Reading test output:**
+- `PASS` = all tests in that file passed ✅
+- `FAIL` = something broke ❌ — the error message shows which test failed and why
 
-- **PASS** — All tests passed, everything is working correctly
-- **FAIL** — Something broke. The output will show which test failed and why (expected vs received value)
-
-### What the tests cover
-
-Based on the test files detected, the following is tested:
-- Dashboard data fetching and processing
+**Tests cover:**
+- Dashboard data processing (ROI calculations, odds formatting, bet statistics)
 
 ## 📁 Project Structure
 
-| Folder | Description |
-|--------|-------------|
-| `src/app` | Next.js App Router pages and layouts |
-| `src/components` | Reusable React components |
-| `src/components/dashboard` | Dashboard-specific components including bankroll tracker |
-| `src/components/dashboard/bankroll` | Bankroll header, KPIs, and tracking components |
-| `src/lib` | Utility functions, Supabase client setup, and data processing |
-| `__tests__` | Jest unit tests |
-| `public` | Static assets (images, fonts) |
+- `src/app/` — Next.js App Router pages and layouts
+- `src/components/` — React components organized by feature (dashboard, bankroll, etc.)
+- `src/lib/` — Utility functions, Supabase client setup, and data processing helpers
+- `__tests__/` — Jest test files
+- `public/` — Static assets (images, fonts)
 
 ## 🚀 Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### Step by step
+**Step by step:**
 
-1. Click the **Deploy with Vercel** button above (or go to [vercel.com/new](https://vercel.com/new))
-2. Import your GitHub repository (`value-bet-ai`)
+1. Click the button above or go to [vercel.com/new](https://vercel.com/new)
+2. Import your GitHub repository
 3. In the Vercel dashboard, go to **Settings** → **Environment Variables**
-4. Add all environment variables from your `.env.local` file:
-   - `NEXT_PUBLIC_SUPABASE_URL` — your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — your Supabase anon key
+4. Add all variables from your `.env.local` file:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 5. Click **Deploy**
 
-> ⚠️ **Important**: Make sure to add all environment variables in Vercel before deploying. Your app will not work correctly without them.
+> ⚠️ **Important**: Make sure to add all environment variables in Vercel before deploying, otherwise your app will crash.
 
 ## 📝 License
 

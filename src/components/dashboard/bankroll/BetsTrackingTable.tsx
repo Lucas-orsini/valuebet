@@ -277,7 +277,7 @@ function BetRow({
   formatDate,
 }: BetRowProps) {
   const profit = calculateProfit(bet);
-  const displayOdds = customOdds || bet.aiOdds;
+  const displayOdds = customOdds ?? bet.aiOdds;
 
   const isDisabled = mode === "auto" && !bet.isTracked;
   const isGreyedOut = mode === "auto" && bet.isTracked === false && bet.result !== "pending";

@@ -212,107 +212,34 @@ export const MOCK_BETS: MockBet[] = [
   },
 ];
 
-// Curve data point type
-export interface CurvePoint {
-  date: string;
-  bankroll: number;
-  pnl: number;
-}
+// Curve data for the bankroll chart
+export const BANKROLL_CURVE_DATA: CurvePoint[] = [
+  { date: "2025-01-01", bankroll: 500, pnl: 0 },
+  { date: "2025-01-08", bankroll: 515, pnl: 15 },
+  { date: "2025-01-15", bankroll: 530, pnl: 30 },
+  { date: "2025-01-22", bankroll: 522, pnl: 22 },
+  { date: "2025-01-29", bankroll: 538, pnl: 38 },
+  { date: "2025-02-05", bankroll: 555, pnl: 55 },
+  { date: "2025-02-12", bankroll: 548, pnl: 48 },
+  { date: "2025-02-19", bankroll: 562, pnl: 62 },
+  { date: "2025-02-26", bankroll: 580, pnl: 80 },
+  { date: "2025-03-05", bankroll: 572, pnl: 72 },
+  { date: "2025-03-12", bankroll: 595, pnl: 95 },
+  { date: "2025-03-19", bankroll: 612, pnl: 112 },
+  { date: "2025-03-26", bankroll: 598, pnl: 98 },
+  { date: "2025-04-02", bankroll: 615, pnl: 115 },
+  { date: "2025-04-09", bankroll: 635, pnl: 135 },
+  { date: "2025-04-16", bankroll: 650, pnl: 150 },
+];
 
-// Get tracked bets based on mode
-export function getTrackedBets(
-  bets: MockBet[],
-  mode: BankrollMode,
-  selectedBetIds: Set<string>
-): MockBet[] {
-  if (mode === "auto") {
-    return bets.filter((bet) => bet.isTracked);
-  }
-  return bets.filter((bet) => selectedBetIds.has(bet.id));
-}
-
-// Generate curve data from bets
-export function generateCurveData(
-  bets: MockBet[],
-  initialBankroll: number
-): CurvePoint[] {
-  if (bets.length === 0) {
-    return [{ date: new Date().toISOString().split("T")[0], bankroll: initialBankroll, pnl: 0 }];
-  }
-
-  const sortedBets = [...bets].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-
-  let currentBankroll = initialBankroll;
-  return sortedBets.map((bet) => {
-    if (bet.pnl !== undefined) {
-      currentBankroll += bet.pnl;
-    }
-    return {
-      date: bet.date,
-      bankroll: currentBankroll,
-      pnl: currentBankroll - initialBankroll,
-    };
-  });
-}
-
-// Calculate KPIs from bets
-export function calculateKpis(
-  bets: MockBet[],
-  initialBankroll: number,
-  mode: BankrollMode,
-  selectedBetIds: Set<string>
-): BankrollKpi {
-  const trackedBets = getTrackedBets(bets, mode, selectedBetIds);
-  const settledBets = trackedBets.filter((bet) => bet.result !== "P");
-
-  let currentBankroll = initialBankroll;
-  let totalPnL = 0;
-  let wins = 0;
-  let losses = 0;
-
-  settledBets.forEach((bet) => {
-    if (bet.pnl !== undefined) {
-      totalPnL += bet.pnl;
-      currentBankroll += bet.pnl;
-      if (bet.pnl > 0) wins++;
-      else if (bet.pnl < 0) losses++;
-    }
-  });
-
-  const totalBets = wins + losses;
-  const winRate = totalBets > 0 ? (wins / totalBets) * 100 : 0;
-  const roi = initialBankroll > 0 ? (totalPnL / initialBankroll) * 100 : 0;
-
-  // Calculate streak
-  let streakCount = 0;
-  let streakType: "W" | "L" = "W";
-  for (let i = settledBets.length - 1; i >= 0; i--) {
-    const bet = settledBets[i];
-    if (bet.pnl === undefined) continue;
-
-    if (bet.pnl > 0) {
-      if (streakType === "W") streakCount++;
-      else break;
-    } else if (bet.pnl < 0) {
-      if (streakType === "L") streakCount++;
-      else {
-        streakType = "L";
-        streakCount = 1;
-      }
-    }
-  }
-
-  return {
-    currentBankroll,
-    initialBankroll,
-    profitLoss: totalPnL,
-    roi,
-    betsTracked: trackedBets.length,
-    streak: {
-      type: streakType,
-      count: streakCount,
-    },
-  };
-}
+// Transform MOCK_BETS to Bet[] for BetsTrackingTable
+export const MOCK_BETS_TRACKING: Bet[] = MOCK_BETS.map((bet) => ({
+  id: bet.id,
+  match: `${bet.player} vs ${bet.opponent}`,
+  type: bet.tournament,
+  date: bet.date,
+  aiOdds: bet.odds,
+  units: bet.units,
+  result: bet.result === "W" ? "win" : bet.result === "L" ? "loss" : "pending",
+  isTracked: bet.isTracked,
+}));
