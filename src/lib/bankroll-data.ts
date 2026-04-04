@@ -2,7 +2,38 @@ import type { Variants } from "framer-motion";
 
 // Bankroll Mode type
 export type BankrollMode = "auto" | "custom";
+export type BetResult = "win" | "loss" | "pending";
 
+export interface Bet {
+  id: string;
+  match: string;
+  date: string;
+  type: string;
+  aiOdds: number;
+  units: number;
+  result: BetResult;
+  isTracked: boolean;
+}
+
+export interface Streak {
+  type: "W" | "L";
+  count: number;
+}
+
+export interface BankrollKpi {
+  initialBankroll: number;
+  currentBankroll: number;
+  profitLoss: number;
+  roi: number;
+  betsTracked: number;
+  streak: Streak;
+}
+
+export interface CurvePoint {
+  date: string;
+  bankroll: number;
+  pnl: number;
+}
 // Animation variants
 export const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 20 },

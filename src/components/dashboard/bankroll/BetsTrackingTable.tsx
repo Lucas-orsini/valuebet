@@ -128,7 +128,7 @@ export function BetsTrackingTable({
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.05]">
-              {mode === "manual" && (
+              {mode === "custom" && (
                 <th className="px-4 py-3 w-12">
                   <span className="sr-only">Sélection</span>
                 </th>
@@ -145,7 +145,7 @@ export function BetsTrackingTable({
               <th className="px-4 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
                 Cote IA
               </th>
-              {mode === "manual" && (
+              {mode === "custom" && (
                 <th className="px-4 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
                   Cote réelle
                 </th>
@@ -295,8 +295,8 @@ function BetRow({
         !isDisabled && "hover:bg-white/[0.02] cursor-pointer"
       )}
     >
-      {/* Checkbox (manual mode only) */}
-      {mode === "manual" && (
+      {/* Checkbox (custom mode only) */}
+      {mode === "custom" && (
         <td className="px-4 py-4">
           <button
             onClick={onToggle}
@@ -334,8 +334,8 @@ function BetRow({
         </span>
       </td>
 
-      {/* Custom Odds (manual mode only) */}
-      {mode === "manual" && (
+      {/* Custom Odds (custom mode only) */}
+      {mode === "custom" && (
         <td className="px-4 py-4 text-center">
           {isSelected ? (
             <input
