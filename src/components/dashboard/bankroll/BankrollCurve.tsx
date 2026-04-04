@@ -130,7 +130,7 @@ export function BankrollCurve({ data, initialBankroll }: BankrollCurveProps) {
             Évolution bankroll
           </h2>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-0.5 rounded-full bg-[#F2CB38]" />
+            <div className="w-2.5 h-0.5 rounded-full bg-[#fb923c]" />
             <span className="text-[11px] text-zinc-500">Bankroll</span>
           </div>
         </div>
@@ -144,7 +144,7 @@ export function BankrollCurve({ data, initialBankroll }: BankrollCurveProps) {
               className={cn(
                 "px-3 py-1 rounded-md text-xs font-medium transition-colors",
                 selectedRange === option.value
-                  ? "bg-[#F2CB38]/15 text-[#F2CB38] border border-[#F2CB38]/20"
+                  ? "bg-[#fb923c]/15 text-[#fb923c] border border-[#fb923c]/20"
                   : "text-zinc-500 hover:text-zinc-300"
               )}
             >
@@ -160,7 +160,7 @@ export function BankrollCurve({ data, initialBankroll }: BankrollCurveProps) {
           <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
             Actuelle
           </p>
-          <p className="text-lg font-bold text-zinc-100 tabular-nums">
+          <p className="text-lg font-bold text-white tabular-nums">
             {stats.current.toLocaleString("fr-FR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -221,9 +221,9 @@ export function BankrollCurve({ data, initialBankroll }: BankrollCurveProps) {
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="bankrollGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#F2CB38" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#F2CB38" stopOpacity={0} />
+              <linearGradient id="bankrollGradientOrange" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#fb923c" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#fb923c" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -256,13 +256,13 @@ export function BankrollCurve({ data, initialBankroll }: BankrollCurveProps) {
             <Area
               type="monotone"
               dataKey="bankroll"
-              stroke="#F2CB38"
+              stroke="#fb923c"
               strokeWidth={2}
-              fill="url(#bankrollGradient)"
+              fill="url(#bankrollGradientOrange)"
               dot={false}
               activeDot={{
                 r: 5,
-                fill: "#F2CB38",
+                fill: "#fb923c",
                 stroke: "#0a0a0a",
                 strokeWidth: 2,
               }}
