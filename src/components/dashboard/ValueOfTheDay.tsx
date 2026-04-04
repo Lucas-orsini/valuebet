@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Info, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,20 +21,22 @@ interface TooltipData {
   edge: number;
 }
 
+const TOOLTIP_WIDTH = 220;
+const TOOLTIP_MARGIN = 16;
+
 export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
-  const [tooltipTargetRect, setTooltipTargetRect] = useState<DOMRect | null>(null);
+  const [mouseX, setMouseX] = useState<number | null>(null);
   const [lastRefresh] = useState<Date>(new Date());
 
   const sortedItems = [...items].sort((a, b) => b.edge - a.edge);
 
   const handleMouseEnter = (
     item: ValueOfTheDayItem,
-    containerRef: HTMLDivElement | null
+    event: React.MouseEvent<HTMLDivElement>
   ) => {
-    if (!containerRef) return;
-    const rect = containerRef.getBoundingClientRect();
-    setTooltipTargetRect(rect);
+    const initialX = event.clientX;
+    setMouseX(initialX);
     setTooltip({
       playerName: item.playerName,
       odds: item.odds,
@@ -46,8 +48,12 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
     });
   };
 
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    setMouseX(event.clientX);
+  };
+
   const handleMouseLeave = () => {
-    setTooltipTargetRect(null);
+    setMouseX(null);
     setTooltip(null);
   };
 
@@ -141,7 +147,6 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
         <div className="divide-y divide-white/[0.04]">
           {sortedItems.map((item, index) => {
             const roiColors = ROI_COLORS[item.roiLabel];
-            const oddsContainerRef = useRef<HTMLDivElement>(null);
 
             return (
               <motion.div
@@ -149,7 +154,8 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                onMouseEnter={() => handleMouseEnter(item, oddsContainerRef.current)}
+                onMouseEnter={(e) => handleMouseEnter(item, e)}
+                onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 className="relative px-4 py-3 hover:bg-white/[0.02] transition-colors cursor-pointer"
               >
@@ -180,10 +186,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
                   {/* Odds & Badge */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <div
-                      ref={oddsContainerRef}
-                      className="w-14 min-w-[3.5rem] flex items-center justify-center"
-                    >
+                    <div className="w-14 min-w-[3.5rem] flex items-center justify-center">
                       <span className="text-sm font-semibold text-zinc-100 tabular-nums text-center">
                         {item.odds.toFixed(2)}
                       </span>
@@ -228,7 +231,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
       {/* Tooltip */}
       <AnimatePresence>
-        {tooltip && tooltipTargetRect && (
+        {tooltip && mouseX !== null && (
           <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
@@ -236,8 +239,14 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
             transition={{ duration: 0.15 }}
             className="fixed z-50 pointer-events-none"
             style={{
-              left: tooltipTargetRect.left + tooltipTargetRect.width / 2,
-              top: tooltipTargetRect.top - 8,
+              left: Math.max(
+                TOOLTIP_WIDTH / 2 + TOOLTIP_MARGIN,
+                Math.min(
+                  mouseX,
+                  window.innerWidth - TOOLTIP_WIDTH / 2 - TOOLTIP_MARGIN
+                )
+              ),
+              top: 0,
               transform: "translate(-50%, -100%)",
             }}
           >
