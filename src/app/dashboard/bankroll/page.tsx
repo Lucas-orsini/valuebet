@@ -8,10 +8,8 @@ import { BankrollKpis } from "@/components/dashboard/bankroll/BankrollKpis";
 import { BankrollCurve } from "@/components/dashboard/bankroll/BankrollCurve";
 import { BetsTrackingTable } from "@/components/dashboard/bankroll/BetsTrackingTable";
 import {
-  MOCK_BETS,
-  generateCurveData,
-  calculateKpis,
-  getTrackedBets,
+  MOCK_BETS_TRACKING,
+  BANKROLL_CURVE_DATA,
 } from "@/lib/bankroll-data";
 import type { BankrollMode, BankrollKpi, CurvePoint } from "@/lib/bankroll-data";
 
@@ -21,7 +19,7 @@ export default function BankrollPage() {
   const [initialBankroll, setInitialBankroll] = useState(DEFAULT_INITIAL_BANKROLL);
   const [mode, setMode] = useState<BankrollMode>("auto");
   const [selectedBetIds, setSelectedBetIds] = useState<Set<string>>(() => {
-    return new Set(MOCK_BETS.filter((b) => b.isTracked).map((b) => b.id));
+    return new Set(MOCK_BETS_TRACKING.filter((b) => b.isTracked).map((b) => b.id));
   });
   const [customOdds, setCustomOdds] = useState<Record<string, number>>({});
 
@@ -53,13 +51,51 @@ export default function BankrollPage() {
   }, []);
 
   const kpis: BankrollKpi = useMemo(() => {
-    return calculateKpis(MOCK_BETS, initialBankroll, mode, selectedBetIds);
-  }, [initialBankroll, mode, selectedBetIds]);
+    const trackedBets = MOCK_BETS_TRACKING.filter((b) => b.isTracked);
+    const settledBets = trackedBets.filter((b) => b.result !== "pending");
+    
+    const totalPnL = settledBets.reduce((acc, bet) => {
+      const odds = customOdds[bet.id] || bet.aiOdds;
+      if (bet.result === "win") {
+        return acc + (odds - 1) * bet.units;
+      }
+      return acc - bet.units;
+    }, 0);
+    
+    const wonBets = settledBets.filter((b) => b.result === "win").length;
+    const winRate = settledBets.length > 0 ? (wonBets / settledBets.length) * 100 : 0;
+    const totalStaked = settledBets.reduce((acc, b) => acc + b.units, 0);
+    const roi = totalStaked > 0 ? (totalPnL / totalStaked) * 100 : 0;
+    
+    // Calculate streak
+    let streak: { type: "W" | "L"; count: number } = { type: "W", count: 0 };
+    const sortedBets = [...settledBets].reverse();
+    if (sortedBets.length > 0) {
+      let currentStreak = 1;
+      const firstResult = sortedBets[0].result;
+      for (let i = 1; i < sortedBets.length; i++) {
+        if (sortedBets[i].result === firstResult) {
+          currentStreak++;
+        } else {
+          break;
+        }
+      }
+      streak = { type: firstResult === "win" ? "W" : "L", count: currentStreak };
+    }
+    
+    return {
+      initialBankroll,
+      currentBankroll: initialBankroll + totalPnL,
+      profitLoss: totalPnL,
+      roi,
+      betsTracked: trackedBets.length,
+      streak,
+    };
+  }, [initialBankroll, customOdds]);
 
   const curveData: CurvePoint[] = useMemo(() => {
-    const trackedBets = getTrackedBets(MOCK_BETS, mode, selectedBetIds);
-    return generateCurveData(trackedBets, initialBankroll);
-  }, [mode, selectedBetIds, initialBankroll]);
+    return BANKROLL_CURVE_DATA;
+  }, []);
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] text-zinc-100 overflow-hidden">
@@ -93,7 +129,7 @@ export default function BankrollPage() {
 
             {/* Bets Tracking Table */}
             <BetsTrackingTable
-              bets={MOCK_BETS}
+              bets={MOCK_BETS_TRACKING}
               mode={mode}
               selectedBetIds={selectedBetIds}
               customOdds={customOdds}
