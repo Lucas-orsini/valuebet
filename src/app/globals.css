@@ -19,6 +19,51 @@
   --accent-glow: rgba(242, 203, 56, 0.18);
   --green: #4ade80;
   --red: #f87171;
+
+  /* Surfaces bankroll — nuances de gris intermédiaire */
+  --surface-bankroll-1: #0d0d0d;
+  --surface-bankroll-2: #111111;
+  --surface-bankroll-3: #161616;
+  --surface-bankroll-4: #1a1a1a;
+
+  /* Indicateurs ROI — palette verte (optimal) */
+  --roi-green: #22c55e;
+  --roi-green-bg: rgba(34, 197, 94, 0.12);
+  --roi-green-border: rgba(34, 197, 94, 0.20);
+
+  /* Indicateurs ROI — palette jaune (correct) */
+  --roi-yellow: #eab308;
+  --roi-yellow-bg: rgba(234, 179, 8, 0.12);
+  --roi-yellow-border: rgba(234, 179, 8, 0.20);
+
+  /* Indicateurs ROI — palette orange (risqué) */
+  --roi-orange: #f97316;
+  --roi-orange-bg: rgba(249, 115, 22, 0.12);
+  --roi-orange-border: rgba(249, 115, 22, 0.20);
+
+  /* Indicateurs ROI — palette rouge (très risqué) */
+  --roi-red: #ef4444;
+  --roi-red-bg: rgba(239, 68, 68, 0.12);
+  --roi-red-border: rgba(239, 68, 68, 0.20);
+
+  /* Status paris */
+  --status-pending: #eab308;
+  --status-pending-bg: rgba(234, 179, 8, 0.12);
+  --status-void: #71717a;
+  --status-void-bg: rgba(113, 113, 122, 0.12);
+
+  /* Bordures spécifiques bankroll */
+  --border-bankroll: rgba(255, 255, 255, 0.05);
+  --border-bankroll-md: rgba(255, 255, 255, 0.08);
+  --border-bankroll-hi: rgba(255, 255, 255, 0.12);
+
+  /* Surfaces tennis (court) */
+  --surface-clay: rgba(249, 115, 22, 0.10);
+  --border-clay: rgba(249, 115, 22, 0.20);
+  --surface-hard: rgba(59, 130, 246, 0.10);
+  --border-hard: rgba(59, 130, 246, 0.20);
+  --surface-grass: rgba(34, 197, 94, 0.10);
+  --border-grass: rgba(34, 197, 94, 0.20);
 }
 
 * {

@@ -7,13 +7,13 @@ import type { SurfaceStats } from "@/lib/dashboard-data";
 
 export function SurfaceStats() {
   return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden">
+    <div className="bg-[var(--surface-1)] border border-[var(--border)] rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-white/[0.06]">
-        <h2 className="text-sm font-semibold text-zinc-100">
+      <div className="px-5 py-4 border-b border-[var(--border)]">
+        <h2 className="text-sm font-semibold text-[var(--text-1)]">
           Performance par surface
         </h2>
-        <p className="text-xs text-zinc-500 mt-0.5">
+        <p className="text-xs text-[var(--text-3)] mt-0.5">
           ROI moyen selon le type de terrain
         </p>
       </div>
@@ -35,24 +35,24 @@ function SurfaceCard({ surface, delay }: { surface: SurfaceStats; delay: number 
   const surfaceColors = {
     clay: {
       icon: "🏟️",
-      bg: "bg-orange-500/10",
-      border: "border-orange-500/20",
-      accent: "text-orange-400",
-      bar: "bg-orange-500",
+      bg: "bg-[var(--surface-clay)]",
+      border: "border-[var(--border-clay)]",
+      accent: "text-[var(--roi-orange)]",
+      bar: "bg-[var(--roi-orange)]",
     },
     hard: {
       icon: "🎾",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
-      accent: "text-blue-400",
-      bar: "bg-blue-500",
+      bg: "bg-[var(--surface-hard)]",
+      border: "border-[var(--border-hard)]",
+      accent: "text-[var(--surface-hard)]",
+      bar: "bg-[var(--surface-hard)]",
     },
     grass: {
       icon: "🌿",
-      bg: "bg-green-500/10",
-      border: "border-green-500/20",
-      accent: "text-green-400",
-      bar: "bg-green-500",
+      bg: "bg-[var(--surface-grass)]",
+      border: "border-[var(--border-grass)]",
+      accent: "text-[var(--roi-green)]",
+      bar: "bg-[var(--roi-green)]",
     },
   };
 
@@ -72,14 +72,14 @@ function SurfaceCard({ surface, delay }: { surface: SurfaceStats; delay: number 
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <span className="text-lg">{colors.icon}</span>
-        <span className="text-sm font-medium text-zinc-200">
+        <span className="text-sm font-medium text-[var(--text-1)]">
           {surface.label}
         </span>
       </div>
 
       {/* ROI */}
       <div className="mb-4">
-        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+        <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-1">
           ROI moyen
         </p>
         <p className={cn("text-2xl font-bold tracking-tight", colors.accent)}>
@@ -100,26 +100,26 @@ function SurfaceCard({ surface, delay }: { surface: SurfaceStats; delay: number 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-0.5">
             Total
           </p>
-          <p className="text-sm font-semibold text-zinc-200">
+          <p className="text-sm font-semibold text-[var(--text-1)]">
             {surface.totalBets}
           </p>
         </div>
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">
+          <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider mb-0.5">
             Win rate
           </p>
-          <p className="text-sm font-semibold text-zinc-200">{winRate}%</p>
+          <p className="text-sm font-semibold text-[var(--text-1)]">{winRate}%</p>
         </div>
       </div>
 
       {/* Won bets */}
       <div className="mt-3 pt-3 border-t border-white/[0.05]">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-zinc-500">Paris gagnés</span>
-          <span className="text-green-400 font-medium">
+          <span className="text-[var(--text-3)]">Paris gagnés</span>
+          <span className="text-[var(--roi-green)] font-medium">
             {surface.wonBets}/{surface.totalBets}
           </span>
         </div>
