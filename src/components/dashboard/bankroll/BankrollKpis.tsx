@@ -100,6 +100,13 @@ function KpiCard({
   delay,
   started,
 }: KpiCardProps) {
+  const variantStyles = {
+    default: "text-zinc-100",
+    success: "text-green-400",
+    danger: "text-red-400",
+    accent: "text-[#F2CB38]",
+  };
+
   const subtextStyles = {
     success: "text-green-400",
     danger: "text-red-400",
@@ -120,7 +127,7 @@ function KpiCard({
               variant === "success" && "bg-green-500/10 border border-green-500/20",
               variant === "danger" && "bg-red-500/10 border border-red-500/20",
               variant === "accent" && "bg-[#F2CB38]/10 border border-[#F2CB38]/20",
-              variant === "default" && "bg-[#F2CB38]/10 border border-[#F2CB38]/20"
+              variant === "default" && "bg-white/[0.05] border border-white/[0.08]"
             )}
           >
             {icon}
@@ -133,7 +140,12 @@ function KpiCard({
 
       {/* Value */}
       <div className="flex items-end gap-1">
-        <span className="text-3xl font-bold text-zinc-100 tracking-tight">
+        <span
+          className={cn(
+            "text-3xl font-bold tracking-tight",
+            variantStyles[variant]
+          )}
+        >
           {value < 0 && value !== 0 ? "-" : ""}
           <AnimatedNumber
             target={Math.abs(value)}
@@ -208,14 +220,22 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
       {
         label: "P&L",
         value: kpis.profitLoss,
-        icon: (
-          <TrendingUp
-            size={18}
-            className="text-[#F2CB38]"
-            strokeWidth={1.5}
-          />
-        ),
-        variant: kpis.profitLoss >= 0 ? ("success" as const) : ("danger" as const),
+        icon:
+          kpis.profitLoss >= 0 ? (
+            <TrendingUp
+              size={18}
+              className="text-green-400"
+              strokeWidth={1.5}
+            />
+          ) : (
+            <TrendingDown
+              size={18}
+              className="text-red-400"
+              strokeWidth={1.5}
+            />
+          ),
+        variant:
+          kpis.profitLoss >= 0 ? ("success" as const) : ("danger" as const),
         isCurrency: true,
         decimals: 2,
         suffix: "€",
@@ -246,7 +266,9 @@ export function BankrollKpis({ kpis }: BankrollKpisProps) {
         icon: (
           <Flame
             size={18}
-            className="text-[#F2CB38]"
+            className={
+              kpis.streak.type === "W" ? "text-green-400" : "text-red-400"
+            }
             strokeWidth={1.5}
           />
         ),
