@@ -46,6 +46,12 @@
   --roi-red-bg: rgba(239, 68, 68, 0.12);
   --roi-red-border: rgba(239, 68, 68, 0.20);
 
+  /* Indicateurs ROI — palette bleue (surface dur/hard court) */
+  --roi-blue: #3b82f6;
+  --roi-blue-hi: #60a5fa;
+  --roi-blue-bg: rgba(59, 130, 246, 0.12);
+  --roi-blue-border: rgba(59, 130, 246, 0.20);
+
   /* Status paris */
   --status-pending: #eab308;
   --status-pending-bg: rgba(234, 179, 8, 0.12);
