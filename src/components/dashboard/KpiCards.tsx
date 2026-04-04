@@ -139,8 +139,8 @@ function KpiCard({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#F2CB38]/10 border border-[#F2CB38]/20 flex items-center justify-center">
-            <Icon size={16} className="text-[#F2CB38]" strokeWidth={1.5} />
+          <div className="w-8 h-8 rounded-lg bg-[#f2ab05]/10 border border-[#f2ab05]/20 flex items-center justify-center">
+            <Icon size={16} className="text-[#f2ab05]" strokeWidth={1.5} />
           </div>
           <span className="text-xs text-zinc-500 uppercase tracking-wider">
             {label}

@@ -61,7 +61,7 @@ export function BankrollHeader({
   }, [inputValue, initialBankroll, onBankrollChange]);
 
   const handleModeToggle = useCallback(() => {
-    onModeChange(mode === "auto" ? "manual" : "auto");
+    onModeChange(mode === "auto" ? "custom" : "auto");
   }, [mode, onModeChange]);
 
   const formatCurrency = (value: number) => {
@@ -155,7 +155,7 @@ export function BankrollHeader({
               {/* Sliding background */}
               <motion.div
                 className="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] rounded-md bg-gradient-to-r from-indigo-500 to-indigo-600"
-                animate={{ x: mode === "manual" ? "100%" : "0%" }}
+                animate={{ x: mode === "custom" ? "100%" : "0%" }}
                 transition={{ type: "spring", stiffness: 500, damping: 35 }}
               />
 
@@ -191,7 +191,7 @@ export function BankrollHeader({
                 <div
                   className={cn(
                     "flex-1 flex items-center justify-center gap-2 rounded-md transition-colors z-10",
-                    mode === "manual" ? "text-white" : "text-zinc-500"
+                    mode === "custom" ? "text-white" : "text-zinc-500"
                   )}
                 >
                   <svg
