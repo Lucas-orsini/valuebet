@@ -29,7 +29,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload) return null;
 
   return (
-    <div className="bg-[#1a1a1a] border border-white/[0.10] rounded-lg p-3 shadow-xl">
+    <div className="bg-[var(--surface-2)] border border-white/[0.10] rounded-lg p-3 shadow-xl">
       <p className="text-xs text-zinc-500 mb-2">{label}</p>
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export function BankrollChart() {
   const roi = ((bankrollDiff / firstPoint.bankroll) * 100).toFixed(1);
 
   return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
+    <div className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] shrink-0">
         <div className="flex items-center gap-4">
@@ -74,7 +74,7 @@ export function BankrollChart() {
           </h2>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-0.5 rounded-full bg-[#F2CB38]" />
+              <div className="w-2.5 h-0.5 rounded-full bg-[var(--accent)]" />
               <span className="text-[11px] text-zinc-500">Bankroll</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -92,7 +92,7 @@ export function BankrollChart() {
               onClick={() => setSelectedRange(range)}
               className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                 selectedRange === range
-                  ? "bg-[#F2CB38]/15 text-[#F2CB38] border border-[#F2CB38]/20"
+                  ? "bg-[var(--accent-alpha)] text-[var(--accent)] border border-[var(--border-accent)]"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
@@ -124,7 +124,7 @@ export function BankrollChart() {
           <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
             ROI période
           </p>
-          <p className="text-lg font-bold text-[#F2CB38] tabular-nums">
+          <p className="text-lg font-bold text-[var(--accent)] tabular-nums">
             +{roi}%
           </p>
         </div>
@@ -179,13 +179,13 @@ export function BankrollChart() {
             <Line
               type="monotone"
               dataKey="bankroll"
-              stroke="#F2CB38"
+              stroke="var(--accent)"
               strokeWidth={2.5}
               dot={false}
               activeDot={{
                 r: 5,
-                fill: "#F2CB38",
-                stroke: "#0a0a0a",
+                fill: "var(--accent)",
+                stroke: "var(--bg)",
                 strokeWidth: 2,
               }}
             />

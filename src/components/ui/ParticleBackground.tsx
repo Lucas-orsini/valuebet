@@ -6,7 +6,7 @@ interface ParticleBackgroundProps {
 }
 
 // Design token from globals.css
-const PARTICLE_COLOR = "#F2CB38";
+const PARTICLE_COLOR = "var(--accent)";
 const PARTICLE_LINE_COLOR = "rgba(242, 203, 56, 0.4)";
 const DESKTOP_PARTICLE_COUNT = 80;
 const MOBILE_PARTICLE_COUNT = 30;
@@ -61,6 +61,10 @@ export function ParticleBackground({ className }: ParticleBackgroundProps) {
   );
 
   const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    // Handle CSS variable reference by using default value
+    if (hex.startsWith("var(")) {
+      return { r: 242, g: 203, b: 56 }; // Default to accent color
+    }
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (!result) return { r: 242, g: 203, b: 56 };
     return {
@@ -93,6 +97,7 @@ export function ParticleBackground({ className }: ParticleBackgroundProps) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const particles = particlesRef.current;
+    const particleColorRgb = hexToRgb(PARTICLE_COLOR);
 
     // Update and draw particles
     particles.forEach((particle) => {
@@ -114,7 +119,7 @@ export function ParticleBackground({ className }: ParticleBackgroundProps) {
       // Draw particle
       ctx.beginPath();
       ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-      ctx.fillStyle = PARTICLE_COLOR;
+      ctx.fillStyle = `rgb(${particleColorRgb.r}, ${particleColorRgb.g}, ${particleColorRgb.b})`;
       ctx.fill();
     });
 
@@ -128,7 +133,7 @@ export function ParticleBackground({ className }: ParticleBackgroundProps) {
         if (distance < CONNECTION_DISTANCE) {
           const opacity = (1 - distance / CONNECTION_DISTANCE) * 0.4;
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(242, 203, 56, ${opacity})`;
+          ctx.strokeStyle = `rgba(${particleColorRgb.r}, ${particleColorRgb.g}, ${particleColorRgb.b}, ${opacity})`;
           ctx.lineWidth = 1;
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);

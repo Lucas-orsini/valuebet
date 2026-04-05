@@ -15,8 +15,12 @@
   --text-2: #a1a1aa;
   --text-3: #71717a;
   --accent: #F2CB38;
+  --accent-light: #F7D55C;
   --accent-hi: #F7D55C;
   --accent-glow: rgba(242, 203, 56, 0.18);
+  --accent-alpha: rgba(245, 203, 56, 0.1);
+  --tennis-ball: #CCFF00;
+  --border-accent: rgba(245, 203, 56, 0.2);
   --green: #4ade80;
   --red: #f87171;
 

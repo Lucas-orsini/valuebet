@@ -50,7 +50,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   const data = payload[0].payload;
 
   return (
-    <div className="bg-[#1a1a1a] border border-white/[0.10] rounded-lg p-3 shadow-xl min-w-[180px]">
+    <div className="bg-[var(--surface-2)] border border-white/[0.10] rounded-lg p-3 shadow-xl min-w-[180px]">
       <p className="text-xs text-zinc-500 mb-2">
         {new Date(data.date).toLocaleDateString("fr-FR", {
           day: "numeric",
@@ -76,7 +76,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         </div>
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[#F2CB38]" />
+            <div className="w-2 h-2 rounded-full bg-[var(--accent)]" />
             <span className="text-xs text-zinc-400">Cumulé</span>
           </div>
           <span
@@ -98,6 +98,18 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("ALL");
 
+  // Full period map for filtering
+  const daysMap: Record<Period, number> = {
+    "7D": 7,
+    "30D": 30,
+    "90D": 90,
+    "1M": 30,
+    "3M": 90,
+    "6M": 180,
+    "1Y": 365,
+    ALL: Infinity,
+  };
+
   // First filter by header time range, then by chart period
   const filteredData = useMemo(() => {
     // Filter by header time range (timeRange filters the raw data)
@@ -109,10 +121,6 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
         "7D": 7,
         "30D": 30,
         "90D": 90,
-        "1M": 30,
-        "3M": 90,
-        "6M": 180,
-        "1Y": 365,
       };
       const days = ranges[timeRange as Exclude<TimeRange, "ALL">];
       const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
@@ -123,16 +131,6 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
     if (selectedPeriod === "ALL" || result.length === 0) return result;
 
     const now = new Date();
-    const daysMap: Record<Period, number> = {
-      "7D": 7,
-      "30D": 30,
-      "90D": 90,
-      "1M": 30,
-      "3M": 90,
-      "6M": 180,
-      "1Y": 365,
-      ALL: Infinity,
-    };
     const days = daysMap[selectedPeriod];
     const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
@@ -160,7 +158,7 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+        className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden"
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
           <h2 className="text-sm font-semibold text-zinc-100">
@@ -179,7 +177,7 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+      className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
@@ -189,7 +187,7 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
           </h2>
           <div className="hidden sm:flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-0.5 rounded-full bg-[#F2CB38]" />
+              <div className="w-2.5 h-0.5 rounded-full bg-[var(--accent)]" />
               <span className="text-[11px] text-zinc-500">Cumulé</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -208,7 +206,7 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
               className={cn(
                 "px-3 py-1 rounded-md text-xs font-medium transition-colors",
                 selectedPeriod === period
-                  ? "bg-[#F2CB38]/15 text-[#F2CB38] border border-[#F2CB38]/20"
+                  ? "bg-[var(--accent-alpha)] text-[var(--accent)] border border-[var(--border-accent)]"
                   : "text-zinc-500 hover:text-zinc-300"
               )}
             >
@@ -266,8 +264,8 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
           >
             <defs>
               <linearGradient id="cumulativeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#F2CB38" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#F2CB38" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -303,14 +301,14 @@ export function HistoryChart({ data, timeRange = "ALL" }: HistoryChartProps) {
             <Area
               type="monotone"
               dataKey="cumulative"
-              stroke="#F2CB38"
+              stroke="var(--accent)"
               strokeWidth={2}
               fill="url(#cumulativeGradient)"
               dot={false}
               activeDot={{
                 r: 5,
-                fill: "#F2CB38",
-                stroke: "#0a0a0a",
+                fill: "var(--accent)",
+                stroke: "var(--bg)",
                 strokeWidth: 2,
               }}
             />

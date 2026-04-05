@@ -79,7 +79,6 @@ export function HistoryTable({ bets, isEmpty, timeRange = "ALL" }: HistoryTableP
   const [tempEndDate, setTempEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(true);
 
-  // Format date display for the button
   const formatDateDisplay = useCallback(() => {
     if (!filters.dateRange.start && !filters.dateRange.end) {
       return "Toutes les dates";
@@ -100,7 +99,6 @@ export function HistoryTable({ bets, isEmpty, timeRange = "ALL" }: HistoryTableP
     return `Jusqu'au ${formatDate(filters.dateRange.end)}`;
   }, [filters.dateRange]);
 
-  // Handle date range application
   const handleDateApply = useCallback(() => {
     setFilters((prev) => ({
       ...prev,
@@ -112,7 +110,6 @@ export function HistoryTable({ bets, isEmpty, timeRange = "ALL" }: HistoryTableP
     setShowDatePicker(false);
   }, [tempStartDate, tempEndDate]);
 
-  // Handle date range clear
   const handleClearDates = useCallback(() => {
     setFilters((prev) => ({
       ...prev,
@@ -123,660 +120,657 @@ export function HistoryTable({ bets, isEmpty, timeRange = "ALL" }: HistoryTableP
     setShowDatePicker(false);
   }, []);
 
-  // Filtered bets - apply all filters (timeRange comes from parent now)
   const filteredBets = useMemo(() => {
-    return bets.filter((bet) => {
-      // Time range filter — now from parent prop
-      const betDate = new Date(bet.date);
-      if (!isInRange(betDate, timeRange)) return false;
+    let result = [...bets];
 
-      // Custom date range filter
-      if (filters.dateRange.start || filters.dateRange.end) {
-        if (filters.dateRange.start && betDate < filters.dateRange.start) return false;
-        if (filters.dateRange.end) {
-          const endOfDay = new Date(filters.dateRange.end);
-          endOfDay.setHours(23, 59, 59, 999);
-          if (betDate > endOfDay) return false;
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      result = result.filter(
+        (bet) =>
+          bet.player.toLowerCase().includes(searchLower) ||
+          bet.opponent.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (filters.tournament) {
+      result = result.filter((bet) => bet.tournament === filters.tournament);
+    }
+
+    if (filters.surface) {
+      result = result.filter((bet) => bet.surface === filters.surface);
+    }
+
+    if (filters.roi) {
+      result = result.filter((bet) => bet.roiLabel === filters.roi);
+    }
+
+    if (filters.dateRange.start || filters.dateRange.end) {
+      result = result.filter((bet) => {
+        const betDate = new Date(bet.date);
+        if (filters.dateRange.start && betDate < filters.dateRange.start) {
+          return false;
         }
-      }
+        if (filters.dateRange.end && betDate > filters.dateRange.end) {
+          return false;
+        }
+        return true;
+      });
+    }
 
-      // Search query
-      if (filters.search) {
-        const query = filters.search.toLowerCase();
-        const matchesPlayer = bet.player.toLowerCase().includes(query);
-        const matchesOpponent = bet.opponent.toLowerCase().includes(query);
-        if (!matchesPlayer && !matchesOpponent) return false;
-      }
+    if (timeRange !== "ALL") {
+      result = result.filter((bet) => {
+        const betDate = new Date(bet.date);
+        return isInRange(betDate, timeRange);
+      });
+    }
 
-      // Tournament filter
-      if (filters.tournament && filters.tournament !== "Tous les tournois") {
-        if (bet.tournament !== filters.tournament) return false;
-      }
-
-      // Surface filter
-      if (filters.surface) {
-        if (bet.surface !== filters.surface) return false;
-      }
-
-      // ROI label filter
-      if (filters.roi) {
-        if (bet.roiLabel !== filters.roi) return false;
-      }
-
-      return true;
-    });
+    return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [bets, filters, timeRange]);
 
-  // Check if any filters are active
-  const hasActiveFilters = Boolean(
-    filters.search ||
-      filters.tournament ||
-      filters.surface ||
-      filters.roi ||
-      filters.dateRange.start ||
-      filters.dateRange.end
+  const totalPages = Math.ceil(filteredBets.length / ITEMS_PER_PAGE);
+  const paginatedBets = filteredBets.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   );
 
-  // Clear all filters
+  const stats = useMemo(() => {
+    const totalBets = filteredBets.length;
+    const wins = filteredBets.filter((b) => b.status === "won").length;
+    const totalProfit = filteredBets.reduce((sum, b) => sum + b.profit, 0);
+    const totalStake = filteredBets.reduce((sum, b) => sum + b.units, 0);
+    const winRate = totalBets > 0 ? (wins / totalBets) * 100 : 0;
+    const roi = totalStake > 0 ? (totalProfit / totalStake) * 100 : 0;
+
+    return { totalBets, wins, totalProfit, totalStake, winRate, roi };
+  }, [filteredBets]);
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    },
+    [totalPages]
+  );
+
   const clearFilters = useCallback(() => {
     setFilters(INITIAL_FILTERS);
     setTempStartDate("");
     setTempEndDate("");
   }, []);
 
-  // Reset to page 1 when filters change
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [filters]);
+  const hasActiveFilters =
+    filters.search ||
+    filters.tournament ||
+    filters.surface ||
+    filters.roi ||
+    filters.dateRange.start ||
+    filters.dateRange.end;
 
-  // Pagination
-  const totalPages = Math.max(1, Math.ceil(filteredBets.length / ITEMS_PER_PAGE));
-
-  const paginatedBets = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredBets.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredBets, currentPage]);
-
-  const goToPage = (page: number) => {
-    const newPage = Math.max(1, Math.min(page, totalPages));
-    setCurrentPage(newPage);
-  };
-
-  const goToFirstPage = () => goToPage(1);
-  const goToLastPage = () => goToPage(totalPages);
-  const goToPreviousPage = () => goToPage(currentPage - 1);
-  const goToNextPage = () => goToPage(currentPage + 1);
-
-  // Stats
-  const totalProfit = filteredBets.reduce((sum, bet) => sum + bet.profit, 0);
-  const wonBets = filteredBets.filter((bet) => bet.status === "won").length;
-  const lostBets = filteredBets.filter((bet) => bet.status === "lost").length;
-  const voidBets = filteredBets.filter((bet) => bet.status === "void").length;
-  const winRate = filteredBets.length > 0 ? (wonBets / filteredBets.length) * 100 : 0;
-
-  // Early return for no data
   if (isEmpty) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-        className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-zinc-100">
-              Historique des paris
-            </h2>
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-500 text-[10px] font-medium">
-              0
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
           <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center mb-4">
-            <ScrollText size={22} className="text-zinc-500" strokeWidth={1.5} />
+            <ScrollText size={24} className="text-zinc-500" strokeWidth={1.5} />
           </div>
-          <p className="text-sm font-medium text-zinc-300 mb-1">
-            Aucun pari enregistré
+          <p className="text-base font-medium text-zinc-400 mb-2">
+            Aucun pari dans l&apos;historique
           </p>
-          <p className="text-xs text-zinc-600 max-w-xs">
-            Vos paris apparaîtront ici une fois enregistrés.
+          <p className="text-sm text-zinc-600 max-w-[280px]">
+            Vos paris apparaîtront ici une fois enregistrés
           </p>
         </div>
       </motion.div>
     );
   }
 
-  const isFilteredEmpty = filteredBets.length === 0;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.3 }}
-      className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden"
+      transition={{ duration: 0.4, delay: 0.1 }}
+      className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-zinc-100">
-            Historique des paris
-          </h2>
-          <span className="px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-500 text-[10px] font-medium">
-            {filteredBets.length}
-          </span>
-        </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 px-3 h-8 rounded-md bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-zinc-400 hover:text-zinc-200 text-xs transition-colors lg:hidden"
-        >
-          <Filter size={14} />
-          Filtres
-          {hasActiveFilters && (
-            <span className="w-5 h-5 rounded-full bg-[#F2CB38]/20 text-[#F2CB38] text-[10px] font-medium flex items-center justify-center">
-              !
-            </span>
-          )}
-        </button>
-        {hasActiveFilters && (
-          <button
-            onClick={clearFilters}
-            className="hidden lg:flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-          >
-            <X size={12} />
-            Effacer les filtres
-          </button>
-        )}
-      </div>
+      <div className="px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[var(--accent-alpha)] border border-[var(--border-accent)] flex items-center justify-center">
+              <ScrollText size={16} className="text-[var(--accent)]" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-zinc-100">
+                Historique des paris
+              </h2>
+              <p className="text-[11px] text-zinc-500">
+                {filteredBets.length} pari{filteredBets.length !== 1 ? "s" : ""} trouvé{filteredBets.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
 
-      {/* Filter bar - collapsible */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden border-b border-white/[0.06]"
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={cn(
+              "flex items-center gap-2 h-8 px-3 rounded-md text-xs font-medium transition-colors",
+              showFilters
+                ? "bg-[var(--accent-alpha)] text-[var(--accent)] border border-[var(--border-accent)]"
+                : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200 border border-transparent"
+            )}
           >
-            <div className="p-5 space-y-4 bg-white/[0.02]">
-              {/* Filter controls - timeRange is controlled by parent PeriodFilter */}
-              <div className="flex flex-wrap items-center gap-3">
+            <Filter size={14} />
+            Filtres
+            {hasActiveFilters && (
+              <span className="w-4 h-4 rounded-full bg-[var(--accent)] text-[10px] font-bold text-black flex items-center justify-center">
+                !
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Filters */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="pt-4 mt-4 border-t border-white/[0.06] space-y-3">
                 {/* Search */}
-                <div className="relative flex-1 min-w-[180px] max-w-[280px]">
+                <div className="relative">
                   <Search
                     size={14}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
                   />
                   <input
                     type="text"
+                    placeholder="Rechercher un joueur..."
                     value={filters.search}
                     onChange={(e) =>
                       setFilters((prev) => ({ ...prev, search: e.target.value }))
                     }
-                    placeholder="Rechercher un joueur…"
-                    className="w-full h-9 pl-9 pr-3 rounded-lg bg-[#0a0a0a] border border-white/[0.08] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[#F2CB38]/50 focus:ring-1 focus:ring-[#F2CB38]/20 transition-colors"
+                    className="w-full h-9 pl-9 pr-3 rounded-md bg-white/[0.03] border border-white/[0.06] text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[var(--border-accent)] transition-colors"
                   />
+                  {filters.search && (
+                    <button
+                      onClick={() =>
+                        setFilters((prev) => ({ ...prev, search: "" }))
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
 
-                {/* Date Range */}
-                <div className="relative">
-                  <button
-                    onClick={() => setShowDatePicker(!showDatePicker)}
-                    className={cn(
-                      "h-9 px-3 rounded-lg border text-sm transition-colors flex items-center gap-2",
-                      filters.dateRange.start || filters.dateRange.end
-                        ? "bg-[#F2CB38]/10 border-[#F2CB38]/30 text-[#F2CB38]"
-                        : "bg-[#0a0a0a] border-white/[0.08] text-zinc-300 hover:border-white/[0.12]"
-                    )}
-                  >
-                    <span className="hidden sm:inline">{formatDateDisplay()}</span>
-                    <span className="sm:hidden">Dates</span>
+                {/* Filter Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Tournament Select */}
+                  <div className="relative">
+                    <select
+                      value={filters.tournament}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          tournament: e.target.value,
+                        }))
+                      }
+                      className="h-8 pl-3 pr-8 rounded-md bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-300 appearance-none cursor-pointer hover:bg-white/[0.05] focus:outline-none focus:border-[var(--border-accent)] transition-colors"
+                    >
+                      {TOURNAMENTS.map((t) => (
+                        <option key={t} value={t === "Tous les tournois" ? "" : t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
                     <ChevronDown
-                      size={14}
-                      className={cn(
-                        "text-zinc-500 transition-transform",
-                        showDatePicker && "rotate-180"
-                      )}
+                      size={12}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
                     />
-                  </button>
+                  </div>
 
-                  {/* Date picker dropdown */}
-                  <AnimatePresence>
-                    {showDatePicker && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 mt-2 z-50 bg-[#1a1a1a] border border-white/[0.10] rounded-lg p-4 shadow-xl min-w-[280px]"
-                      >
-                        <div className="space-y-3">
-                          <div>
-                            <label className="text-[11px] text-zinc-500 uppercase tracking-wider mb-1 block">
-                              Date de début
-                            </label>
-                            <input
-                              type="date"
-                              value={tempStartDate}
-                              onChange={(e) => setTempStartDate(e.target.value)}
-                              className="w-full h-9 px-3 rounded-md bg-[#111] border border-white/[0.08] text-sm text-zinc-200 focus:outline-none focus:border-[#F2CB38]/50 transition-colors"
-                            />
+                  {/* Surface Select */}
+                  <div className="relative">
+                    <select
+                      value={filters.surface}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          surface: e.target.value,
+                        }))
+                      }
+                      className="h-8 pl-3 pr-8 rounded-md bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-300 appearance-none cursor-pointer hover:bg-white/[0.05] focus:outline-none focus:border-[var(--border-accent)] transition-colors"
+                    >
+                      {SURFACES.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      size={12}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+                    />
+                  </div>
+
+                  {/* ROI Select */}
+                  <div className="relative">
+                    <select
+                      value={filters.roi}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          roi: e.target.value as RoiLabel | "",
+                        }))
+                      }
+                      className="h-8 pl-3 pr-8 rounded-md bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-300 appearance-none cursor-pointer hover:bg-white/[0.05] focus:outline-none focus:border-[var(--border-accent)] transition-colors"
+                    >
+                      {ROI_FILTERS.map((r) => (
+                        <option key={r.value} value={r.value}>
+                          {r.label}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      size={12}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+                    />
+                  </div>
+
+                  {/* Date Range */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowDatePicker(!showDatePicker)}
+                      className={cn(
+                        "h-8 px-3 rounded-md text-xs font-medium transition-colors flex items-center gap-2",
+                        filters.dateRange.start || filters.dateRange.end
+                          ? "bg-[var(--accent-alpha)] text-[var(--accent)] border border-[var(--border-accent)]"
+                          : "bg-white/[0.03] text-zinc-300 border border-white/[0.06] hover:bg-white/[0.05]"
+                      )}
+                    >
+                      {formatDateDisplay()}
+                    </button>
+
+                    <AnimatePresence>
+                      {showDatePicker && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute top-full left-0 mt-2 p-3 bg-[var(--surface-2)] border border-white/[0.10] rounded-lg shadow-xl z-20 min-w-[240px]"
+                        >
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 block">
+                                Date début
+                              </label>
+                              <input
+                                type="date"
+                                value={tempStartDate}
+                                onChange={(e) => setTempStartDate(e.target.value)}
+                                className="w-full h-8 px-2 rounded bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 focus:outline-none focus:border-[var(--border-accent)]"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1 block">
+                                Date fin
+                              </label>
+                              <input
+                                type="date"
+                                value={tempEndDate}
+                                onChange={(e) => setTempEndDate(e.target.value)}
+                                className="w-full h-8 px-2 rounded bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-200 focus:outline-none focus:border-[var(--border-accent)]"
+                              />
+                            </div>
+                            <div className="flex gap-2 pt-1">
+                              <button
+                                onClick={handleClearDates}
+                                className="flex-1 h-8 rounded bg-white/[0.03] text-xs text-zinc-400 hover:bg-white/[0.06] transition-colors"
+                              >
+                                Effacer
+                              </button>
+                              <button
+                                onClick={handleDateApply}
+                                className="flex-1 h-8 rounded bg-[var(--accent-alpha)] text-xs text-[var(--accent)] hover:bg-[var(--accent)] hover:text-black transition-colors"
+                              >
+                                Appliquer
+                              </button>
+                            </div>
                           </div>
-                          <div>
-                            <label className="text-[11px] text-zinc-500 uppercase tracking-wider mb-1 block">
-                              Date de fin
-                            </label>
-                            <input
-                              type="date"
-                              value={tempEndDate}
-                              onChange={(e) => setTempEndDate(e.target.value)}
-                              className="w-full h-9 px-3 rounded-md bg-[#111] border border-white/[0.08] text-sm text-zinc-200 focus:outline-none focus:border-[#F2CB38]/50 transition-colors"
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 pt-2">
-                            <button
-                              onClick={handleClearDates}
-                              className="flex-1 h-8 px-3 rounded-md border border-white/[0.08] text-xs text-zinc-400 hover:text-zinc-200 hover:border-white/[0.15] transition-colors"
-                            >
-                              Effacer
-                            </button>
-                            <button
-                              onClick={handleDateApply}
-                              className="flex-1 h-8 px-3 rounded-md bg-[#F2CB38] hover:bg-[#F2CB38]/90 text-white text-xs font-medium transition-colors"
-                            >
-                              Appliquer
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Clear All */}
+                  {hasActiveFilters && (
+                    <button
+                      onClick={clearFilters}
+                      className="h-8 px-3 rounded-md text-xs text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] transition-colors"
+                    >
+                      Réinitialiser
+                    </button>
+                  )}
                 </div>
-
-                {/* Tournament */}
-                <select
-                  value={filters.tournament}
-                  onChange={(e) =>
-                    setFilters((prev) => ({ ...prev, tournament: e.target.value }))
-                  }
-                  className="h-9 px-3 rounded-lg bg-[#0a0a0a] border border-white/[0.08] text-sm text-zinc-300 focus:outline-none focus:border-[#F2CB38]/50 transition-colors appearance-none pr-8 cursor-pointer hover:border-white/[0.12]"
-                >
-                  {TOURNAMENTS.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Surface */}
-                <select
-                  value={filters.surface}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      surface: e.target.value as Surface | "",
-                    }))
-                  }
-                  className="h-9 px-3 rounded-lg bg-[#0a0a0a] border border-white/[0.08] text-sm text-zinc-300 focus:outline-none focus:border-[#F2CB38]/50 transition-colors appearance-none pr-8 cursor-pointer hover:border-white/[0.12]"
-                >
-                  {SURFACES.map((s) => (
-                    <option key={s.value || "all"} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-
-                {/* ROI */}
-                <select
-                  value={filters.roi}
-                  onChange={(e) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      roi: e.target.value as RoiLabel | "",
-                    }))
-                  }
-                  className="h-9 px-3 rounded-lg bg-[#0a0a0a] border border-white/[0.08] text-sm text-zinc-300 focus:outline-none focus:border-[#F2CB38]/50 transition-colors appearance-none pr-8 cursor-pointer hover:border-white/[0.12]"
-                >
-                  {ROI_FILTERS.map((r) => (
-                    <option key={r.value || "all"} value={r.value}>
-                      {r.label}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Clear filters on mobile */}
-                {hasActiveFilters && (
-                  <button
-                    onClick={clearFilters}
-                    className="lg:hidden flex items-center gap-1.5 h-9 px-3 rounded-lg border border-white/[0.08] text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-                  >
-                    <X size={12} />
-                    Effacer
-                  </button>
-                )}
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Body */}
-      {isFilteredEmpty ? (
-        <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-          <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center mb-4">
-            <ScrollText size={22} className="text-zinc-500" strokeWidth={1.5} />
-          </div>
-          <p className="text-sm font-medium text-zinc-300 mb-1">
-            Aucun pari trouvé
-          </p>
-          <p className="text-xs text-zinc-600 max-w-xs mb-4">
-            Aucun résultat ne correspond à vos critères de recherche.
-          </p>
-          {hasActiveFilters && (
-            <button
-              onClick={clearFilters}
-              className="h-8 px-4 rounded-md border border-white/[0.08] text-xs text-zinc-500 hover:text-zinc-300 hover:border-white/[0.12] transition-colors"
-            >
-              Effacer les filtres
-            </button>
+            </motion.div>
           )}
-        </div>
-      ) : (
-        <>
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="px-5 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Joueur
-                  </th>
-                  <th className="px-3 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Tournoi
-                  </th>
-                  <th className="px-3 py-3 text-left text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Surface
-                  </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Cote
-                  </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Mise
-                  </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    ROI
-                  </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Résultat
-                  </th>
-                  <th className="px-3 py-3 text-center text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-5 py-3 text-right text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                    Profit
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                <AnimatePresence mode="popLayout">
-                  {paginatedBets.map((bet, index) => (
-                    <HistoryRow key={bet.id} bet={bet} index={index} />
-                  ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
-          </div>
+        </AnimatePresence>
+      </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between px-5 py-3 border-t border-white/[0.06] bg-white/[0.02]">
-              <div className="flex items-center gap-2 text-xs text-zinc-500">
-                <span>
-                  Affichage {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
-                  {Math.min(currentPage * ITEMS_PER_PAGE, filteredBets.length)} sur{" "}
-                  {filteredBets.length}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={goToFirstPage}
-                  disabled={currentPage === 1}
-                  className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.12] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Première page"
-                >
-                  <ChevronsLeft size={14} />
-                </button>
-                <button
-                  onClick={goToPreviousPage}
-                  disabled={currentPage === 1}
-                  className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.12] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Page précédente"
-                >
-                  <ChevronLeft size={14} />
-                </button>
-                <div className="flex items-center gap-1 mx-2">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum: number;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => goToPage(pageNum)}
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 px-5 py-4 border-b border-white/[0.06] bg-white/[0.02]">
+        <div>
+          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+            Paris
+          </p>
+          <p className="text-lg font-bold text-zinc-100 tabular-nums">
+            {stats.totalBets}
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+            Victoires
+          </p>
+          <p className="text-lg font-bold text-green-400 tabular-nums">
+            {stats.winRate.toFixed(1)}%
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+            Profit
+          </p>
+          <p
+            className={cn(
+              "text-lg font-bold tabular-nums",
+              stats.totalProfit >= 0 ? "text-green-400" : "text-red-400"
+            )}
+          >
+            {stats.totalProfit >= 0 ? "+" : ""}
+            {stats.totalProfit.toFixed(2)}€
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
+            ROI
+          </p>
+          <p
+            className={cn(
+              "text-lg font-bold tabular-nums",
+              stats.roi >= 6
+                ? "text-green-400"
+                : stats.roi >= 4
+                ? "text-yellow-400"
+                : stats.roi >= 2
+                ? "text-orange-400"
+                : "text-red-400"
+            )}
+          >
+            {stats.roi >= 0 ? "+" : ""}
+            {stats.roi.toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      {/* Table */}
+      {paginatedBets.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/[0.06]">
+                <th className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Joueur
+                </th>
+                <th className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Tournoi
+                </th>
+                <th className="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Surface
+                </th>
+                <th className="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Cote
+                </th>
+                <th className="px-4 py-3 text-center text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Mise
+                </th>
+                <th className="px-4 py-3 text-center text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  ROI
+                </th>
+                <th className="px-4 py-3 text-center text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Résultat
+                </th>
+                <th className="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-zinc-500 font-medium">
+                  Profit
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedBets.map((bet, index) => {
+                const roiColors = ROI_COLORS[bet.roiLabel];
+                const statusColors = STATUS_COLORS[bet.status];
+
+                return (
+                  <motion.tr
+                    key={bet.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="text-sm text-zinc-200 font-medium">
+                          {bet.player}
+                        </p>
+                        <p className="text-[11px] text-zinc-600">
+                          vs {bet.opponent}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-zinc-400">{bet.tournament}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
                         className={cn(
-                          "flex items-center justify-center w-8 h-8 rounded-md text-xs font-medium transition-colors",
-                          currentPage === pageNum
-                            ? "bg-[#F2CB38]/15 text-[#F2CB38] border border-[#F2CB38]/20"
-                            : "border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.12]"
+                          "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium",
+                          bet.surface === "hard" &&
+                            "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+                          bet.surface === "clay" &&
+                            "bg-orange-500/10 text-orange-400 border border-orange-500/20",
+                          bet.surface === "grass" &&
+                            "bg-green-500/10 text-green-400 border border-green-500/20"
                         )}
                       >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-                </div>
-                <button
-                  onClick={goToNextPage}
-                  disabled={currentPage === totalPages}
-                  className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.12] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Page suivante"
-                >
-                  <ChevronRight size={14} />
-                </button>
-                <button
-                  onClick={goToLastPage}
-                  disabled={currentPage === totalPages}
-                  className="flex items-center justify-center w-8 h-8 rounded-md border border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.12] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Dernière page"
-                >
-                  <ChevronsRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-        </>
+                        {bet.surface === "hard"
+                          ? "Dur"
+                          : bet.surface === "clay"
+                          ? "Terre"
+                          : "Gazon"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="text-sm font-semibold text-zinc-100 tabular-nums">
+                        {bet.odds.toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className="text-sm font-medium text-zinc-300 tabular-nums">
+                        {bet.units}u
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className={cn(
+                          "inline-flex items-center justify-center min-w-[48px] px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider",
+                          roiColors.bg,
+                          roiColors.text
+                        )}
+                      >
+                        {ROI_LABELS[bet.roiLabel]}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className={cn(
+                          "inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold",
+                          statusColors.bg,
+                          statusColors.text
+                        )}
+                      >
+                        {bet.status === "won"
+                          ? "W"
+                          : bet.status === "lost"
+                          ? "L"
+                          : bet.status === "void"
+                          ? "V"
+                          : "?"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {bet.profit >= 0 ? (
+                          <ArrowUpRight
+                            size={14}
+                            className={cn(
+                              bet.profit > 0 ? "text-green-400" : "text-zinc-500"
+                            )}
+                          />
+                        ) : (
+                          <ArrowDownRight size={14} className="text-red-400" />
+                        )}
+                        <span
+                          className={cn(
+                            "text-sm font-semibold tabular-nums",
+                            bet.profit > 0
+                              ? "text-green-400"
+                              : bet.profit < 0
+                              ? "text-red-400"
+                              : "text-zinc-500"
+                          )}
+                        >
+                          {bet.profit >= 0 ? "+" : ""}
+                          {bet.profit.toFixed(2)}€
+                        </span>
+                      </div>
+                    </td>
+                  </motion.tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+          <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center mb-3">
+            <Search size={18} className="text-zinc-500" strokeWidth={1.5} />
+          </div>
+          <p className="text-sm font-medium text-zinc-400 mb-1">
+            Aucun résultat
+          </p>
+          <p className="text-xs text-zinc-600 max-w-[200px]">
+            Modifiez vos filtres pour voir plus de paris
+          </p>
+        </div>
       )}
 
-      {/* Footer stats */}
-      {!isFilteredEmpty && (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 px-5 py-4 border-t border-white/[0.06] bg-white/[0.02]">
-          <div>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
-              Paris affichés
-            </p>
-            <p className="text-sm font-bold text-zinc-100">
-              {paginatedBets.length}
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
-              Profit total
-            </p>
-            <p
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-5 py-4 border-t border-white/[0.06]">
+          <p className="text-xs text-zinc-500">
+            Page {currentPage} sur {totalPages} ({filteredBets.length} résultats)
+          </p>
+
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
               className={cn(
-                "text-sm font-bold",
-                totalProfit >= 0 ? "text-green-400" : "text-red-400"
+                "flex items-center justify-center w-8 h-8 rounded-md transition-colors",
+                currentPage === 1
+                  ? "bg-white/[0.03] text-zinc-600 cursor-not-allowed"
+                  : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
               )}
             >
-              {totalProfit >= 0 ? "+" : ""}
-              {totalProfit.toFixed(2)}€
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
-              Victoires
-            </p>
-            <p className="text-sm font-bold text-green-400">
-              {wonBets}
-              <span className="text-zinc-500 font-normal">/{filteredBets.length}</span>
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
-              Défaites
-            </p>
-            <p className="text-sm font-bold text-red-400">
-              {lostBets}
-              <span className="text-zinc-500 font-normal">/{filteredBets.length}</span>
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">
-              Win rate
-            </p>
-            <p className="text-sm font-bold text-zinc-100">
-              {winRate.toFixed(1)}%
-            </p>
+              <ChevronsLeft size={14} />
+            </button>
+
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={cn(
+                "flex items-center justify-center w-8 h-8 rounded-md transition-colors",
+                currentPage === 1
+                  ? "bg-white/[0.03] text-zinc-600 cursor-not-allowed"
+                  : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
+              )}
+            >
+              <ChevronLeft size={14} />
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={cn(
+                    "flex items-center justify-center w-8 h-8 rounded-md text-xs font-medium transition-colors",
+                    currentPage === pageNum
+                      ? "bg-[var(--accent-alpha)] text-[var(--accent)] border border-[var(--border-accent)]"
+                      : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
+                  )}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={cn(
+                "flex items-center justify-center w-8 h-8 rounded-md transition-colors",
+                currentPage === totalPages
+                  ? "bg-white/[0.03] text-zinc-600 cursor-not-allowed"
+                  : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
+              )}
+            >
+              <ChevronRight size={14} />
+            </button>
+
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className={cn(
+                "flex items-center justify-center w-8 h-8 rounded-md transition-colors",
+                currentPage === totalPages
+                  ? "bg-white/[0.03] text-zinc-600 cursor-not-allowed"
+                  : "bg-white/[0.03] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"
+              )}
+            >
+              <ChevronsRight size={14} />
+            </button>
           </div>
         </div>
       )}
     </motion.div>
-  );
-}
-
-function HistoryRow({
-  bet,
-  index,
-}: {
-  bet: BetHistoryItem;
-  index: number;
-}) {
-  const roiColors = ROI_COLORS[bet.roiLabel];
-  const statusColors = STATUS_COLORS[bet.status];
-
-  const surfaceLabels = {
-    clay: "Terre battue",
-    hard: "Dur",
-    grass: "Gazon",
-  };
-
-  return (
-    <motion.tr
-      layout
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ delay: index * 0.02 }}
-      className="hover:bg-white/[0.02] transition-colors cursor-pointer"
-    >
-      {/* Player */}
-      <td className="px-5 py-4">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm text-zinc-200 font-medium">
-            {bet.player}
-          </span>
-          <span className="text-xs text-zinc-500">vs {bet.opponent}</span>
-        </div>
-      </td>
-
-      {/* Tournament */}
-      <td className="px-3 py-4">
-        <span className="text-xs text-zinc-500">{bet.tournament}</span>
-      </td>
-
-      {/* Surface */}
-      <td className="px-3 py-4">
-        <span className="text-xs text-zinc-500">
-          {surfaceLabels[bet.surface]}
-        </span>
-      </td>
-
-      {/* Odds */}
-      <td className="px-3 py-4 text-center">
-        <span className="text-sm font-semibold text-zinc-200 tabular-nums">
-          {bet.odds.toFixed(2)}
-        </span>
-      </td>
-
-      {/* Units */}
-      <td className="px-3 py-4 text-center">
-        <span className="text-sm text-zinc-400">{bet.units}u</span>
-      </td>
-
-      {/* ROI */}
-      <td className="px-3 py-4 text-center">
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium",
-            roiColors.bg,
-            roiColors.text
-          )}
-        >
-          {ROI_LABELS[bet.roiLabel]}
-        </span>
-      </td>
-
-      {/* Status */}
-      <td className="px-3 py-4 text-center">
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium uppercase tracking-wider",
-            statusColors.bg,
-            statusColors.text
-          )}
-        >
-          {bet.status === "won" && <ArrowUpRight size={10} />}
-          {bet.status === "lost" && <ArrowDownRight size={10} />}
-          {bet.status === "void" ? "annulé" : bet.status}
-        </span>
-      </td>
-
-      {/* Date */}
-      <td className="px-3 py-4 text-center">
-        <span className="text-xs text-zinc-600 font-mono">
-          {new Date(bet.date).toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "short",
-          })}
-        </span>
-      </td>
-
-      {/* Profit */}
-      <td className="px-5 py-4 text-right">
-        <span
-          className={cn(
-            "text-sm font-semibold tabular-nums flex items-center justify-end gap-1",
-            bet.profit >= 0 ? "text-green-400" : "text-red-400"
-          )}
-        >
-          {bet.profit >= 0 ? (
-            <ArrowUpRight size={14} />
-          ) : (
-            <ArrowDownRight size={14} />
-          )}
-          {bet.profit >= 0 ? "+" : ""}
-          {bet.profit.toFixed(2)}€
-        </span>
-      </td>
-    </motion.tr>
   );
 }

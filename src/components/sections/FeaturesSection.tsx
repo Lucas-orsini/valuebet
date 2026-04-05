@@ -5,7 +5,7 @@ import { BentoGrid } from "@/components/ui/BentoGrid";
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 px-6 bg-[#09090b]">
+    <section id="features" className="py-24 px-6 bg-[var(--bg)]">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -15,7 +15,7 @@ export function FeaturesSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent-light text-xs font-medium uppercase tracking-widest mb-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-[var(--accent-alpha)] text-[var(--accent-light)] text-xs font-medium uppercase tracking-widest mb-4">
             Fonctionnalités
           </span>
           <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
@@ -61,7 +61,7 @@ export function FeaturesSection() {
             >
               <item.icon
                 size={24}
-                className="text-accent-light mb-4"
+                className="text-[var(--accent-light)] mb-4"
                 strokeWidth={1.5}
               />
               <h3 className="text-base font-semibold text-zinc-100 mb-2">
