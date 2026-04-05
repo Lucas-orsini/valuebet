@@ -134,13 +134,13 @@ function KpiCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="bg-[#111] border border-white/[0.10] rounded-xl p-5 hover:border-white/[0.14] transition-colors"
+      className="bg-[var(--surface-1)] border border-white/[0.10] rounded-xl p-5 hover:border-white/[0.14] transition-colors"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#f2ab05]/10 border border-[#f2ab05]/20 flex items-center justify-center">
-            <Icon size={16} className="text-[#f2ab05]" strokeWidth={1.5} />
+          <div className="w-8 h-8 rounded-lg bg-[var(--accent-alpha)] border border-[var(--border-accent)] flex items-center justify-center">
+            <Icon size={16} className="text-[var(--accent)]" strokeWidth={1.5} />
           </div>
           <span className="text-xs text-zinc-500 uppercase tracking-wider">
             {label}

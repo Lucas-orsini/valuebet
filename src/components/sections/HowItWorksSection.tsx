@@ -22,9 +22,9 @@ function TimelineWidget() {
   ];
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+    <div className="rounded-xl border border-white/[0.07] bg-[var(--surface-1)] p-4 min-h-[200px]">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+        <div className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
         <span className="text-xs text-zinc-500 font-mono"> Model_V4.py</span>
       </div>
       <div className="space-y-2">
@@ -42,7 +42,7 @@ function TimelineWidget() {
                 item.status === "done"
                   ? "bg-green-500"
                   : item.status === "active"
-                  ? "bg-accent animate-pulse"
+                  ? "bg-[var(--accent)] animate-pulse"
                   : "bg-zinc-600"
               )}
             />
@@ -65,18 +65,18 @@ function TimelineWidget() {
 // Widget for step 2 - Model prediction
 function PredictionWidget() {
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+    <div className="rounded-xl border border-white/[0.07] bg-[var(--surface-1)] p-4 min-h-[200px]">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-6 h-6 rounded bg-accent/20 flex items-center justify-center">
-          <Cpu size={12} className="text-accent-light" />
+        <div className="w-6 h-6 rounded bg-[var(--accent-alpha)] flex items-center justify-center">
+          <Cpu size={12} className="text-[var(--accent-light)]" />
         </div>
         <span className="text-xs text-zinc-400">Model v4</span>
       </div>
       <div className="space-y-3">
-        <div className="p-3 rounded-lg bg-[#18181b] border border-white/[0.05]">
+        <div className="p-3 rounded-lg bg-[var(--surface-2)] border border-white/[0.05]">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs text-zinc-500">Sinner vs Medvedev</span>
-            <span className="text-[10px] text-accent-light">VALUE</span>
+            <span className="text-[10px] text-[var(--accent-light)]">VALUE</span>
           </div>
           <div className="flex items-end gap-2">
             <span className="text-2xl font-bold text-zinc-100">67%</span>
@@ -87,7 +87,7 @@ function PredictionWidget() {
               initial={{ width: 0 }}
               animate={{ width: "67%" }}
               transition={{ duration: 1, delay: 0.5 }}
-              className="h-full bg-gradient-to-r from-accent to-accent-light rounded-full"
+              className="h-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-light)] rounded-full"
             />
           </div>
         </div>
@@ -115,7 +115,7 @@ function ValueDetectionWidget() {
   ];
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+    <div className="rounded-xl border border-white/[0.07] bg-[var(--surface-1)] p-4 min-h-[200px]">
       <div className="flex items-center gap-2 mb-4">
         <div className="w-6 h-6 rounded bg-green-500/20 flex items-center justify-center">
           <Target size={12} className="text-green-400" />
@@ -151,7 +151,7 @@ function TennisBallIcon({ className }: { className?: string }) {
   return (
     <motion.svg
       viewBox="0 0 24 24"
-      className={cn("w-6 h-6 text-[#CCFF00]", className)}
+      className={cn("w-6 h-6 text-[var(--tennis-ball)]", className)}
       animate={{ rotate: [0, 10, -10, 0] }}
       transition={{
         duration: 4,
@@ -209,7 +209,7 @@ function TelegramWidget() {
   };
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-[#111] p-4 min-h-[200px]">
+    <div className="rounded-xl border border-white/[0.07] bg-[var(--surface-1)] p-4 min-h-[200px]">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <div className="w-6 h-6 rounded bg-blue-500/20 flex items-center justify-center">
@@ -227,7 +227,7 @@ function TelegramWidget() {
 
       {/* Pulsing VALUE BET badge */}
       <div className="mb-3">
-        <span className="animate-pulse inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent-light text-[10px] font-bold uppercase tracking-wider">
+        <span className="animate-pulse inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--accent-alpha)] border border-[var(--border-accent)] text-[var(--accent-light)] text-[10px] font-bold uppercase tracking-wider">
           Value
         </span>
       </div>
@@ -257,7 +257,7 @@ function TelegramWidget() {
       <div className="flex items-center gap-2 pt-2 border-t border-white/[0.07]">
         <div className="flex items-center gap-1 px-2 py-1 rounded bg-white/[0.03] border border-white/[0.06]">
           <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Edge</span>
-          <span className="text-xs text-accent-light font-bold">{tennisData.edge}</span>
+          <span className="text-xs text-[var(--accent-light)] font-bold">{tennisData.edge}</span>
         </div>
         <div className="flex items-center gap-1 px-2 py-1 rounded bg-white/[0.03] border border-white/[0.06]">
           <span className="text-[9px] text-zinc-500 uppercase tracking-wider">Prob</span>
@@ -276,7 +276,7 @@ const widgetMap = [TimelineWidget, PredictionWidget, ValueDetectionWidget, Teleg
 
 export function HowItWorksSection() {
   return (
-    <section id="how" className="py-24 px-6 bg-[#111]">
+    <section id="how" className="py-24 px-6 bg-[var(--surface-1)]">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -286,7 +286,7 @@ export function HowItWorksSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent-light text-xs font-medium uppercase tracking-widest mb-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-[var(--accent-alpha)] text-[var(--accent-light)] text-xs font-medium uppercase tracking-widest mb-4">
             Comment ça marche
           </span>
           <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
@@ -319,8 +319,8 @@ export function HowItWorksSection() {
                 {/* Text */}
                 <div className="flex-1 space-y-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl border border-accent/20 bg-accent/10 flex items-center justify-center">
-                      <Icon size={22} className="text-accent-light" strokeWidth={1.5} />
+                    <div className="w-12 h-12 rounded-xl border border-[var(--border-accent)] bg-[var(--accent-alpha)] flex items-center justify-center">
+                      <Icon size={22} className="text-[var(--accent-light)]" strokeWidth={1.5} />
                     </div>
                     <span className="text-3xl font-bold text-zinc-800 dark:text-zinc-700">
                       {String(step.step).padStart(2, "0")}

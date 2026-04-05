@@ -12,7 +12,7 @@ export function ResultsSection() {
   const winRate = Math.round((wins / miamiOpenResults.length) * 100);
 
   return (
-    <section id="resultats" className="py-24 px-6 bg-[#09090b]">
+    <section id="resultats" className="py-24 px-6 bg-[var(--bg)]">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -22,7 +22,7 @@ export function ResultsSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-2xl mx-auto mb-12"
         >
-          <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent-light text-xs font-medium uppercase tracking-widest mb-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-[var(--accent-alpha)] text-[var(--accent-light)] text-xs font-medium uppercase tracking-widest mb-4">
             Résultats
           </span>
           <h2 className="text-3xl sm:text-4xl font-semibold text-zinc-50 tracking-[-0.03em] leading-tight mb-4">
@@ -39,7 +39,7 @@ export function ResultsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="rounded-xl border border-white/[0.07] bg-[#111] overflow-hidden"
+          className="rounded-xl border border-white/[0.07] bg-[var(--surface-1)] overflow-hidden"
         >
           {/* Table Header */}
           <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 p-4 border-b border-white/[0.06] bg-white/[0.02]">
@@ -133,7 +133,7 @@ export function ResultsSection() {
               </p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-accent-light">+{((totalProfit / totalStake) * 100).toFixed(1)}%</p>
+              <p className="text-lg font-bold text-[var(--accent-light)]">+{((totalProfit / totalStake) * 100).toFixed(1)}%</p>
               <p className="text-[10px] text-zinc-500 uppercase tracking-wider">
                 ROI
               </p>

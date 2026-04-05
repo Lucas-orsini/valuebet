@@ -80,12 +80,12 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
 
   if (sortedItems.length === 0) {
     return (
-      <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
+      <div className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
         {/* Header */}
         <div className="px-4 py-3 border-b border-white/[0.06] shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#F2CB38]/10 border border-[#F2CB38]/20 flex items-center justify-center">
-              <Trophy size={14} className="text-[#F2CB38]" strokeWidth={1.5} />
+            <div className="w-7 h-7 rounded-lg bg-[var(--accent-alpha)] border border-[var(--border-accent)] flex items-center justify-center">
+              <Trophy size={14} className="text-[var(--accent)]" strokeWidth={1.5} />
             </div>
             <h2 className="text-sm font-semibold text-zinc-100">
               Value du jour
@@ -116,18 +116,18 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
   }
 
   return (
-    <div className="bg-[#111] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
+    <div className="bg-[var(--surface-1)] border border-white/[0.07] rounded-xl overflow-hidden h-full flex flex-col">
       {/* Header */}
       <div className="px-4 py-3 border-b border-white/[0.06] shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#F2CB38]/10 border border-[#F2CB38]/20 flex items-center justify-center">
-              <Trophy size={14} className="text-[#F2CB38]" strokeWidth={1.5} />
+            <div className="w-7 h-7 rounded-lg bg-[var(--accent-alpha)] border border-[var(--border-accent)] flex items-center justify-center">
+              <Trophy size={14} className="text-[var(--accent)]" strokeWidth={1.5} />
             </div>
             <h2 className="text-sm font-semibold text-zinc-100">
               Value du jour
             </h2>
-            <span className="px-1.5 py-0.5 rounded-full bg-[#F2CB38]/10 border border-[#F2CB38]/20 text-[#F2CB38] text-[10px] font-medium">
+            <span className="px-1.5 py-0.5 rounded-full bg-[var(--accent-alpha)] border border-[var(--border-accent)] text-[var(--accent)] text-[10px] font-medium">
               {sortedItems.length}
             </span>
           </div>
@@ -206,7 +206,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
                           item.units === 3
                             ? "bg-green-500/15 text-green-400"
                             : item.units === 2
-                            ? "bg-[#F2CB38]/15 text-[#F2CB38]"
+                            ? "bg-[var(--accent-alpha)] text-[var(--accent)]"
                             : "bg-white/[0.08] text-zinc-400"
                         )}
                       >
@@ -243,9 +243,9 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
               transform: "translate(-50%, -100%)",
             }}
           >
-            <div className="bg-[#1a1a1a] border border-white/[0.12] rounded-lg p-3 shadow-xl min-w-[180px]">
+            <div className="bg-[var(--surface-2)] border border-white/[0.12] rounded-lg p-3 shadow-xl min-w-[180px]">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#F2CB38]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
                 <span className="text-xs font-semibold text-zinc-100">
                   {tooltip.playerName}
                 </span>
@@ -289,7 +289,7 @@ export function ValueOfTheDay({ items = VALUE_OF_THE_DAY }: ValueOfTheDayProps) 
                 </div>
               </div>
               <div
-                className="absolute -bottom-1.5 bg-[#1a1a1a] w-3 h-3 rotate-45 border-r border-b border-white/[0.12]"
+                className="absolute -bottom-1.5 bg-[var(--surface-2)] w-3 h-3 rotate-45 border-r border-b border-white/[0.12]"
                 style={{
                   left: mousePosition.x - 6,
                 }}
